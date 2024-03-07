@@ -1,0 +1,167 @@
+@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap");
+
+.fredoka-400 {
+  font-family: "Fredoka", sans-serif;
+  font-weight: 400;
+}
+
+.fredoka-500 {
+  font-family: "Fredoka", sans-serif;
+  font-weight: 500;
+}
+
+.fredoka-600 {
+  font-family: "Fredoka", sans-serif;
+  font-weight: 600;
+}
+
+.fredoka-700 {
+  font-family: "Fredoka", sans-serif;
+  font-weight: 700;
+}
+
+body {
+  font-family: "Fredoka", sans-serif;
+  font-weight: 400;
+}
+
+.ant-table-thead {
+  height: 64px;
+  position: sticky;
+}
+
+.ant-table-wrapper .ant-table-tbody > tr > td {
+  font-size: 16px;
+  border-bottom: 2px solid #e5e7eb;
+  font-family: "Fredoka", sans-serif !important;
+}
+
+.pricing-form span.ant-input-suffix {
+  top: -15px;
+  position: absolute;
+  background-color: white;
+  padding: 2px;
+}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.insta-bg {
+  background: linear-gradient(
+    90deg,
+    #f6cc49 0%,
+    #ea772e 20.1%,
+    #db326e 39.37%,
+    #c42c9d 58.65%,
+    #7241d1 77.92%,
+    #554ddd 100%
+  );
+}
+
+.carousel .thumb img {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.carousel .slide img {
+  max-height: 400px; /* change this to whatever you want */
+  width: auto;
+}
+
+.ant-select-selection-overflow-item.ant-select-selection-overflow-item-rest {
+  display: none;
+}
+
+.tags-select .ant-select-selector {
+  overflow-x: auto !important;
+}
+
+.ant-select-disabled:where(.css-dev-only-do-not-override-w8mnev).ant-select:not(
+    .ant-select-customize-input
+  )
+  .ant-select-selector {
+  background-color: white;
+}
+
+.multi-select .ant-select-selection-item {
+  background-color: #fc8172 !important;
+  color: white;
+  border-radius: 10px;
+}
+
+:where(.css-dev-only-do-not-override-w8mnev).ant-input-disabled,
+:where(.css-dev-only-do-not-override-w8mnev).ant-input[disabled] {
+  background-color: white;
+}
+
+.ant-select-multiple.ant-select-disabled:where(
+    .css-dev-only-do-not-override-w8mnev
+  ).ant-select:not(.ant-select-customize-input)
+  .ant-select-selector {
+  background: none !important;
+}
+
+:where(.css-dev-only-do-not-override-w8mnev).ant-btn-primary {
+  background-color: #1677ff !important;
+}
+
+.tags-select {
+  padding: 8px;
+}
+
+.arrow-select .ant-select-arrow {
+  top: 4px !important;
+}
+.arrow-select .ant-select-selection-item {
+  padding: 0px !important;
+}
+
+.warehouse-phone-number .PhoneInput--focus {
+  border: none !important;
+  outline: none !important;
+}
+
+.react-tel-input .form-control {
+  width: 100% !important;
+  border: none;
+  background: none;
+}
+
+.react-tel-input .flag-dropdown {
+  background-color: white !important;
+  border: none;
+}
+
+.select-label {
+  z-index: 2;
+  position: absolute;
+  transform: translate(20px, -65%);
+  background: white;
+  padding: 0 4px;
+  color: #a8a8a8;
+}
+
+.multi-select > .ant-select-selector {
+  width: 100%;
+}
+
+.tags-select .ant-select-selector {
+  border: none !important;
+}
+
+.ant-select-selection-item-remove {
+  color: white !important;
+}
+
+.credit-debit-tab .ant-select-selector {
+  border: none !important;
+}
+
+.credit-debit-boxshadow {
+  box-shadow: 2px 2px 8px 2px rgba(223, 69, 132, 0.25) inset;
+}
+
+.product-content {
+  height: 500px;
+  overflow-y: auto;
+}

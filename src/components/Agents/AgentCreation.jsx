@@ -1,6 +1,4 @@
-import React from "react";
 import Button from "../Common/Button";
-import { FormInput } from "../Product/Form/FormComponents";
 
 const AgentCreation = () => {
   return (

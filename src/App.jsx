@@ -10,7 +10,7 @@ import History from "./pages/History";
 import Agents from "./pages/Agent/Agents";
 import Subscription from "./pages/Subscription";
 import PrivateRoute from "./components/Auth/PrivateRoute";
-import Dashboard from "./pages/Dashboard";
+// import Dashboard from "./pages/Dashboard";
 // import Inventory from "./pages/Inventory";
 // import Order from "./pages/Order";
 // import Profile from "./pages/Profile";

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import DataTable from "../Common/DataTable/DataTable";
 
 const AgentDetail = () => {
@@ -10,9 +9,7 @@ const AgentDetail = () => {
       society_name: "DLF CREST, SECTOR 53, GURGAON-17",
       delivery: "FLAT 203, BLOCK 4, SECTION XYZ",
       align: "center",
-      // product: {
-      //   detail: "hgfwgerfvgc",
-      // },
+
       agent_name: "manan",
       status: " In Progress",
       image_log: " In Progress",
@@ -24,9 +21,7 @@ const AgentDetail = () => {
       society_name: "DLF CREST, SECTOR 53, GURGAON-17",
       delivery: "FLAT 203, BLOCK 4, SECTION XYZ",
       align: "center",
-      // product: {
-      //   detail: "hgfwgerfvgc",
-      // },
+
       agent_name: "manan",
       status: " Available",
       image_log: " In Progress",
@@ -38,9 +33,7 @@ const AgentDetail = () => {
       society_name: "DLF CREST, SECTOR 53, GURGAON-17",
       delivery: "FLAT 203, BLOCK 4, SECTION XYZ",
       align: "center",
-      // product: {
-      //   detail: "hgfwgerfvgc",
-      // },
+
       agent_name: "manan",
       status: " Pending",
       image_log: " In Progress",
@@ -142,13 +135,6 @@ const AgentDetail = () => {
           data={dataHistory}
           columns={HistoryHeaders}
           pagination={true}
-          //   onRow={(record, rowIndex) => {
-          //     return {
-          //       onClick: () => {
-          //         setSelectedRowData(record);
-          //       },
-          //     };
-          //   }}
         />
       </div>
     </div>

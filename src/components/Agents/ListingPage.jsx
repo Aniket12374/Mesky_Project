@@ -1,13 +1,9 @@
 import { useState } from "react";
-import { Form, Input, Row, Col, Button } from "antd";
 import DataTable from "../Common/DataTable/DataTable";
 import AgentDetail from "../Agents/AgentDetail"; // Import the AgentDetail component
 
 const ListingPage = () => {
   const [selectedRowData, setSelectedRowData] = useState(null);
-  const [form] = Form.useForm();
-  const [agentName, setAgentName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
 
   const [dataHistory, setDataHistory] = useState([
     {

@@ -19,3 +19,16 @@ httpVendor.interceptors.request.use((conf) => {
 export const httpCreators = axios.create({
   baseURL: `${import.meta.env.VITE_API_CREATOR_URL}`,
 });
+
+export const httpVendorUpload = axios.create({
+  baseURL: `${import.meta.env.VITE_VENDOR_UPLOAD_API_URL}`,
+});
+
+httpVendorUpload.interceptors.request.use((conf) => {
+  conf.headers = {
+    ...conf.headers,
+    Authorization: "TkGZRT5lAPhx3YHrdd7R",
+  };
+
+  return conf;
+});

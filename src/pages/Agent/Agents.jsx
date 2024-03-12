@@ -15,16 +15,10 @@ const Agents = () => {
   return (
     <Layout>
       <Header text="Agents" />
-      <div className="float-right">
-        {!showAgentCreation && (
-          <Button btnName={"+ Add Agent"} onClick={handleAddAgentClick} />
-        )}
-      </div>
-
       {showAgentCreation ? (
         <AgentCreation setShowAgentCreation={setShowAgentCreation} />
       ) : (
-        <ListingPage />
+        <ListingPage setShowAgentCreation={setShowAgentCreation} />
       )}
     </Layout>
   );

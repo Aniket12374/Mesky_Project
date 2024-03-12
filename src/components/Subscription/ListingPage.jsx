@@ -1,8 +1,28 @@
 import React from "react";
 import DataTable from "../Common/DataTable/DataTable";
+import { useQuery } from "react-query";
+import {
+  presentOrders,
+  previousOrders,
+} from "../../services/subscriptionOrders/subscriptionService";
 
 const ListingPage = () => {
   const [selectedRowData, setSelectedRowData] = React.useState(null);
+  // const { data, isLoading } = useQuery("presentOrders", presentOrders);
+  const { data, isLoading } = useQuery("presentOrders", previousOrders);
+
+  let historyData = [];
+  data?.data?.data.map((listingData) => {
+    historyData.push({
+      order_id: listingData?.order?.uid,
+      customer_name: listingData?.order?.full_name,
+      society_name: listingData?.society?.name,
+      delivery: listingData?.order?.line_1 + " " + listingData?.order?.line_2,
+      align: "center",
+      agent_name: listingData?.rider?.name,
+      status: listingData?.status?.name,
+    });
+  });
 
   const dataHistory = [
     {
@@ -77,8 +97,9 @@ const ListingPage = () => {
   return (
     <div>
       <DataTable
-        data={dataHistory}
+        data={historyData}
         // navigateTo="/products/edit/"
+        loading={isLoading}
         columns={HistoryHeaders}
         pagination={true}
         // onRow={(record, rowIndex) => {

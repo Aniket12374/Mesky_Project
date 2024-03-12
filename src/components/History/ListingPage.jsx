@@ -1,6 +1,27 @@
+import { useQuery } from "react-query";
 import DataTable from "../Common/DataTable/DataTable";
+import { previousOrders } from "../../services/subscriptionOrders/subscriptionService";
+import { useEffect, useState } from "react";
 
 const ListingPage = () => {
+  const [totalOrders, setTotalOrders] = useState([]);
+  const { data, isLoading } = useQuery("previousOrders", previousOrders);
+
+  let historyData = [];
+  data?.data?.data.map((listingData) => {
+    historyData.push({
+      order_id: listingData?.order?.uid,
+      customer_name: listingData?.order?.full_name,
+      society_name: listingData?.society?.name,
+      delivery: listingData?.order?.line_1 + " " + listingData?.order?.line_2,
+      align: "center",
+      agent_name: listingData?.rider?.name,
+      status: listingData?.status?.name,
+    });
+  });
+
+  useEffect(() => {});
+
   const dataHistory = [
     {
       order_id: "iurhuyg4ryw3ttyg54",
@@ -74,10 +95,11 @@ const ListingPage = () => {
   return (
     <div>
       <DataTable
-        data={dataHistory}
+        data={historyData}
         // navigateTo="/products/edit/"
         columns={HistoryHeaders}
         pagination={true}
+        loading={isLoading}
       />
     </div>
   );

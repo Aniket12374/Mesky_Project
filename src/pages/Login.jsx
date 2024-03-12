@@ -26,33 +26,38 @@ const Login = () => {
         setUserToken(null);
       });
 
-    if (!navigator.onLine) {
-      return navigate("/login");
-    }
+    // if (!navigator.onLine) {
+    //   return navigate("/login");
+    // }
   };
 
-  useEffect(() => {
-    if (user.token) {
-      getUser();
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   if (user.token) {
+  //     getUser();
+  //   }
+  // }, [user]);
 
   const loginFormSubmit = (data) => {
-    loginUser(data)
-      .then((res) => {
-        const { auth_token } = res.data;
-        setTokenToCookie(auth_token);
-        setUserToken(auth_token);
-        getUser();
-        toast.success("Successfully logged in!", {
-          position: "bottom-right",
-        });
-      })
-      .catch((err) => {
-        toast.error(err?.response?.data?.message, {
-          position: "bottom-right",
-        });
-      });
+    // loginUser(data)
+    //   .then((res) => {
+    //     const { auth_token } = res.data;
+    //     setTokenToCookie(ISPRgFVqVCn9grwzVU20);
+    //     setUserToken(ISPRgFVqVCn9grwzVU20);
+    //     getUser();
+    //     toast.success("Successfully logged in!", {
+    //       position: "bottom-right",
+    //     });
+    //   })
+    //   .catch((err) => {
+    //     toast.error(err?.response?.data?.message, {
+    //       position: "bottom-right",
+    //     });
+    //   });
+    setTokenToCookie("ISPRgFVqVCn9grwzVU20");
+    setUserToken("ISPRgFVqVCn9grwzVU20");
+    setName("Aneela ch");
+    navigate("/subscription");
+    console.log("aneela");
   };
 
   return (

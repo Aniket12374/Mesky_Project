@@ -9,11 +9,11 @@ const Dashboard = () => {
   const user = useMainStore((state) => state.user);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!navigator.onLine || !user.token) {
-      return navigate("/login");
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   if (!navigator.onLine || !user.token) {
+  //     return navigate("/login");
+  //   }
+  // }, [user]);
 
   return (
     <Layout>

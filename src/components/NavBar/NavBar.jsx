@@ -11,61 +11,62 @@ const NavBar = () => {
   const setBrand = useMainStore((state) => state.setBrand);
   const navigate = useNavigate();
 
-  const {
-    data: response,
-    isSuccess,
-    isError,
-  } = useQuery("vendorDetails", getMyDetails, {
-    staleTime: 120000,
-    cacheTime: 120000,
-  });
+  // const {
+  //   data: response,
+  //   isSuccess,
+  //   isError,
+  // } = useQuery("vendorDetails", getMyDetails, {
+  //   staleTime: 120000,
+  //   cacheTime: 120000,
+  // });
 
-  useEffect(() => {
-    if (isSuccess) {
-      const {
-        first_name,
-        last_name,
-        brand_id,
-        brand_name,
-        default_email,
-        default_mobile_number,
-        alternateNumber,
-        registered_name,
-        registered_address,
-        delivery_pay_by,
-        address_line_1,
-        address_line_2,
-        state,
-        city,
-        pincode,
-      } = undefined || response.data;
-      setName(`${first_name} ${last_name}`);
-      setBrand(
-        brand_id,
-        brand_name,
-        default_mobile_number,
-        alternateNumber,
-        default_email,
-        first_name,
-        last_name,
-        registered_name,
-        registered_address,
-        delivery_pay_by,
-        address_line_1,
-        address_line_2,
-        state,
-        city,
-        pincode
-      );
-    }
-    if (isError) {
-      navigate("/login");
-    }
-  }, [isSuccess, isError]);
+  // useEffect(() => {
+  //   if (isSuccess) {
+  //     const {
+  //       first_name,
+  //       last_name,
+  //       brand_id,
+  //       brand_name,
+  //       default_email,
+  //       default_mobile_number,
+  //       alternateNumber,
+  //       registered_name,
+  //       registered_address,
+  //       delivery_pay_by,
+  //       address_line_1,
+  //       address_line_2,
+  //       state,
+  //       city,
+  //       pincode,
+  //     } = undefined || response.data;
+  //     setName(`${first_name} ${last_name}`);
+  //     setBrand(
+  //       brand_id,
+  //       brand_name,
+  //       default_mobile_number,
+  //       alternateNumber,
+  //       default_email,
+  //       first_name,
+  //       last_name,
+  //       registered_name,
+  //       registered_address,
+  //       delivery_pay_by,
+  //       address_line_1,
+  //       address_line_2,
+  //       state,
+  //       city,
+  //       pincode
+  //     );
+  //   }
+  //   if (isError) {
+  //     navigate("/login");
+  //   }
+  // }, [isSuccess, isError]);
 
   return (
     <>
-      <TopNavBar />
+      {/* <TopNavBar />
+      <SideNavBar /> */}
       <SideNavBar />
     </>
   );

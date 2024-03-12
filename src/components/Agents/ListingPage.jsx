@@ -1,9 +1,26 @@
 import { useState } from "react";
 import DataTable from "../Common/DataTable/DataTable";
 import AgentDetail from "../Agents/AgentDetail"; // Import the AgentDetail component
+import { useQuery } from "react-query";
+import { ridersList } from "../../services/riders/riderService";
 
 const ListingPage = () => {
   const [selectedRowData, setSelectedRowData] = useState(null);
+
+  const { data, isLoading } = useQuery("ridersList", ridersList);
+  const riders = [];
+  console.log({ data });
+  data?.data?.data.map((rider) =>
+    riders.push({
+      s_no: rider.id,
+      phone_number: rider.mobile_number,
+      assigned_area: "",
+      delivery_area: rider?.society.length > 0 ? rider.society[0].street : "",
+      status: rider?.status,
+      align: "center",
+      agent_name: rider?.full_name,
+    })
+  );
 
   const [dataHistory, setDataHistory] = useState([
     {
@@ -86,9 +103,10 @@ const ListingPage = () => {
         <AgentDetail rowData={selectedRowData} />
       ) : (
         <DataTable
-          data={dataHistory}
+          data={riders}
           columns={HistoryHeaders}
           pagination={true}
+          loading={isLoading}
           onRow={(record, rowIndex) => {
             return {
               onClick: () => {

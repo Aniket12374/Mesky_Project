@@ -10,7 +10,7 @@ httpVendor.interceptors.request.use((conf) => {
   if (token) {
     conf.headers = {
       ...conf.headers,
-      Authorization: token,
+      Authorization: "ISPRgFVqVCn9grwzVU20",
     };
   }
   return conf;

@@ -4,6 +4,9 @@ import { httpVendor, httpVendorUpload } from "../../services/api-client";
 import { addRider, getSocieties } from "../../services/riders/riderService";
 import toast from "react-hot-toast";
 import Select from "react-select";
+import { DatePicker } from "antd";
+
+const dateFormat = "YYYY/MM/DD";
 
 const AgentCreation = ({ setShowAgentCreation }) => {
   const [agent, setAgent] = useState({});
@@ -31,6 +34,23 @@ const AgentCreation = ({ setShowAgentCreation }) => {
   };
 
   const handleSaveAgent = () => {
+    const fields = [...expDts, ...issueDts];
+    fields.push(
+      "dl",
+      "adhar",
+      "veh_n_pl_im",
+      "veh_rc",
+      "poll_ch",
+      "mobile_number",
+      "full_name",
+      "society"
+    );
+
+    if (Object.keys(agent).length < fields.length) {
+      console.log(Object.keys(agent));
+      return toast.error("Please fill all the fields");
+    }
+
     addRider(agent)
       .then((res) => {
         toast.success("Saved successfully");
@@ -43,9 +63,10 @@ const AgentCreation = ({ setShowAgentCreation }) => {
   };
 
   const handleSelectOption = (selectedOption) => {
+    console.log({ selectedOption });
     handleChange(
       "society",
-      selectedOption.map((x) => x.name)
+      selectedOption.map((x) => x.value)
     );
   };
 
@@ -58,6 +79,24 @@ const AgentCreation = ({ setShowAgentCreation }) => {
       setSocitiesList(list);
     });
   }, []);
+
+  const issueDts = [
+    "dl_i_date",
+    "adhar_i_date",
+    "veh_n_pl_im_i_date",
+    "veh_rc_i_date",
+    "poll_ch_i_date",
+  ];
+
+  const expDts = [
+    "dl_ex_date",
+    "adhar_ex_date",
+    "veh_n_pl_im_ex_date",
+    "veh_rc_ex_date",
+    "poll_ch_ex_date",
+  ];
+
+  console.log({ agent });
 
   return (
     <div>
@@ -74,7 +113,7 @@ const AgentCreation = ({ setShowAgentCreation }) => {
             <label>Full Name</label>
             <input
               type="text"
-              className="w-full h-12 rounded-lg  shadow-inner shadow-fuchsia-400"
+              className="w-full h-12 rounded-lg  shadow-inner shadow-fuchsia-400 p-2"
               value={agent?.full_name}
               onChange={(e) => handleChange("full_name", e.target.value)}
             />
@@ -83,7 +122,7 @@ const AgentCreation = ({ setShowAgentCreation }) => {
             <label>Phone Number</label>
             <input
               type="text"
-              className="w-full h-12 rounded-lg  shadow-inner shadow-fuchsia-400"
+              className="w-full h-12 rounded-lg  shadow-inner shadow-fuchsia-400 p-2"
               value={agent?.mobile_number}
               onChange={(e) => handleChange("mobile_number", e.target.value)}
             />
@@ -170,21 +209,31 @@ const AgentCreation = ({ setShowAgentCreation }) => {
           <div className="w-1/2 flex justify-evenly">
             <div className="space-y-4">
               <div className="text-lg font-medium">ISSUE DATE</div>
-              <div>24-MAR-2018</div>
-              <div>24-MAR-2018</div>
-              <div>24-MAR-2018</div>
-              <div>24-MAR-2018</div>
-              <div>24-MAR-2018</div>
-              <div>24-MAR-2018</div>
+              {issueDts.map((x) => (
+                <div key={x}>
+                  <DatePicker
+                    placeholder={"select date"}
+                    format={dateFormat}
+                    onChange={(date, dateString) => {
+                      handleChange(x, dateString);
+                    }}
+                  />
+                </div>
+              ))}
             </div>
             <div className="space-y-4">
               <div className="text-lg font-medium">EXPIRY DATE</div>
-              <div>18-JUL-2028</div>
-              <div>18-JUL-2028</div>
-              <div>18-JUL-2028</div>
-              <div>18-JUL-2028</div>
-              <div>18-JUL-2028</div>
-              <div>18-JUL-2028</div>
+              {expDts.map((x) => (
+                <div key={x}>
+                  <DatePicker
+                    format={dateFormat}
+                    placeholder={"select date"}
+                    onChange={(date, dateString) => {
+                      handleChange(x, dateString);
+                    }}
+                  />
+                </div>
+              ))}
             </div>
           </div>
         </div>

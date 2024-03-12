@@ -7,7 +7,6 @@ import {
   getSocieties,
   modifyRider,
 } from "../../services/riders/riderService";
-import { useQuery } from "react-query";
 import toast from "react-hot-toast";
 
 const AgentDetail = ({ rowData, setShowAgentCreation, setSelectedRowData }) => {
@@ -168,7 +167,7 @@ const AgentDetail = ({ rowData, setShowAgentCreation, setSelectedRowData }) => {
             <label>Phone Number</label>
             <input
               type="text"
-              className="w-full h-12 rounded-lg  shadow-inner shadow-fuchsia-400"
+              className="w-full h-12 rounded-lg  shadow-inner shadow-fuchsia-400 p-2"
               value={agent?.phone_number}
               //   placeholder="Warehouse Name"
             />

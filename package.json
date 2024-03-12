@@ -18,6 +18,7 @@
     "classnames": "^2.3.2",
     "country-state-city": "^3.1.4",
     "daisyui": "^2.52.0",
+    "dayjs": "^1.11.10",
     "immer": "^10.0.4",
     "js-cookie": "^3.0.5",
     "lodash": "^4.17.21",

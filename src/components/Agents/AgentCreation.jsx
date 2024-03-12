@@ -47,7 +47,6 @@ const AgentCreation = ({ setShowAgentCreation }) => {
     );
 
     if (Object.keys(agent).length < fields.length) {
-      console.log(Object.keys(agent));
       return toast.error("Please fill all the fields");
     }
 
@@ -63,7 +62,6 @@ const AgentCreation = ({ setShowAgentCreation }) => {
   };
 
   const handleSelectOption = (selectedOption) => {
-    console.log({ selectedOption });
     handleChange(
       "society",
       selectedOption.map((x) => x.value)
@@ -95,8 +93,6 @@ const AgentCreation = ({ setShowAgentCreation }) => {
     "veh_rc_ex_date",
     "poll_ch_ex_date",
   ];
-
-  console.log({ agent });
 
   return (
     <div>

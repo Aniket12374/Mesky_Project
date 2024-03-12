@@ -9,6 +9,14 @@ import {
 } from "../../services/riders/riderService";
 import toast from "react-hot-toast";
 
+const colorStatus = {
+  DELIVERED: "#9c29c1",
+  "IN PROGRESS": "#FFD700",
+  CANCELLED: "#FF0028",
+  RECIEVED: "#9c29c1",
+  "NOT RECEIVED": "#FFD700",
+};
+
 const AgentDetail = ({
   rowData,
   setShowAgentCreation,
@@ -126,12 +134,18 @@ const AgentDetail = ({
       dataIndex: "status",
       key: "status",
       align: "center",
+      render: (status) => (
+        <div style={{ color: colorStatus[status] }}>{status}</div>
+      ),
     },
     {
       title: "IMAGE LOG",
       dataIndex: "image_log",
       key: "image_log",
       align: "center",
+      render: (image_log) => (
+        <div style={{ color: colorStatus[image_log] }}>{image_log}</div>
+      ),
     },
   ];
 
@@ -172,7 +186,7 @@ const AgentDetail = ({
             <label>Phone Number</label>
             <input
               type="text"
-              className="w-full h-12 rounded-lg  shadow-inner shadow-fuchsia-400 p-2"
+              className="w-full h-12 rounded-lg border-select__control  p-2"
               value={agent?.phone_number}
               //   placeholder="Warehouse Name"
             />
@@ -183,6 +197,7 @@ const AgentDetail = ({
             className="w-full"
             value={{ label: agent?.status, value: agent?.status }}
             onChange={(option) => handleOptionChange(option, "status")}
+            classNamePrefix="border-select"
           />
         </div>
         <div className="w-[40%]">
@@ -193,6 +208,7 @@ const AgentDetail = ({
             placeholder="Please select areas"
             onChange={handleSelectOption}
             className="w-full"
+            classNamePrefix="border-select"
             value={socitiesList.filter((society) =>
               agent?.assigned_area.includes(society.label)
             )}

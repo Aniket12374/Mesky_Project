@@ -5,6 +5,11 @@ import { useQuery } from "react-query";
 import { ridersList } from "../../services/riders/riderService";
 import Button from "../Common/Button";
 
+const colorStatus = {
+  AVAILABLE: "#9c29c1",
+  "NOT AVAILABLE": "#FF0028",
+};
+
 const ListingPage = ({ setShowAgentCreation }) => {
   const [selectedRowData, setSelectedRowData] = useState(null);
 
@@ -64,6 +69,9 @@ const ListingPage = ({ setShowAgentCreation }) => {
       key: "status",
       align: "center",
       width: 50,
+      render: (status) => (
+        <div style={{ color: colorStatus[status] }}>{status}</div>
+      ),
     },
   ];
 

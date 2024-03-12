@@ -109,7 +109,7 @@ const AgentCreation = ({ setShowAgentCreation }) => {
             <label>Full Name</label>
             <input
               type="text"
-              className="w-full h-12 rounded-lg  shadow-inner shadow-fuchsia-400 p-2"
+              className="w-full h-12 rounded-lg  border-select__control  p-2"
               value={agent?.full_name}
               onChange={(e) => handleChange("full_name", e.target.value)}
             />
@@ -118,7 +118,7 @@ const AgentCreation = ({ setShowAgentCreation }) => {
             <label>Phone Number</label>
             <input
               type="text"
-              className="w-full h-12 rounded-lg  shadow-inner shadow-fuchsia-400 p-2"
+              className="w-full h-12 rounded-lg  border-select__control  p-2"
               value={agent?.mobile_number}
               onChange={(e) => handleChange("mobile_number", e.target.value)}
             />
@@ -130,6 +130,7 @@ const AgentCreation = ({ setShowAgentCreation }) => {
             <Select
               options={socitiesList}
               isMulti
+              classNamePrefix="border-select"
               placeholder="Please select areas"
               onChange={handleSelectOption}
             />

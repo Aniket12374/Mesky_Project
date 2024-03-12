@@ -1,7 +1,6 @@
 import { useQuery } from "react-query";
 import DataTable from "../Common/DataTable/DataTable";
 import { previousOrders } from "../../services/subscriptionOrders/subscriptionService";
-import { useEffect, useState } from "react";
 
 const ListingPage = () => {
   const { data, isLoading } = useQuery("previousOrders", previousOrders);

@@ -4,7 +4,6 @@ import { previousOrders } from "../../services/subscriptionOrders/subscriptionSe
 import { useEffect, useState } from "react";
 
 const ListingPage = () => {
-  const [totalOrders, setTotalOrders] = useState([]);
   const { data, isLoading } = useQuery("previousOrders", previousOrders);
 
   let historyData = [];
@@ -15,42 +14,10 @@ const ListingPage = () => {
       society_name: listingData?.society?.name,
       delivery: listingData?.order?.line_1 + " " + listingData?.order?.line_2,
       align: "center",
-      agent_name: listingData?.rider?.name,
-      status: listingData?.status?.name,
+      agent_name: listingData?.rider?.map((x) => x.full_name + ","),
+      status: listingData?.status?.del_status,
     });
   });
-
-  useEffect(() => {});
-
-  const dataHistory = [
-    {
-      order_id: "iurhuyg4ryw3ttyg54",
-      customer_name: "John Doedfvv",
-      society_name: "DLF CREST, SECTOR 53, GURGAON-17",
-      delivery: "FLAT 203, BLOCK 4, SECTION XYZ",
-      align: "center",
-      agent_name: "manan",
-      status: " In Progress",
-    },
-    {
-      order_id: "iurhuyg4ryw3ttyg54",
-      customer_name: "John Doedfvv",
-      society_name: "DLF CREST, SECTOR 53, GURGAON-17",
-      delivery: "FLAT 203, BLOCK 4, SECTION XYZ",
-      align: "center",
-      agent_name: "manan",
-      status: " Available",
-    },
-    {
-      order_id: "iurhuyg4ryw3ttyg54",
-      customer_name: "John Doedfvv",
-      society_name: "DLF CREST, SECTOR 53, GURGAON-17",
-      delivery: "FLAT 203, BLOCK 4, SECTION XYZ",
-      align: "center",
-      agent_name: "manan",
-      status: " Pending",
-    },
-  ];
 
   const HistoryHeaders = [
     {
@@ -83,6 +50,7 @@ const ListingPage = () => {
       dataIndex: "agent_name",
       key: "agent_name",
       align: "center",
+      width: 200,
     },
     {
       title: "STATUS",
@@ -96,7 +64,6 @@ const ListingPage = () => {
     <div>
       <DataTable
         data={historyData}
-        // navigateTo="/products/edit/"
         columns={HistoryHeaders}
         pagination={true}
         loading={isLoading}

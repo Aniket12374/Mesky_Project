@@ -1,15 +1,11 @@
 import React from "react";
 import DataTable from "../Common/DataTable/DataTable";
 import { useQuery } from "react-query";
-import {
-  presentOrders,
-  previousOrders,
-} from "../../services/subscriptionOrders/subscriptionService";
+import { presentOrders } from "../../services/subscriptionOrders/subscriptionService";
 
 const ListingPage = () => {
   const [selectedRowData, setSelectedRowData] = React.useState(null);
-  // const { data, isLoading } = useQuery("presentOrders", presentOrders);
-  const { data, isLoading } = useQuery("presentOrders", previousOrders);
+  const { data, isLoading } = useQuery("presentOrders", presentOrders);
 
   let historyData = [];
   data?.data?.data.map((listingData) => {
@@ -19,40 +15,10 @@ const ListingPage = () => {
       society_name: listingData?.society?.name,
       delivery: listingData?.order?.line_1 + " " + listingData?.order?.line_2,
       align: "center",
-      agent_name: listingData?.rider?.name,
+      agent_name: listingData?.rider?.full_name,
       status: listingData?.status?.name,
     });
   });
-
-  const dataHistory = [
-    {
-      order_id: "iurhuyg4ryw3ttyg54",
-      customer_name: "John Doedfvv",
-      society_name: "DLF CREST, SECTOR 53, GURGAON-17",
-      delivery: "FLAT 203, BLOCK 4, SECTION XYZ",
-      align: "center",
-      agent_name: "manan",
-      status: " In Progress",
-    },
-    {
-      order_id: "iurhuyg4ryw3ttyg54",
-      customer_name: "John Doedfvv",
-      society_name: "DLF CREST, SECTOR 53, GURGAON-17",
-      delivery: "FLAT 203, BLOCK 4, SECTION XYZ",
-      align: "center",
-      agent_name: "manan",
-      status: " Available",
-    },
-    {
-      order_id: "iurhuyg4ryw3ttyg54",
-      customer_name: "John Doedfvv",
-      society_name: "DLF CREST, SECTOR 53, GURGAON-17",
-      delivery: "FLAT 203, BLOCK 4, SECTION XYZ",
-      align: "center",
-      agent_name: "manan",
-      status: " Pending",
-    },
-  ];
 
   const HistoryHeaders = [
     {

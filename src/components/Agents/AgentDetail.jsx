@@ -9,7 +9,12 @@ import {
 } from "../../services/riders/riderService";
 import toast from "react-hot-toast";
 
-const AgentDetail = ({ rowData, setShowAgentCreation, setSelectedRowData }) => {
+const AgentDetail = ({
+  rowData,
+  setShowAgentCreation,
+  setSelectedRowData,
+  refetch,
+}) => {
   const [socitiesList, setSocitiesList] = useState([]);
   const [agent, setAgent] = useState({});
   const [historyData, setHistoryData] = useState([]);
@@ -41,6 +46,7 @@ const AgentDetail = ({ rowData, setShowAgentCreation, setSelectedRowData }) => {
           agent_name: x.rider.map((x) => x.full_name),
           status: x.status.del_status,
           del_image: x.status.del_img,
+          image_log: x.status.img_status,
           align: "center",
         });
       });
@@ -126,9 +132,6 @@ const AgentDetail = ({ rowData, setShowAgentCreation, setSelectedRowData }) => {
       dataIndex: "image_log",
       key: "image_log",
       align: "center",
-      render: (record) => (
-        <img src={record?.status?.del_img} width={30} height={30} />
-      ),
     },
   ];
 
@@ -136,6 +139,7 @@ const AgentDetail = ({ rowData, setShowAgentCreation, setSelectedRowData }) => {
     modifyRider(agent)
       .then((res) => {
         toast.success("Successfully Edited!");
+        refetch();
       })
       .catch((err) => {
         toast.error("Error Occured");
@@ -150,16 +154,17 @@ const AgentDetail = ({ rowData, setShowAgentCreation, setSelectedRowData }) => {
     }));
   };
 
+  const handleCancel = () => {
+    setSelectedRowData(null);
+    refetch();
+  };
+
   return (
     <div>
       <div className="text-3xl font-semibold">{rowData?.agent_name}</div>
       <div className="flex justify-end">
         <Button btnName={"Edit"} onClick={handleEditAgent} className="w-32" />
-        <Button
-          btnName={"Cancel"}
-          onClick={() => setSelectedRowData(null)}
-          className="w-32"
-        />
+        <Button btnName={"Cancel"} onClick={handleCancel} className="w-32" />
       </div>
       <div className="flex space-x-5 w-full justify-start">
         <div className="w-[40%] space-y-2">
@@ -194,7 +199,7 @@ const AgentDetail = ({ rowData, setShowAgentCreation, setSelectedRowData }) => {
           />
         </div>
       </div>
-      <div className="font-bold text-2xl">Delivery History</div>
+      <div className="font-bold text-2xl pt-5">Delivery History</div>
       <div>
         <DataTable
           data={historyData}

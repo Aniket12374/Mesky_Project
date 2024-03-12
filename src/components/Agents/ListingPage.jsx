@@ -8,7 +8,7 @@ import Button from "../Common/Button";
 const ListingPage = ({ setShowAgentCreation }) => {
   const [selectedRowData, setSelectedRowData] = useState(null);
 
-  const { data, isLoading } = useQuery("ridersList", ridersList);
+  const { data, isLoading, refetch } = useQuery("ridersList", ridersList);
   const riders = [];
   data?.data?.data.map((rider) =>
     riders.push({
@@ -74,6 +74,7 @@ const ListingPage = ({ setShowAgentCreation }) => {
           rowData={selectedRowData}
           setShowAgentCreation={setShowAgentCreation}
           setSelectedRowData={setSelectedRowData}
+          refetch={refetch}
         />
       ) : (
         <div>

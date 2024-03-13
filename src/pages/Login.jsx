@@ -6,7 +6,6 @@ import {
 } from "../services/auth/authService";
 import bgimg from "@/assets/images/background.png";
 import meskyLogo from "@/assets/mesky-logos/mesky-circle.png";
-import reSendIcon from "../assets/resetIcon.svg";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import { useMainStore } from "../store/store";

@@ -30,7 +30,7 @@ const AgentDetail = ({
   useEffect(() => {
     getSocieties().then((res) => {
       let list = res?.data?.data?.map((x) => ({
-        label: x.name,
+        label: x.sector + " - " + x.name,
         value: x.id,
       }));
       setSocitiesList(list);

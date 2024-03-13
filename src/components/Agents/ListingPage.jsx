@@ -28,8 +28,8 @@ const ListingPage = ({ setShowAgentCreation }) => {
     riders.push({
       s_no: rider.id,
       phone_number: rider.mobile_number,
-      assigned_area: rider?.society.map((x) => x.name),
-      delivery_area: rider?.society.map((x) => x.name),
+      assigned_area: rider?.society.map((x) => x.sector + " - " + x.name),
+      delivery_area: rider?.society.map((x) => x.sector + " - " + x.name),
       status: rider?.status,
       align: "center",
       agent_name: rider?.full_name,

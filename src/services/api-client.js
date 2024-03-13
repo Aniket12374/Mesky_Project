@@ -8,7 +8,7 @@ export const httpVendor = axios.create({
 httpVendor.interceptors.request.use((conf) => {
   // have add token
   const token = getTokenFromCookie();
-  console.log({ token });
+
   if (token) {
     conf.headers = {
       ...conf.headers,

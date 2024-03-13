@@ -15,13 +15,17 @@ const ListingPage = () => {
 
   let historyData = [];
   data?.data?.data.map((listingData) => {
+    const ridersCount = listingData?.rider?.length;
     historyData.push({
       order_id: listingData?.order?.uid,
       customer_name: listingData?.order?.full_name,
       society_name: listingData?.society?.name,
       delivery: listingData?.order?.line_1 + " " + listingData?.order?.line_2,
       align: "center",
-      agent_name: listingData?.rider?.full_name,
+      agent_name: listingData?.rider?.map((rider, key) => {
+        let comma = ridersCount - 1 !== key ? ", " : "";
+        return rider.full_name + comma;
+      }),
       status: listingData?.status?.name,
     });
   });

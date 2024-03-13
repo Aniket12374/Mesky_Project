@@ -1,38 +1,30 @@
-import React from "react";
+import React, { useEffect } from "react";
 import DataTable from "../Common/DataTable/DataTable";
+import { useQuery } from "react-query";
+import { presentOrders } from "../../services/subscriptionOrders/subscriptionService";
+import { useNavigate } from "react-router-dom";
 
 const ListingPage = () => {
   const [selectedRowData, setSelectedRowData] = React.useState(null);
+  const { data, isLoading, isError } = useQuery("presentOrders", presentOrders);
 
-  const dataHistory = [
-    {
-      order_id: "iurhuyg4ryw3ttyg54",
-      customer_name: "John Doedfvv",
-      society_name: "DLF CREST, SECTOR 53, GURGAON-17",
-      delivery: "FLAT 203, BLOCK 4, SECTION XYZ",
+  const navigate = useNavigate();
+  if (isError) {
+    return navigate("/login");
+  }
+
+  let historyData = [];
+  data?.data?.data.map((listingData) => {
+    historyData.push({
+      order_id: listingData?.order?.uid,
+      customer_name: listingData?.order?.full_name,
+      society_name: listingData?.society?.name,
+      delivery: listingData?.order?.line_1 + " " + listingData?.order?.line_2,
       align: "center",
-      agent_name: "manan",
-      status: " In Progress",
-    },
-    {
-      order_id: "iurhuyg4ryw3ttyg54",
-      customer_name: "John Doedfvv",
-      society_name: "DLF CREST, SECTOR 53, GURGAON-17",
-      delivery: "FLAT 203, BLOCK 4, SECTION XYZ",
-      align: "center",
-      agent_name: "manan",
-      status: " Available",
-    },
-    {
-      order_id: "iurhuyg4ryw3ttyg54",
-      customer_name: "John Doedfvv",
-      society_name: "DLF CREST, SECTOR 53, GURGAON-17",
-      delivery: "FLAT 203, BLOCK 4, SECTION XYZ",
-      align: "center",
-      agent_name: "manan",
-      status: " Pending",
-    },
-  ];
+      agent_name: listingData?.rider?.full_name,
+      status: listingData?.status?.name,
+    });
+  });
 
   const HistoryHeaders = [
     {
@@ -77,8 +69,9 @@ const ListingPage = () => {
   return (
     <div>
       <DataTable
-        data={dataHistory}
+        data={historyData}
         // navigateTo="/products/edit/"
+        loading={isLoading}
         columns={HistoryHeaders}
         pagination={true}
         // onRow={(record, rowIndex) => {

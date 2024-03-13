@@ -9,7 +9,9 @@ const Dashboard = () => {
   const user = useMainStore((state) => state.user);
   const navigate = useNavigate();
 
+  // check this useffect after token added
   useEffect(() => {
+    
     if (!navigator.onLine || !user.token) {
       return navigate("/login");
     }

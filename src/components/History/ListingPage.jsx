@@ -1,35 +1,30 @@
+import { useQuery } from "react-query";
 import DataTable from "../Common/DataTable/DataTable";
+import { previousOrders } from "../../services/subscriptionOrders/subscriptionService";
+import { useNavigate } from "react-router-dom";
 
 const ListingPage = () => {
-  const dataHistory = [
-    {
-      order_id: "iurhuyg4ryw3ttyg54",
-      customer_name: "John Doedfvv",
-      society_name: "DLF CREST, SECTOR 53, GURGAON-17",
-      delivery: "FLAT 203, BLOCK 4, SECTION XYZ",
+  const { data, isLoading, isError } = useQuery(
+    "previousOrders",
+    previousOrders
+  );
+  const navigate = useNavigate();
+  if (isError) {
+    return navigate("/login");
+  }
+
+  let historyData = [];
+  data?.data?.data.map((listingData) => {
+    historyData.push({
+      order_id: listingData?.order?.uid,
+      customer_name: listingData?.order?.full_name,
+      society_name: listingData?.society?.name,
+      delivery: listingData?.order?.line_1 + " " + listingData?.order?.line_2,
       align: "center",
-      agent_name: "manan",
-      status: " In Progress",
-    },
-    {
-      order_id: "iurhuyg4ryw3ttyg54",
-      customer_name: "John Doedfvv",
-      society_name: "DLF CREST, SECTOR 53, GURGAON-17",
-      delivery: "FLAT 203, BLOCK 4, SECTION XYZ",
-      align: "center",
-      agent_name: "manan",
-      status: " Available",
-    },
-    {
-      order_id: "iurhuyg4ryw3ttyg54",
-      customer_name: "John Doedfvv",
-      society_name: "DLF CREST, SECTOR 53, GURGAON-17",
-      delivery: "FLAT 203, BLOCK 4, SECTION XYZ",
-      align: "center",
-      agent_name: "manan",
-      status: " Pending",
-    },
-  ];
+      agent_name: listingData?.rider?.map((x) => x.full_name + ","),
+      status: listingData?.status?.del_status,
+    });
+  });
 
   const HistoryHeaders = [
     {
@@ -62,6 +57,7 @@ const ListingPage = () => {
       dataIndex: "agent_name",
       key: "agent_name",
       align: "center",
+      width: 200,
     },
     {
       title: "STATUS",
@@ -74,10 +70,10 @@ const ListingPage = () => {
   return (
     <div>
       <DataTable
-        data={dataHistory}
-        // navigateTo="/products/edit/"
+        data={historyData}
         columns={HistoryHeaders}
         pagination={true}
+        loading={isLoading}
       />
     </div>
   );

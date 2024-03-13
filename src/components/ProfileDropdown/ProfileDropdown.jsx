@@ -25,9 +25,9 @@ const ProfileDropdown = () => {
   };
 
   useEffect(() => {
-    if (!user || !user.token) {
-      navigate("/login");
-    }
+    // if (!user || !user.token) {
+    //   navigate("/login");
+    // }
   }, []);
 
   return (

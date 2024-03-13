@@ -15,33 +15,12 @@ import { useNavigate } from "react-router-dom";
 import { formatTime } from "../utils";
 
 const Login = () => {
-  const { register, handleSubmit } = useForm();
-  const setUserToken = useMainStore((state) => state.setUserToken);
-  const user = useMainStore((state) => state.user);
-  const setName = useMainStore((state) => state.setName);
+  const { register } = useForm();
   const navigate = useNavigate();
   const [userInput, setUserInput] = useState("");
   const [otp, setOtp] = useState(null);
   const [otpReq, setOtpReq] = useState(false);
   const [message, setMessage] = useState("");
-  const [seconds, setSeconds] = useState(30);
-
-  useEffect(() => {
-    let interval;
-
-    if (otpReq) {
-      setSeconds(10);
-      interval = setInterval(() => {
-        setSeconds((prevSeconds) => (prevSeconds > 0 ? prevSeconds - 1 : 0));
-      }, 1000);
-    } else {
-      setSeconds(0);
-    }
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, [otpReq]);
 
   const handleInputChange = (e) => {
     otpReq ? setOtp(e.target.value) : setUserInput(e.target.value);
@@ -79,18 +58,6 @@ const Login = () => {
     }
   };
 
-  const handleResendOtp = async () => {
-    otpReq(true);
-    try {
-      await otpRequest({ signin_type: userInput });
-      setSeconds(180);
-      toast.success("OTP sent");
-    } catch {
-      console.log("error");
-      toast.error("Failed to send OTP");
-    }
-  };
-
   return (
     <div className="flex justify-center h-screen items-center">
       <div className="w-96 bg-base-100 shadow-2xl rounded-xl border-2">
@@ -103,7 +70,6 @@ const Login = () => {
             <input
               {...register("email", { required: true })}
               type={otpReq ? "number" : "email"}
-              style={otpReq ? { WebkitAppearance: "textfield" } : null}
               name="email"
               placeholder={
                 otpReq ? "Please enter OTP" : "Enter email/phone number"
@@ -113,12 +79,6 @@ const Login = () => {
               onChange={handleInputChange}
             />
 
-            {/* <input
-              {...register("password", { required: true })}
-              type="Number"
-              placeholder="Please enter OTP"
-              className="input input-bordered w-full max-w-xs"
-            /> */}
             <p className="text-[#FF3131] opacity-70 ml-4 sm:ml-6">{message}</p>
             <div className="card-body items-center text-center">
               <div className="card-actions" onClick={handleLogin}>

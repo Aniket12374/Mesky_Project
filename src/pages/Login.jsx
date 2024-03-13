@@ -1,24 +1,15 @@
-import {
-  getMyDetails,
-  loginUser,
-  otpRequest,
-  validateOtp,
-} from "../services/auth/authService";
-import bgimg from "@/assets/images/background.png";
+import { otpRequest, validateOtp } from "../services/auth/authService";
 import meskyLogo from "@/assets/mesky-logos/mesky-circle.png";
-import reSendIcon from "../assets/resetIcon.svg";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
-import { useMainStore } from "../store/store";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { formatTime } from "../utils";
 
 const Login = () => {
   const { register } = useForm();
   const navigate = useNavigate();
   const [userInput, setUserInput] = useState("");
-  const [otp, setOtp] = useState(null);
+  const [otp, setOtp] = useState("");
   const [otpReq, setOtpReq] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -69,7 +60,7 @@ const Login = () => {
           <div className="flex flex-col justify-center items-center space-y-4">
             <input
               {...register("email", { required: true })}
-              type={otpReq ? "number" : "email"}
+              type={otpReq ? "text" : "email"}
               name="email"
               placeholder={
                 otpReq ? "Please enter OTP" : "Enter email/phone number"

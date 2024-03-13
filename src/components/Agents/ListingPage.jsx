@@ -4,6 +4,7 @@ import AgentDetail from "../Agents/AgentDetail"; // Import the AgentDetail compo
 import { useQuery } from "react-query";
 import { ridersList } from "../../services/riders/riderService";
 import Button from "../Common/Button";
+import { useNavigate } from "react-router-dom";
 
 const colorStatus = {
   AVAILABLE: "#9c29c1",
@@ -13,7 +14,15 @@ const colorStatus = {
 const ListingPage = ({ setShowAgentCreation }) => {
   const [selectedRowData, setSelectedRowData] = useState(null);
 
-  const { data, isLoading, refetch } = useQuery("ridersList", ridersList);
+  const { data, isLoading, refetch, isError } = useQuery(
+    "ridersList",
+    ridersList
+  );
+
+  const navigate = useNavigate();
+  if (isError) {
+    return navigate("/login");
+  }
   const riders = [];
   data?.data?.data.map((rider) =>
     riders.push({

@@ -21,3 +21,4 @@ export const modifyRider = (data) => {
 export const getRiderHistory = (id) => {
   return httpVendor.get(`/api/delivery/portal/rider/history?rider_id=${id}`);
 };
+

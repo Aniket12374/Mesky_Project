@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Button from "../../components/Common/Button";
 import ListingPage from "../../components/Agents/ListingPage";
 import { Header } from "../../utils";
@@ -15,17 +15,10 @@ const Agents = () => {
   return (
     <Layout>
       <Header text="Agents" />
-      <div className="float-right">
-        {/* Render the "Add Agent" button only if showAgentCreation is false */}
-        {!showAgentCreation && (
-          <Button btnName={"+ Add Agent"} onClick={handleAddAgentClick} />
-        )}
-      </div>
-      {/* Conditionally render either AgentCreation or ListingPage */}
       {showAgentCreation ? (
         <AgentCreation setShowAgentCreation={setShowAgentCreation} />
       ) : (
-        <ListingPage />
+        <ListingPage setShowAgentCreation={setShowAgentCreation} />
       )}
     </Layout>
   );

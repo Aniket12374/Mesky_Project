@@ -1,59 +1,32 @@
-import { useState } from "react";
+import React, { useEffect } from "react";
 import DataTable from "../Common/DataTable/DataTable";
+import { useQuery } from "react-query";
+import { presentOrders } from "../../services/subscriptionOrders/subscriptionService";
+import { useNavigate } from "react-router-dom";
 
 const ListingPage = () => {
-  const [selectedRowData, setSelectedRowData] = useState(null);
+  const [selectedRowData, setSelectedRowData] = React.useState(null);
+  const { data, isLoading, isError } = useQuery("presentOrders", presentOrders);
 
-  const dataHistory = [
-    {
-      // order_date: "12-12-23",
-      order_id: "iurhuyg4ryw3ttyg54",
-      customer_name: "John Doedfvv",
-      society_name: "DLF CREST, SECTOR 53, GURGAON-17",
-      delivery: "FLAT 203, BLOCK 4, SECTION XYZ",
+  const navigate = useNavigate();
+  if (isError) {
+    return navigate("/login");
+  }
+
+  let historyData = [];
+  data?.data?.data.map((listingData) => {
+    historyData.push({
+      order_id: listingData?.order?.uid,
+      customer_name: listingData?.order?.full_name,
+      society_name: listingData?.society?.name,
+      delivery: listingData?.order?.line_1 + " " + listingData?.order?.line_2,
       align: "center",
-      // product: {
-      //   detail: "hgfwgerfvgc",
-      // },
-      agent_name: "manan",
-      status: " In Progress",
-    },
-    {
-      // order_date: "12-12-23",
-      order_id: "iurhuyg4ryw3ttyg54",
-      customer_name: "John Doedfvv",
-      society_name: "DLF CREST, SECTOR 53, GURGAON-17",
-      delivery: "FLAT 203, BLOCK 4, SECTION XYZ",
-      align: "center",
-      // product: {
-      //   detail: "hgfwgerfvgc",
-      // },
-      agent_name: "manan",
-      status: " Available",
-    },
-    {
-      // order_date: "12-12-23",
-      order_id: "iurhuyg4ryw3ttyg54",
-      customer_name: "John Doedfvv",
-      society_name: "DLF CREST, SECTOR 53, GURGAON-17",
-      delivery: "FLAT 203, BLOCK 4, SECTION XYZ",
-      align: "center",
-      // product: {
-      //   detail: "hgfwgerfvgc",
-      // },
-      agent_name: "manan",
-      status: " Pending",
-    },
-  ];
+      agent_name: listingData?.rider?.full_name,
+      status: listingData?.status?.name,
+    });
+  });
 
   const HistoryHeaders = [
-    // {
-    //   title: "ORDER DATE",
-    //   dataIndex: "order_date",
-    //   align: "center",
-    //   key: "order_date",
-    //   width: 100,
-    // },
     {
       title: "ORDER ID",
       dataIndex: "order_id",
@@ -73,60 +46,38 @@ const ListingPage = () => {
       align: "center",
       key: "society_name",
     },
-
     {
       title: "DELIVERY ADDRESS",
       dataIndex: "delivery",
       align: "center",
       key: "delivery",
     },
-
     {
       title: "AGENT NAME",
       dataIndex: "agent_name",
       key: "agent_name",
       align: "center",
-      // width: 100,
     },
     {
       title: "STATUS",
       dataIndex: "status",
       key: "status",
       align: "center",
-      // width: 100,
     },
   ];
-
-  // const [isModalVisible, setIsModalVisible] = useState(false);
-
-  // const handleSave = () => {
-  //   console.log("handleSave function is called.");
-  //   form
-  //     .validateFields()
-  //     .then((values) => {
-  //       // Handle the updated values (values) here
-  //       console.log("Updated values:", values);
-
-  //       // Close the modal
-  //       setIsModalVisible(false);
-  //     })
-  //     .catch((errorInfo) => {
-  //       console.error("Validation failed:", errorInfo);
-  //     });
-  // };
 
   return (
     <div>
       <DataTable
-        data={dataHistory}
-        navigateTo="/products/edit/"
+        data={historyData}
+        // navigateTo="/products/edit/"
+        loading={isLoading}
         columns={HistoryHeaders}
         pagination={true}
         // onRow={(record, rowIndex) => {
         //   return {
         //     onClick: () => {
-        //       // Pass the clicked row's data to the showModal function
-        //       showModal(record);
+        //       setSelectedRowData(record);
         //     },
         //   };
         // }}

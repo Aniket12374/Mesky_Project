@@ -1,43 +1,40 @@
 import { useState } from "react";
-import { Form, Input, Row, Col, Button } from "antd";
 import DataTable from "../Common/DataTable/DataTable";
 import AgentDetail from "../Agents/AgentDetail"; // Import the AgentDetail component
+import { useQuery } from "react-query";
+import { ridersList } from "../../services/riders/riderService";
+import Button from "../Common/Button";
+import { useNavigate } from "react-router-dom";
 
-const ListingPage = () => {
+const colorStatus = {
+  AVAILABLE: "#9c29c1",
+  "NOT AVAILABLE": "#FF0028",
+};
+
+const ListingPage = ({ setShowAgentCreation }) => {
   const [selectedRowData, setSelectedRowData] = useState(null);
-  const [form] = Form.useForm();
-  const [agentName, setAgentName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
 
-  const [dataHistory, setDataHistory] = useState([
-    {
-      s_no: "1",
-      phone_number: "1234567890",
-      assigned_area: "CENTRAL PARK FLOWER VALLEY, SECTOR 50, GURGAON-50",
-      delivery_area: "CENTRAL PARK FLOWER VALLEY, SECTOR 50, GURGAON-50",
-      status: "Available",
+  const { data, isLoading, refetch, isError } = useQuery(
+    "ridersList",
+    ridersList
+  );
+
+  const navigate = useNavigate();
+  if (isError) {
+    return navigate("/login");
+  }
+  const riders = [];
+  data?.data?.data.map((rider) =>
+    riders.push({
+      s_no: rider.id,
+      phone_number: rider.mobile_number,
+      assigned_area: rider?.society.map((x) => x.name),
+      delivery_area: rider?.society.map((x) => x.name),
+      status: rider?.status,
       align: "center",
-      agent_name: "manan",
-    },
-    {
-      s_no: "2",
-      phone_number: "1234567890",
-      assigned_area: "CENTRAL PARK FLOWER VALLEY, SECTOR 50, GURGAON-50",
-      delivery_area: "CENTRAL PARK FLOWER VALLEY, SECTOR 50, GURGAON-50",
-      status: "Pending",
-      align: "center",
-      agent_name: "manan",
-    },
-    {
-      s_no: "3",
-      phone_number: "1234567890",
-      assigned_area: "CENTRAL PARK FLOWER VALLEY, SECTOR 50, GURGAON-50",
-      delivery_area: "CENTRAL PARK FLOWER VALLEY, SECTOR 50, GURGAON-50",
-      status: "Available",
-      align: "center",
-      agent_name: "manan",
-    },
-  ]);
+      agent_name: rider?.full_name,
+    })
+  );
 
   const HistoryHeaders = [
     {
@@ -81,26 +78,44 @@ const ListingPage = () => {
       key: "status",
       align: "center",
       width: 50,
+      render: (status) => (
+        <div style={{ color: colorStatus[status] }}>{status}</div>
+      ),
     },
   ];
 
   return (
     <div>
       {selectedRowData ? (
-        <AgentDetail rowData={selectedRowData} />
-      ) : (
-        <DataTable
-          data={dataHistory}
-          columns={HistoryHeaders}
-          pagination={true}
-          onRow={(record, rowIndex) => {
-            return {
-              onClick: () => {
-                setSelectedRowData(record);
-              },
-            };
-          }}
+        <AgentDetail
+          rowData={selectedRowData}
+          setShowAgentCreation={setShowAgentCreation}
+          setSelectedRowData={setSelectedRowData}
+          refetch={refetch}
         />
+      ) : (
+        <div>
+          <div className="float-right">
+            <Button
+              btnName={"+ Add Agent"}
+              onClick={() => setShowAgentCreation(true)}
+            />
+          </div>
+          <DataTable
+            data={riders}
+            columns={HistoryHeaders}
+            pagination={true}
+            loading={isLoading}
+            onRow={(record, rowIndex) => {
+              return {
+                onClick: () => {
+                  setSelectedRowData(record);
+                  setShowAgentCreation(false);
+                },
+              };
+            }}
+          />
+        </div>
       )}
     </div>
   );

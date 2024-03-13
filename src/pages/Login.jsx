@@ -43,7 +43,7 @@ const Login = () => {
     return () => {
       clearInterval(interval);
     };
-  }, [otpReq]);
+  }, [otpReq, user]);
 
   const handleInputChange = (e) => {
     otpReq ? setOtp(e.target.value) : setUserInput(e.target.value);

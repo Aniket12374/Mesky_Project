@@ -11,8 +11,7 @@ const Dashboard = () => {
 
   // check this useffect after token added
   useEffect(() => {
-    
-    if (!navigator.onLine || !user.token) {
+    if (!user.token) {
       return navigate("/login");
     }
   }, [user]);

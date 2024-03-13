@@ -26,6 +26,9 @@ const Login = () => {
   const [seconds, setSeconds] = useState(30);
 
   useEffect(() => {
+    if (user?.token) {
+      return navigate("/subscription");
+    }
     let interval;
 
     if (otpReq) {
@@ -40,7 +43,7 @@ const Login = () => {
     return () => {
       clearInterval(interval);
     };
-  }, [otpReq]);
+  }, [otpReq, user]);
 
   const handleInputChange = (e) => {
     otpReq ? setOtp(e.target.value) : setUserInput(e.target.value);

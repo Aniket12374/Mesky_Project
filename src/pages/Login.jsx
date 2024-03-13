@@ -26,6 +26,9 @@ const Login = () => {
   const [seconds, setSeconds] = useState(30);
 
   useEffect(() => {
+    if (user?.token) {
+      return navigate("/subscription");
+    }
     let interval;
 
     if (otpReq) {

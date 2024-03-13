@@ -1,12 +1,18 @@
-import { getMyDetails, loginUser } from "../services/auth/authService";
+import {
+  getMyDetails,
+  loginUser,
+  otpRequest,
+  validateOtp,
+} from "../services/auth/authService";
 import bgimg from "@/assets/images/background.png";
 import meskyLogo from "@/assets/mesky-logos/mesky-circle.png";
+import reSendIcon from "../assets/resetIcon.svg";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
-import { setTokenToCookie } from "../services/cookiesFunc";
 import { useMainStore } from "../store/store";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { formatTime } from "../utils";
 
 const Login = () => {
   const { register, handleSubmit } = useForm();
@@ -14,50 +20,75 @@ const Login = () => {
   const user = useMainStore((state) => state.user);
   const setName = useMainStore((state) => state.setName);
   const navigate = useNavigate();
+  const [userInput, setUserInput] = useState("");
+  const [otp, setOtp] = useState(null);
+  const [otpReq, setOtpReq] = useState(false);
+  const [message, setMessage] = useState("");
+  const [seconds, setSeconds] = useState(30);
 
-  const getUser = () => {
-    getMyDetails()
-      .then((res) => {
-        const { data } = res;
-        setName(data.first_name + data.last_name);
-        navigate("/subscription");
-      })
-      .catch((error) => {
-        setUserToken(null);
-      });
+  useEffect(() => {
+    let interval;
 
-    // if (!navigator.onLine) {
-    //   return navigate("/login");
-    // }
+    if (otpReq) {
+      setSeconds(10);
+      interval = setInterval(() => {
+        setSeconds((prevSeconds) => (prevSeconds > 0 ? prevSeconds - 1 : 0));
+      }, 1000);
+    } else {
+      setSeconds(0);
+    }
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [otpReq]);
+
+  const handleInputChange = (e) => {
+    otpReq ? setOtp(e.target.value) : setUserInput(e.target.value);
   };
 
-  // useEffect(() => {
-  //   if (user.token) {
-  //     getUser();
-  //   }
-  // }, [user]);
+  // have to remove the manual the settings of the token , have to set the token while calling the api
+  const handleLogin = async () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^\d{10}$/;
 
-  const loginFormSubmit = (data) => {
-    // loginUser(data)
-    //   .then((res) => {
-    //     const { auth_token } = res.data;
-    //     setTokenToCookie(ISPRgFVqVCn9grwzVU20);
-    //     setUserToken(ISPRgFVqVCn9grwzVU20);
-    //     getUser();
-    //     toast.success("Successfully logged in!", {
-    //       position: "bottom-right",
-    //     });
-    //   })
-    //   .catch((err) => {
-    //     toast.error(err?.response?.data?.message, {
-    //       position: "bottom-right",
-    //     });
-    //   });
-    setTokenToCookie("ISPRgFVqVCn9grwzVU20");
-    setUserToken("ISPRgFVqVCn9grwzVU20");
-    setName("Aneela ch");
-    navigate("/subscription");
-    console.log("aneela");
+    if (!emailRegex.test(userInput) && !phoneRegex.test(userInput)) {
+      setMessage("Please enter a valid email or phone number.");
+      return;
+    }
+    if (otpReq) {
+      if (!otp.length > 0) {
+        setMessage("Please enter OTP");
+        return;
+      }
+    }
+
+    try {
+      if (!otpReq) {
+        await otpRequest({ signin_type: userInput });
+        setOtpReq(true);
+      } else {
+        await validateOtp({ otp, signin_type: userInput });
+        navigate("/subscription");
+      }
+    } catch {
+      if (otpReq) {
+        setMessage("Invalid Code. Please enter the correct code.");
+      }
+      toast.error("something Went wrong");
+    }
+  };
+
+  const handleResendOtp = async () => {
+    otpReq(true);
+    try {
+      await otpRequest({ signin_type: userInput });
+      setSeconds(180);
+      toast.success("OTP sent");
+    } catch {
+      console.log("error");
+      toast.error("Failed to send OTP");
+    }
   };
 
   return (
@@ -68,31 +99,35 @@ const Login = () => {
           <div className="fredoka-600 text-4xl ">MESKY Delivery</div>
         </div>
         <div>
-          <form
-            className="flex flex-col justify-center items-center space-y-4"
-            onSubmit={handleSubmit(loginFormSubmit)}
-          >
+          <div className="flex flex-col justify-center items-center space-y-4">
             <input
               {...register("email", { required: true })}
-              type="email"
-              placeholder="Email"
+              type={otpReq ? "number" : "email"}
+              style={otpReq ? { WebkitAppearance: "textfield" } : null}
+              name="email"
+              placeholder={
+                otpReq ? "Please enter OTP" : "Enter email/phone number"
+              }
               className="input input-bordered w-full max-w-xs"
-            />
-            <input
-              {...register("password", { required: true })}
-              type="password"
-              placeholder="Password"
-              className="input input-bordered w-full max-w-xs"
+              value={otpReq ? otp : userInput}
+              onChange={handleInputChange}
             />
 
+            {/* <input
+              {...register("password", { required: true })}
+              type="Number"
+              placeholder="Please enter OTP"
+              className="input input-bordered w-full max-w-xs"
+            /> */}
+            <p className="text-[#FF3131] opacity-70 ml-4 sm:ml-6">{message}</p>
             <div className="card-body items-center text-center">
-              <div className="card-actions">
+              <div className="card-actions" onClick={handleLogin}>
                 <button className="btn btn-primary" type="submit">
-                  Login
+                  {otpReq ? "Submit" : "OTP Request"}
                 </button>
               </div>
             </div>
-          </form>
+          </div>
         </div>
       </div>
     </div>

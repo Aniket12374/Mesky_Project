@@ -11,15 +11,6 @@ const NavBar = () => {
   const setBrand = useMainStore((state) => state.setBrand);
   const navigate = useNavigate();
 
-  // const {
-  //   data: response,
-  //   isSuccess,
-  //   isError,
-  // } = useQuery("vendorDetails", getMyDetails, {
-  //   staleTime: 120000,
-  //   cacheTime: 120000,
-  // });
-
   // useEffect(() => {
   //   if (isSuccess) {
   //     const {
@@ -65,8 +56,7 @@ const NavBar = () => {
 
   return (
     <>
-      {/* <TopNavBar />
-      <SideNavBar /> */}
+      <TopNavBar />
       <SideNavBar />
     </>
   );

@@ -1,9 +1,17 @@
 import { useQuery } from "react-query";
 import DataTable from "../Common/DataTable/DataTable";
 import { previousOrders } from "../../services/subscriptionOrders/subscriptionService";
+import { useNavigate } from "react-router-dom";
 
 const ListingPage = () => {
-  const { data, isLoading } = useQuery("previousOrders", previousOrders);
+  const { data, isLoading, isError } = useQuery(
+    "previousOrders",
+    previousOrders
+  );
+  const navigate = useNavigate();
+  if (isError) {
+    return navigate("/login");
+  }
 
   let historyData = [];
   data?.data?.data.map((listingData) => {

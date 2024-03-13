@@ -1,11 +1,17 @@
-import React from "react";
+import React, { useEffect } from "react";
 import DataTable from "../Common/DataTable/DataTable";
 import { useQuery } from "react-query";
 import { presentOrders } from "../../services/subscriptionOrders/subscriptionService";
+import { useNavigate } from "react-router-dom";
 
 const ListingPage = () => {
   const [selectedRowData, setSelectedRowData] = React.useState(null);
-  const { data, isLoading } = useQuery("presentOrders", presentOrders);
+  const { data, isLoading, isError } = useQuery("presentOrders", presentOrders);
+
+  const navigate = useNavigate();
+  if (isError) {
+    return navigate("/login");
+  }
 
   let historyData = [];
   data?.data?.data.map((listingData) => {

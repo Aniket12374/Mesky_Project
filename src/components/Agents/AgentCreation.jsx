@@ -71,7 +71,7 @@ const AgentCreation = ({ setShowAgentCreation }) => {
   useEffect(() => {
     getSocieties().then((res) => {
       let list = res?.data?.data?.map((x) => ({
-        label: x.sector + " - " + x.name,
+        label: x.sector,
         value: x.id,
       }));
       setSocitiesList(list);

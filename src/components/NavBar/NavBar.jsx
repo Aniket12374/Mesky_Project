@@ -7,53 +7,6 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const NavBar = () => {
-  const setName = useMainStore((state) => state.setName);
-  const setBrand = useMainStore((state) => state.setBrand);
-  const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   if (isSuccess) {
-  //     const {
-  //       first_name,
-  //       last_name,
-  //       brand_id,
-  //       brand_name,
-  //       default_email,
-  //       default_mobile_number,
-  //       alternateNumber,
-  //       registered_name,
-  //       registered_address,
-  //       delivery_pay_by,
-  //       address_line_1,
-  //       address_line_2,
-  //       state,
-  //       city,
-  //       pincode,
-  //     } = undefined || response.data;
-  //     setName(`${first_name} ${last_name}`);
-  //     setBrand(
-  //       brand_id,
-  //       brand_name,
-  //       default_mobile_number,
-  //       alternateNumber,
-  //       default_email,
-  //       first_name,
-  //       last_name,
-  //       registered_name,
-  //       registered_address,
-  //       delivery_pay_by,
-  //       address_line_1,
-  //       address_line_2,
-  //       state,
-  //       city,
-  //       pincode
-  //     );
-  //   }
-  //   if (isError) {
-  //     navigate("/login");
-  //   }
-  // }, [isSuccess, isError]);
-
   return (
     <>
       <TopNavBar />

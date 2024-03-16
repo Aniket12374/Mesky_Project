@@ -8,6 +8,7 @@ import { useMainStore } from "../../store/store";
 import { Link, useNavigate } from "react-router-dom";
 import { useQueryClient } from "react-query";
 import { useEffect } from "react";
+import Cookies from "js-cookie";
 
 const ProfileDropdown = () => {
   const logoutUser = useMainStore((state) => state.logoutUser);
@@ -25,9 +26,10 @@ const ProfileDropdown = () => {
   };
 
   useEffect(() => {
-    // if (!user || !user.token) {
-    //   navigate("/login");
-    // }
+    const token = Cookies.get("token");
+    if (!token) {
+      navigate("/login");
+    }
   }, []);
 
   return (

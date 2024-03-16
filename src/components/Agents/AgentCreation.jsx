@@ -71,7 +71,7 @@ const AgentCreation = ({ setShowAgentCreation }) => {
   useEffect(() => {
     getSocieties().then((res) => {
       let list = res?.data?.data?.map((x) => ({
-        label: x.sector + " - " + x.name,
+        label: x.sector,
         value: x.id,
       }));
       setSocitiesList(list);
@@ -207,7 +207,7 @@ const AgentCreation = ({ setShowAgentCreation }) => {
             <div className="space-y-4">
               <div className="text-lg font-medium">ISSUE DATE</div>
               {issueDts.map((x) => (
-                <div key={x}>
+                <div key={x} className="border-[#808080] border rounded-md">
                   <DatePicker
                     placeholder={"select date"}
                     format={dateFormat}
@@ -221,7 +221,7 @@ const AgentCreation = ({ setShowAgentCreation }) => {
             <div className="space-y-4">
               <div className="text-lg font-medium">EXPIRY DATE</div>
               {expDts.map((x) => (
-                <div key={x}>
+                <div key={x} className="border-[#808080] border rounded-md">
                   <DatePicker
                     format={dateFormat}
                     placeholder={"select date"}

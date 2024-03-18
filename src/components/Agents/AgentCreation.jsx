@@ -5,6 +5,7 @@ import { addRider, getSocieties } from "../../services/riders/riderService";
 import toast from "react-hot-toast";
 import Select from "react-select";
 import { DatePicker } from "antd";
+import moment from "moment";
 
 const dateFormat = "YYYY/MM/DD";
 
@@ -93,6 +94,16 @@ const AgentCreation = ({ setShowAgentCreation }) => {
     "veh_rc_ex_date",
     "poll_ch_ex_date",
   ];
+
+  const dateFormat = "YYYY-MM-DD";
+
+  function disabledFutureDate(current) {
+    return current && current > moment().endOf("day");
+  }
+
+  function disabledPastDate(current) {
+    return current && current < moment().startOf("day");
+  }
 
   return (
     <div>
@@ -211,6 +222,7 @@ const AgentCreation = ({ setShowAgentCreation }) => {
                   <DatePicker
                     placeholder={"select date"}
                     format={dateFormat}
+                    disabledDate={disabledFutureDate} 
                     onChange={(date, dateString) => {
                       handleChange(x, dateString);
                     }}
@@ -225,6 +237,7 @@ const AgentCreation = ({ setShowAgentCreation }) => {
                   <DatePicker
                     format={dateFormat}
                     placeholder={"select date"}
+                    disabledDate={disabledPastDate} 
                     onChange={(date, dateString) => {
                       handleChange(x, dateString);
                     }}

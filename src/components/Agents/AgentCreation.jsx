@@ -58,7 +58,7 @@ const AgentCreation = ({ setShowAgentCreation }) => {
       })
       .catch((err) => {
         console.log({ err });
-        toast.error("Error occured!!");
+        toast.error(err?.response?.data.message);
       });
   };
 
@@ -120,7 +120,7 @@ const AgentCreation = ({ setShowAgentCreation }) => {
             <label>Full Name</label>
             <input
               type="text"
-              className="w-full h-12 rounded-lg  border-select__control  p-2"
+              className="w-full h-12 rounded-lg border-select__control p-2"
               value={agent?.full_name}
               onChange={(e) => handleChange("full_name", e.target.value)}
             />
@@ -222,7 +222,7 @@ const AgentCreation = ({ setShowAgentCreation }) => {
                   <DatePicker
                     placeholder={"select date"}
                     format={dateFormat}
-                    disabledDate={disabledFutureDate} 
+                    disabledDate={disabledFutureDate}
                     onChange={(date, dateString) => {
                       handleChange(x, dateString);
                     }}
@@ -237,7 +237,7 @@ const AgentCreation = ({ setShowAgentCreation }) => {
                   <DatePicker
                     format={dateFormat}
                     placeholder={"select date"}
-                    disabledDate={disabledPastDate} 
+                    disabledDate={disabledPastDate}
                     onChange={(date, dateString) => {
                       handleChange(x, dateString);
                     }}

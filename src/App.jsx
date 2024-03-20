@@ -9,6 +9,7 @@ import History from "./pages/History";
 import Agents from "./pages/Agent/Agents";
 import Subscription from "./pages/Subscription";
 import PrivateRoute from "./components/Auth/PrivateRoute";
+import AreaMapping from "./pages/AreaMapping";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +42,15 @@ function App() {
             element={
               <PrivateRoute>
                 <Agents />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/AreaMapping"
+            element={
+              <PrivateRoute>
+                <AreaMapping />
               </PrivateRoute>
             }
           />

@@ -11,6 +11,8 @@ const AreaMap = () => {
   const [selectedAgents, setSelectedAgents] = useState({});
   const [mappingData, setMappingData] = useState([]);
   const [tableData, setTableData] = useState([]);
+  const [riderId, setRiderId] = useState(null);
+  const [areaId, setAreaId] = useState(null);
 
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(null);
@@ -25,7 +27,6 @@ const AreaMap = () => {
         const {
           data: { data },
         } = item;
-
         setTableData(data); // table list data
         setMappingData(item?.data); //riders list
       })
@@ -38,26 +39,33 @@ const AreaMap = () => {
   }, []);
 
   const showModal = (record) => {
+    setAreaId(record.key);
     setVisible(true);
-    setSelectedAgents({ ...selectedAgents, [record.key]: "" }); // Initialize selected agent for the button
+    setSelectedAgents({ ...selectedAgents, [record.full_name]: "" }); // Initialize selected agent for the button
   };
 
-  const handleOk = () => {
-    setVisible(false);
+  const handleOk = async () => {
+    try {
+      setVisible(false);
+      await assignAgent({
+        area_id: areaId,
+        rider_id: riderId,
+      });
+    } catch (err) {
+      console.log("error message", err);
+    }
   };
 
   const handleCancel = () => {
     setVisible(false);
   };
 
-  const handleCheckboxChange = (record, checked) => {
-    const { id, fullname } = record;
-    setSelectedAgents(() => ({
-      [id]: checked ? fullname : "",
-    }));
+  const handleRadioChange = (record) => {
+    if (record) {
+      setRiderId(record.id);
+      setSelectedAgents({ [record.full_name]: record.id });
+    }
   };
-
-  console.log(selectedAgents);
 
   const columns = [
     {
@@ -93,8 +101,9 @@ const AreaMap = () => {
           onClick={() => showModal(record)}
           style={{ backgroundColor: "#DF4584" }}
         >
-          {selectedAgents[record.key] || "Assign Agent"}{" "}
-          {/* Show selected agent name if available */}
+          {selectedAgents[record.full_name]
+            ? selectedAgents[record.full_name]
+            : "Assign Agent"}
         </Button>
       ),
     },
@@ -118,8 +127,10 @@ const AreaMap = () => {
         <div style={{ display: "flex", flexDirection: "column" }}>
           {mappingData.all_riders?.map((record) => (
             <Radio
-              key={record.key}
-              onChange={(e) => handleCheckboxChange(record, e.target.checked)}
+              key={record.full_name}
+              value={record.id}
+              checked={selectedAgents[record.full_name] === record.id}
+              onChange={() => handleRadioChange(record)}
             >
               {record.full_name}
             </Radio>

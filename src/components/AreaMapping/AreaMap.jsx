@@ -13,9 +13,9 @@ const AreaMap = () => {
   const [tableData, setTableData] = useState([]);
   const [riderId, setRiderId] = useState(null);
   const [areaId, setAreaId] = useState(null);
-
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(null);
+  const [assignedRider, setAssignedRider] = useState(null); // New state to hold assigned rider
 
   useEffect(() => {
     assignAgent();
@@ -47,10 +47,13 @@ const AreaMap = () => {
   const handleOk = async () => {
     try {
       setVisible(false);
-      await assignAgent({
+      const res = await assignAgent({
         area_id: areaId,
         rider_id: riderId,
       });
+      const assignedRider = res?.data?.area?.rider_list[0];
+      setAssignedRider(assignedRider); // Set the assigned rider in state
+      console.log(assignedRider);
     } catch (err) {
       console.log("error message", err);
     }
@@ -93,18 +96,33 @@ const AreaMap = () => {
       title: "ASSIGNED TO",
       key: "action",
       align: "center",
+
       render: (text, record) => (
-        <Button
-          type="primary"
-          size="large"
-          shape="round"
-          onClick={() => showModal(record)}
-          style={{ backgroundColor: "#DF4584" }}
-        >
-          {selectedAgents[record.full_name]
-            ? selectedAgents[record.full_name]
-            : "Assign Agent"}
-        </Button>
+        <div className="flex justify-center">
+          <div className="w-5/12 flex justify-evenly items-center">
+            {assignedRider && (
+              <span style={{ marginLeft: "10px" }}>
+                {assignedRider.full_name}
+              </span>
+            )}
+            <button
+              type="primary"
+              size="large"
+              shape="round"
+              onClick={() => showModal(record)}
+              className="rounded-full px-3 py-2"
+              style={{
+                backgroundColor:
+                  assignedRider && assignedRider?.full_name
+                    ? "#AA00FF"
+                    : "#DF4584",
+                color: "#FFFFFF", // Change text color to white
+              }}
+            >
+              {assignedRider ? "Change" : "Assign Agent"}
+            </button>
+          </div>
+        </div>
       ),
     },
   ];

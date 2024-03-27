@@ -15,7 +15,9 @@ const AreaMap = () => {
   const [areaId, setAreaId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(null);
-  const [assignedRider, setAssignedRider] = useState(null); // New state to hold assigned rider
+  const [assignedRider, setAssignedRider] = useState(
+    JSON.parse(localStorage.getItem("assignedRider")) || null
+  ); // Initialize assignedRider state with data from localStorage
 
   useEffect(() => {
     assignAgent();
@@ -36,7 +38,28 @@ const AreaMap = () => {
       .finally(() => {
         setIsLoading(false);
       });
-  }, []);
+
+    // Fetch assigned rider when the component mounts or updates
+    const fetchAssignedRider = async () => {
+      try {
+        // Fetch assigned rider data
+        const res = await assignAgent({
+          area_id: areaId, // You might want to adjust this depending on your requirements
+        });
+        const assignedRider = res?.data?.area?.rider_list[0];
+        setAssignedRider(assignedRider); // Set the assigned rider in state
+        localStorage.setItem("assignedRider", JSON.stringify(assignedRider)); // Store assigned rider in localStorage
+      } catch (err) {
+        console.log("error message", err);
+      }
+    };
+
+    // Call the fetchAssignedRider function
+    fetchAssignedRider();
+
+    // If areaId changes, refetch the assigned rider
+    // This ensures that assigned rider state gets updated when areaId changes
+  }, [areaId]);
 
   const showModal = (record) => {
     setAreaId(record.key);
@@ -47,13 +70,16 @@ const AreaMap = () => {
   const handleOk = async () => {
     try {
       setVisible(false);
-      const res = await assignAgent({
-        area_id: areaId,
-        rider_id: riderId,
-      });
-      const assignedRider = res?.data?.area?.rider_list[0];
-      setAssignedRider(assignedRider); // Set the assigned rider in state
-      console.log(assignedRider);
+      if (areaId && riderId) {
+        // Check if both areaId and riderId are present
+        let res = await assignAgent({
+          area_id: areaId,
+          rider_id: riderId,
+        });
+        const assignedRider = res?.data?.area?.rider_list[0];
+        setAssignedRider(assignedRider); // Set the assigned rider in state
+        localStorage.setItem("assignedRider", JSON.stringify(assignedRider)); // Store assigned rider in localStorage
+      }
     } catch (err) {
       console.log("error message", err);
     }

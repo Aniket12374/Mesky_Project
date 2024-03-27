@@ -19,13 +19,13 @@ const SidebarNavItems = [
     icon1: Images["DashboardColored"],
     icon2: Images["Dashboard"],
   },
-  // {
-  //   id: 2,
-  //   name: "Products",
-  //   path: "products",
-  //   icon1: Images["ProductLogoColored"],
-  //   icon2: Images["ProductLogo"],
-  // },
+  {
+    id: 2,
+    name: "Area Mapping",
+    path: "AreaMapping",
+    icon1: Images["ProductLogoColored"],
+    icon2: Images["ProductLogo"],
+  },
   // {
   //   id: 3,
   //   name: "Orders",

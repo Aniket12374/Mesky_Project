@@ -5,6 +5,7 @@ import { addRider, getSocieties } from "../../services/riders/riderService";
 import toast from "react-hot-toast";
 import Select from "react-select";
 import { DatePicker } from "antd";
+import moment from "moment";
 
 const dateFormat = "YYYY/MM/DD";
 
@@ -57,7 +58,7 @@ const AgentCreation = ({ setShowAgentCreation }) => {
       })
       .catch((err) => {
         console.log({ err });
-        toast.error("Error occured!!");
+        toast.error(err?.response?.data.message);
       });
   };
 
@@ -94,6 +95,16 @@ const AgentCreation = ({ setShowAgentCreation }) => {
     "poll_ch_ex_date",
   ];
 
+  const dateFormat = "YYYY-MM-DD";
+
+  function disabledFutureDate(current) {
+    return current && current > moment().endOf("day");
+  }
+
+  function disabledPastDate(current) {
+    return current && current < moment().startOf("day");
+  }
+
   return (
     <div>
       <div className="flex justify-end">
@@ -109,7 +120,7 @@ const AgentCreation = ({ setShowAgentCreation }) => {
             <label>Full Name</label>
             <input
               type="text"
-              className="w-full h-12 rounded-lg  border-select__control  p-2"
+              className="w-full h-12 rounded-lg border-select__control p-2"
               value={agent?.full_name}
               onChange={(e) => handleChange("full_name", e.target.value)}
             />
@@ -211,6 +222,7 @@ const AgentCreation = ({ setShowAgentCreation }) => {
                   <DatePicker
                     placeholder={"select date"}
                     format={dateFormat}
+                    disabledDate={disabledFutureDate}
                     onChange={(date, dateString) => {
                       handleChange(x, dateString);
                     }}
@@ -225,6 +237,7 @@ const AgentCreation = ({ setShowAgentCreation }) => {
                   <DatePicker
                     format={dateFormat}
                     placeholder={"select date"}
+                    disabledDate={disabledPastDate}
                     onChange={(date, dateString) => {
                       handleChange(x, dateString);
                     }}

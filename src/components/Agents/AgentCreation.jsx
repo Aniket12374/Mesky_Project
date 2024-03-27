@@ -12,6 +12,14 @@ const dateFormat = "YYYY/MM/DD";
 const AgentCreation = ({ setShowAgentCreation }) => {
   const [agent, setAgent] = useState({});
   const [socitiesList, setSocitiesList] = useState([]);
+  const [uploadedFiles, setUploadedFiles] = useState({
+    dl: false,
+    adhar: false,
+    veh_n_pl_im: false,
+    veh_rc: false,
+    veh_is: false,
+    poll_ch: false,
+  });
 
   const handleChange = (key, value) => {
     setAgent((prev) => ({ ...prev, ...{ [key]: value } }));
@@ -28,6 +36,7 @@ const AgentCreation = ({ setShowAgentCreation }) => {
       .then((res) => {
         const links = res.data.links;
         handleChange(key, links.length > 0 ? links[0] : null);
+        setUploadedFiles((prev) => ({ ...prev, [key]: true }));
       })
       .catch((err) => {
         console.log(err);
@@ -42,6 +51,7 @@ const AgentCreation = ({ setShowAgentCreation }) => {
       "veh_n_pl_im",
       "veh_rc",
       "poll_ch",
+      "veh_is",
       "mobile_number",
       "full_name",
       "society"
@@ -162,54 +172,108 @@ const AgentCreation = ({ setShowAgentCreation }) => {
               <div>Vehicle (PUC) Pollution Check</div>
             </div>
             <div className="space-y-3">
-              <div className="text-lg font-medium">DOCUMENT</div>
-
-              <div>
+              <div className="text-lg text-center font-medium">DOCUMENT</div>
+              <div className="upload-container">
+                <label
+                  htmlFor="driving-license"
+                  className={`w-full block text-center rounded-2xl ${
+                    uploadedFiles.dl ? "bg-red-500" : "bg-[#df4584]"
+                  } shadow-md shadow-slate-400 text-white py-[2px] text-base`}
+                >
+                  {uploadedFiles.dl ? "Uploaded" : "Upload"}
+                </label>
                 <input
                   type="file"
                   id="driving-license"
                   name="driving-license"
                   onChange={(e) => handleUpload(e, "dl")}
+                  hidden
                 />
               </div>
-              <div>
+
+              <div className="upload-container">
+                <label
+                  htmlFor="aadhar-card"
+                  className={`w-full block text-center rounded-2xl ${
+                    uploadedFiles.adhar ? "bg-red-500" : "bg-[#df4584]"
+                  } shadow-md shadow-slate-400 text-white py-[2px] text-base`}
+                >
+                  {uploadedFiles.adhar ? "Uploaded" : "Upload"}
+                </label>
                 <input
                   type="file"
                   id="aadhar-card"
                   name="aadhar-card"
                   onChange={(e) => handleUpload(e, "adhar")}
+                  hidden
                 />
               </div>
-              <div>
+              <div className="upload-container">
+                <label
+                  htmlFor="vehicle-name-plate"
+                  className={`w-full block text-center rounded-2xl ${
+                    uploadedFiles.veh_n_pl_im ? "bg-red-500" : "bg-[#df4584]"
+                  } shadow-md shadow-slate-400 text-white py-[2px] text-base`}
+                >
+                  {uploadedFiles.veh_n_pl_im ? "Uploaded" : "Upload"}
+                </label>
                 <input
                   type="file"
                   id="vehicle-name-plate"
                   name="vehicle-name-plate"
                   onChange={(e) => handleUpload(e, "veh_n_pl_im")}
+                  hidden
                 />
               </div>
-              <div>
+              <div className="upload-container">
+                <label
+                  htmlFor="vehicle-rc"
+                  className={`w-full block text-center rounded-2xl ${
+                    uploadedFiles.veh_rc ? "bg-red-500" : "bg-[#df4584]"
+                  } shadow-md shadow-slate-400 text-white py-[2px] text-base`}
+                >
+                  {uploadedFiles.veh_rc ? "Uploaded" : "Upload"}
+                </label>
                 <input
                   type="file"
                   id="vehicle-rc"
                   name="vehicle-rc"
                   onChange={(e) => handleUpload(e, "veh_rc")}
+                  hidden
                 />
               </div>
-              <div>
+              <div className="upload-container">
+                <label
+                  htmlFor="vehicle-insurance"
+                  className={`w-full block text-center rounded-2xl ${
+                    uploadedFiles.veh_is ? "bg-red-500" : "bg-[#df4584]"
+                  } shadow-md shadow-slate-400 text-white py-[2px] text-base`}
+                >
+                  {uploadedFiles.veh_is ? "Uploaded" : "Upload"}
+                </label>
                 <input
                   type="file"
                   id="vehicle-insurance"
                   name="vehicle-insurance"
                   onChange={(e) => handleUpload(e, "veh_is")}
+                  hidden
                 />
               </div>
-              <div>
+              <div className="upload-container">
+                <label
+                  htmlFor="vehicle-puc"
+                  className={`w-full block text-center rounded-2xl ${
+                    uploadedFiles.poll_ch ? "bg-red-500" : "bg-[#df4584]"
+                  } shadow-md shadow-slate-400 text-white py-[2px] text-base`}
+                >
+                  {uploadedFiles.poll_ch ? "Uploaded" : "Upload"}
+                </label>
                 <input
                   type="file"
                   id="vehicle-puc"
                   name="vehicle-puc"
                   onChange={(e) => handleUpload(e, "poll_ch")}
+                  hidden
                 />
               </div>
             </div>

@@ -22,6 +22,7 @@ const ListingPage = () => {
       society_name: listingData?.society?.name,
       pincode: listingData?.order?.pincode,
       phone_number: listingData?.order?.mobile_number,
+      sectors: listingData?.society?.sector,
       delivery: listingData?.order?.line_1 + " " + listingData?.order?.line_2,
       align: "center",
       agent_name: listingData?.rider?.map((rider, key) => {
@@ -62,6 +63,13 @@ const ListingPage = () => {
       title: "PHONE NUMBER",
       dataIndex: "phone_number",
       key: "phone_number",
+      align: "center",
+    },
+
+    {
+      title: "SECTOR",
+      dataIndex: "sectors",
+      key: "sectors",
       align: "center",
     },
 

@@ -20,6 +20,8 @@ const ListingPage = () => {
       order_id: listingData?.order?.uid,
       customer_name: listingData?.order?.full_name,
       society_name: listingData?.society?.name,
+      pincode: listingData?.order?.pincode,
+      phone_number: listingData?.order?.mobile_number,
       delivery: listingData?.order?.line_1 + " " + listingData?.order?.line_2,
       align: "center",
       agent_name: listingData?.rider?.map((rider, key) => {
@@ -50,6 +52,19 @@ const ListingPage = () => {
       align: "center",
       key: "society_name",
     },
+    {
+      title: "PINCODE",
+      dataIndex: "pincode",
+      align: "center",
+      key: "pincode",
+    },
+    {
+      title: "PHONE NUMBER",
+      dataIndex: "phone_number",
+      key: "phone_number",
+      align: "center",
+    },
+
     {
       title: "DELIVERY ADDRESS",
       dataIndex: "delivery",

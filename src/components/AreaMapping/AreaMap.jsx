@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Button, Table, Modal, Radio } from "antd";
+import { Table, Modal, Radio } from "antd";
 
 import {
   assignAgent,
@@ -64,7 +64,14 @@ const AreaMap = () => {
   const showModal = (record) => {
     setAreaId(record.key);
     setVisible(true);
-    setSelectedAgents({ ...selectedAgents, [record.full_name]: "" }); // Initialize selected agent for the button
+
+    // Check if there is an assigned rider
+    if (assignedRider) {
+      setRiderId(assignedRider.id); // Set the riderId with the already assigned rider's id
+      setSelectedAgents({ [assignedRider.full_name]: assignedRider.id }); // Set the selected agent with the already assigned rider
+    } else {
+      setSelectedAgents({ ...selectedAgents, [record.full_name]: "" }); // Initialize selected agent for the button
+    }
   };
 
   const handleOk = async () => {

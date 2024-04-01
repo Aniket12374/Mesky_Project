@@ -149,15 +149,41 @@ const AgentDetail = ({
     },
   ];
 
-  const handleEditAgent = () => {
-    modifyRider(agent)
-      .then((res) => {
-        toast.success("Successfully Edited!");
+  const handleEditAgent = async () => {
+    try {
+      const response = await modifyRider(agent);
+      if (response.data?.message) {
+        const errorMessage = response.data.message;
+
+        // Check if the message contains "sector already allocated"
+        if (errorMessage.includes("sector already allocated")) {
+          // Extract rider name and sector from the message
+          const match = errorMessage.match(
+            /\{'rider': '([^']*)', 'society': '([^']*)'\}/
+          );
+          if (match) {
+            const riderName = match[1];
+            const sector = match[2];
+            // Display a customized error message
+            toast.error(
+              `Sector already allocated to ${riderName} in ${sector}`
+            );
+          } else {
+            // If unable to extract rider name and sector, display original message
+            toast.error(errorMessage);
+          }
+        } else {
+          // Display original message if it doesn't contain "sector already allocated"
+          toast.error(errorMessage);
+        }
+
         refetch();
-      })
-      .catch((err) => {
-        toast.error("Error Occured");
-      });
+      } else {
+        toast.success("Successfully Edited");
+      }
+    } catch (error) {
+      toast.error("Error Occurred");
+    }
   };
 
   //status

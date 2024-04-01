@@ -24,17 +24,19 @@ const ListingPage = ({ setShowAgentCreation }) => {
     return navigate("/login");
   }
   const riders = [];
-  data?.data?.data.map((rider) =>
+  data?.data?.data.map((rider) => {
+    let areas = rider?.society.map((x) => x.sector);
+    let assignedArea = new Set(areas);
     riders.push({
       s_no: rider.id,
       phone_number: rider.mobile_number,
-      assigned_area: rider?.society.map((x) => x.sector),
-      delivery_area: rider?.society.map((x) => x.sector),
+      assigned_area: Array.from(assignedArea),
+      delivery_area: Array.from(assignedArea),
       status: rider?.status,
       align: "center",
       agent_name: rider?.full_name,
-    })
-  );
+    });
+  });
 
   const HistoryHeaders = [
     {

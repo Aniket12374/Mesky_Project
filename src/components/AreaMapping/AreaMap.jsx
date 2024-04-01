@@ -108,14 +108,14 @@ const AreaMap = () => {
       title: "AREA",
       dataIndex: "area",
       key: "area",
-      align: "center",
+      // align: "center",
       width: "20%",
     },
     {
       title: "SECTORS",
       dataIndex: "sectors",
       key: "sectors",
-      align: "center",
+      // align: "center",
       width: "30%",
       render: (sectors) => (
         <ul>
@@ -128,22 +128,18 @@ const AreaMap = () => {
     {
       title: "ASSIGNED TO",
       key: "action",
-      align: "center",
+      // align: "center",
 
       render: (text, record) => (
-        <div className="flex justify-center">
-          <div className="w-5/12 flex justify-evenly items-center">
-            {assignedRider && (
-              <span style={{ marginLeft: "10px" }}>
-                {assignedRider.full_name}
-              </span>
-            )}
+        <div className="flex">
+          <div className="w-5/12 flex justify-start items-center">
+            {assignedRider && <span>{assignedRider.full_name}</span>}
             <button
               type="primary"
               size="large"
               shape="round"
               onClick={() => showModal(record)}
-              className="rounded-full px-3 py-2"
+              className="rounded-full ml-2 px-3 py-2"
               style={{
                 backgroundColor:
                   assignedRider && assignedRider?.full_name

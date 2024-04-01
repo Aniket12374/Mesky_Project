@@ -20,7 +20,7 @@ const AreaMap = () => {
   ); // Initialize assignedRider state with data from localStorage
 
   useEffect(() => {
-    assignAgent();
+    // assignAgent();
     // setIsLoading(true);
     // setIsError(null);
 
@@ -55,7 +55,7 @@ const AreaMap = () => {
     };
 
     // Call the fetchAssignedRider function
-    fetchAssignedRider();
+    // fetchAssignedRider();
 
     // If areaId changes, refetch the assigned rider
     // This ensures that assigned rider state gets updated when areaId changes

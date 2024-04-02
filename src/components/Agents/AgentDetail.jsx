@@ -26,6 +26,7 @@ const AgentDetail = ({
   const [socitiesList, setSocitiesList] = useState([]);
   const [agent, setAgent] = useState({});
   const [historyData, setHistoryData] = useState([]);
+  const [editable, setEditable] = useState(false);
 
   useEffect(() => {
     getSocieties().then((res) => {
@@ -41,6 +42,15 @@ const AgentDetail = ({
     Object.keys(rowData).map((row) => {
       setAgent((prev) => ({ ...prev, ...{ [row]: rowData[row] } }));
     });
+
+    let agentAssignedAreas = rowData?.assigned_area?.map((x) =>
+      x.replace(", ", "")
+    );
+
+    setAgent((prev) => ({
+      ...prev,
+      ...{ assigned_area: agentAssignedAreas },
+    }));
 
     getRiderHistory(rowData?.s_no).then((res) => {
       let list = [];
@@ -165,24 +175,29 @@ const AgentDetail = ({
             const riderName = match[1];
             const sector = match[2];
             // Display a customized error message
+
             toast.error(
               `Sector already allocated to ${riderName} in ${sector}`
             );
+            handleChange("assigned_area", rowData?.assigned_area);
           } else {
             // If unable to extract rider name and sector, display original message
             toast.error(errorMessage);
+            handleChange("assigned_area", rowData?.assigned_area);
           }
         } else {
           // Display original message if it doesn't contain "sector already allocated"
           toast.error(errorMessage);
+          handleChange("assigned_area", rowData?.assigned_area);
         }
-
-        refetch();
       } else {
+        setEditable(false);
+        refetch();
         toast.success("Successfully Edited");
       }
     } catch (error) {
       toast.error("Error Occurred");
+      handleChange("assigned_area", rowData?.assigned_area);
     }
   };
 
@@ -203,7 +218,16 @@ const AgentDetail = ({
     <div>
       <div className="text-3xl font-semibold">{rowData?.agent_name}</div>
       <div className="flex justify-end">
-        <Button btnName={"Edit"} onClick={handleEditAgent} className="w-32" />
+        {!editable && (
+          <Button
+            btnName={"Edit"}
+            onClick={() => setEditable(true)}
+            className="w-32"
+          />
+        )}
+        {editable && (
+          <Button btnName={"Save"} onClick={handleEditAgent} className="w-32" />
+        )}
         <Button btnName={"Cancel"} onClick={handleCancel} className="w-32" />
       </div>
       <div className="flex space-x-5 w-full justify-start">
@@ -214,6 +238,7 @@ const AgentDetail = ({
               type="text"
               className="w-full h-12 rounded-lg border-select__control  p-2"
               value={agent?.phone_number}
+              disabled={!editable}
               //   placeholder="Warehouse Name"
             />
           </div>
@@ -224,6 +249,7 @@ const AgentDetail = ({
             value={{ label: agent?.status, value: agent?.status }}
             onChange={(option) => handleOptionChange(option, "status")}
             classNamePrefix="border-select"
+            isDisabled={!editable}
           />
         </div>
         <div className="w-[40%]">
@@ -238,6 +264,7 @@ const AgentDetail = ({
             value={socitiesList.filter((society) =>
               agent?.assigned_area.includes(society.label)
             )}
+            isDisabled={!editable}
           />
         </div>
       </div>

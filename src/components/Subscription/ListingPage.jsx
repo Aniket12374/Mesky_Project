@@ -1,17 +1,36 @@
-import React, { useEffect } from "react";
+import React from "react";
 import DataTable from "../Common/DataTable/DataTable";
 import { useQuery } from "react-query";
 import { presentOrders } from "../../services/subscriptionOrders/subscriptionService";
 import { useNavigate } from "react-router-dom";
 
 const ListingPage = () => {
-  const [selectedRowData, setSelectedRowData] = React.useState(null);
   const { data, isLoading, isError } = useQuery("presentOrders", presentOrders);
-
   const navigate = useNavigate();
+
   if (isError) {
     return navigate("/login");
   }
+
+  const uniqueSocietyNames = Array.from(
+    new Set(data?.data?.data.map((listingData) => listingData?.society?.name))
+  );
+  const uniquePincodes = Array.from(
+    new Set(data?.data?.data.map((listingData) => listingData?.order?.pincode))
+  );
+  const uniqueSectors = Array.from(
+    new Set(data?.data?.data.map((listingData) => listingData?.society?.sector))
+  );
+  const uniqueAgentNames = Array.from(
+    new Set(
+      data?.data?.data.flatMap((listingData) =>
+        listingData?.rider?.map((rider) => rider.full_name)
+      )
+    )
+  );
+  const uniqueStatuses = Array.from(
+    new Set(data?.data?.data.map((listingData) => listingData?.status?.name))
+  );
 
   let historyData = [];
   data?.data?.data.map((listingData) => {
@@ -24,12 +43,12 @@ const ListingPage = () => {
       phone_number: listingData?.order?.mobile_number,
       sectors: listingData?.society?.sector,
       delivery: listingData?.order?.line_1 + " " + listingData?.order?.line_2,
-      align: "center",
+      // align: "center",
       agent_name: listingData?.rider?.map((rider, key) => {
         let comma = ridersCount - 1 !== key ? ", " : "";
         return rider.full_name + comma;
       }),
-      status: listingData?.status?.name,
+      status: listingData?.status?.status || "In Transit", // Defaulting to "In Transit" if no status available
     });
   });
 
@@ -38,58 +57,69 @@ const ListingPage = () => {
       title: "ORDER ID",
       dataIndex: "order_id",
       key: "order_id",
-      align: "center",
       width: 100,
     },
     {
       title: "CUSTOMER NAME",
       dataIndex: "customer_name",
-      align: "center",
       key: "customer_name",
     },
     {
       title: "SOCIETY NAME",
       dataIndex: "society_name",
-      align: "center",
       key: "society_name",
+      filters: uniqueSocietyNames.map((societyName) => ({
+        text: societyName,
+        value: societyName,
+      })),
+      onFilter: (value, record) => record.society_name === value,
     },
     {
       title: "PINCODE",
       dataIndex: "pincode",
-      align: "center",
       key: "pincode",
+      filters: uniquePincodes.map((pincode) => ({
+        text: pincode,
+        value: pincode,
+      })),
+      onFilter: (value, record) => record.pincode === value,
     },
     {
       title: "PHONE NUMBER",
       dataIndex: "phone_number",
       key: "phone_number",
-      align: "center",
     },
-
     {
       title: "SECTOR",
       dataIndex: "sectors",
       key: "sectors",
-      align: "center",
-    },
-
-    {
-      title: "DELIVERY ADDRESS",
-      dataIndex: "delivery",
-      align: "center",
-      key: "delivery",
+      filters: uniqueSectors.map((sector) => ({ text: sector, value: sector })),
+      onFilter: (value, record) => record.sectors === value,
     },
     {
       title: "AGENT NAME",
       dataIndex: "agent_name",
       key: "agent_name",
-      align: "center",
+      filters: uniqueAgentNames.map((agentName) => ({
+        text: agentName,
+        value: agentName,
+      })),
+      onFilter: (value, record) => record.agent_name.includes(value),
+    },
+    {
+      title: "DELIVERY ADDRESS",
+      dataIndex: "delivery",
+      key: "delivery",
     },
     {
       title: "STATUS",
       dataIndex: "status",
       key: "status",
-      align: "center",
+      filters: uniqueStatuses.map((status) => ({
+        text: status,
+        value: status,
+      })),
+      onFilter: (value, record) => record.status === value,
     },
   ];
 
@@ -97,17 +127,9 @@ const ListingPage = () => {
     <div>
       <DataTable
         data={historyData}
-        // navigateTo="/products/edit/"
         loading={isLoading}
         columns={HistoryHeaders}
-        pagination={true}
-        // onRow={(record, rowIndex) => {
-        //   return {
-        //     onClick: () => {
-        //       setSelectedRowData(record);
-        //     },
-        //   };
-        // }}
+        pagination={false}
       />
     </div>
   );

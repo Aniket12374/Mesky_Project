@@ -49,37 +49,37 @@ const ListingPage = ({ setShowAgentCreation }) => {
       title: "S.NO",
       dataIndex: "s_no",
       key: "s_no",
-      width: 50,
+      // width: 50,
     },
     {
       title: "AGENTS",
       dataIndex: "agent_name",
       key: "agent_name",
-      width: 50,
+      // width: 50,
     },
     {
       title: "PHONE NUMBER",
       dataIndex: "phone_number",
       key: "phone_number",
-      width: 50,
+      // width: 50,
     },
     {
       title: "ASSIGNED AREA",
       dataIndex: "assigned_area",
       key: "assigned_area",
-      width: 50,
+      // width: 50,
     },
     {
       title: "DELIVERY AREA",
       dataIndex: "delivery_area",
       key: "delivery_area",
-      width: 50,
+      // width: 50,
     },
     {
       title: "STATUS",
       dataIndex: "status",
       key: "status",
-      width: 50,
+      // width: 50,
       render: (status) => (
         <div style={{ color: colorStatus[status] }}>{status}</div>
       ),
@@ -106,7 +106,7 @@ const ListingPage = ({ setShowAgentCreation }) => {
           <DataTable
             data={riders}
             columns={HistoryHeaders}
-            pagination={true}
+            pagination={false}
             loading={isLoading}
             onRow={(record, rowIndex) => {
               return {

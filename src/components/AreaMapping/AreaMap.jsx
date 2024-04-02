@@ -20,10 +20,6 @@ const AreaMap = () => {
   ); // Initialize assignedRider state with data from localStorage
 
   useEffect(() => {
-    // assignAgent();
-    // setIsLoading(true);
-    // setIsError(null);
-
     mappingList()
       .then((item) => {
         const {
@@ -38,27 +34,6 @@ const AreaMap = () => {
       .finally(() => {
         setIsLoading(false);
       });
-
-    // Fetch assigned rider when the component mounts or updates
-    const fetchAssignedRider = async () => {
-      try {
-        // Fetch assigned rider data
-        const res = await assignAgent({
-          area_id: areaId, // You might want to adjust this depending on your requirements
-        });
-        const assignedRider = res?.data?.area?.rider_list[0];
-        setAssignedRider(assignedRider); // Set the assigned rider in state
-        localStorage.setItem("assignedRider", JSON.stringify(assignedRider)); // Store assigned rider in localStorage
-      } catch (err) {
-        console.log("error message", err);
-      }
-    };
-
-    // Call the fetchAssignedRider function
-    // fetchAssignedRider();
-
-    // If areaId changes, refetch the assigned rider
-    // This ensures that assigned rider state gets updated when areaId changes
   }, [areaId]);
 
   const showModal = (record) => {
@@ -66,9 +41,10 @@ const AreaMap = () => {
     setVisible(true);
 
     // Check if there is an assigned rider
-    if (assignedRider) {
-      setRiderId(assignedRider.id); // Set the riderId with the already assigned rider's id
-      setSelectedAgents({ [assignedRider.full_name]: assignedRider.id }); // Set the selected agent with the already assigned rider
+    const rider = record?.full_name ? record : assignedRider;
+    if (rider) {
+      setRiderId(rider.id); // Set the riderId with the already assigned rider's id
+      setSelectedAgents({ [rider.full_name]: rider.id }); // Set the selected agent with the already assigned rider
     } else {
       setSelectedAgents({ ...selectedAgents, [record.full_name]: "" }); // Initialize selected agent for the button
     }
@@ -83,10 +59,26 @@ const AreaMap = () => {
           area_id: areaId,
           rider_id: riderId,
         });
+
         const assignedRider = res?.data?.area?.rider_list[0];
         setAssignedRider(assignedRider); // Set the assigned rider in state
         localStorage.setItem("assignedRider", JSON.stringify(assignedRider)); // Store assigned rider in localStorage
       }
+
+      mappingList()
+        .then((item) => {
+          const {
+            data: { data },
+          } = item;
+          setTableData(data); // table list data
+          setMappingData(item?.data); //riders list
+        })
+        .catch((error) => {
+          setIsError(error);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     } catch (err) {
       console.log("error message", err);
     }
@@ -127,29 +119,56 @@ const AreaMap = () => {
     },
     {
       title: "ASSIGNED TO",
-      key: "action",
+      dataIndex: "riders",
+      key: "riders",
       // align: "center",
 
-      render: (text, record) => (
+      render: (riders, record) => (
         <div className="flex">
           <div className="w-5/12 flex justify-start items-center">
-            {assignedRider && <span>{assignedRider.full_name}</span>}
-            <button
-              type="primary"
-              size="large"
-              shape="round"
-              onClick={() => showModal(record)}
-              className="rounded-full ml-2 px-3 py-2"
-              style={{
-                backgroundColor:
-                  assignedRider && assignedRider?.full_name
-                    ? "#AA00FF"
-                    : "#DF4584",
-                color: "#FFFFFF", // Change text color to white
-              }}
-            >
-              {assignedRider ? "Change" : "Assign Agent"}
-            </button>
+            {riders?.length ? (
+              riders?.map((rider) => {
+                return (
+                  <>
+                    {rider.full_name && <span>{rider.full_name}</span>}
+                    <button
+                      type="primary"
+                      size="large"
+                      shape="round"
+                      onClick={() =>
+                        showModal({
+                          key: record.key,
+                          ...rider,
+                        })
+                      }
+                      className="rounded-full ml-2 px-3 py-2"
+                      style={{
+                        backgroundColor: rider?.full_name
+                          ? "#AA00FF"
+                          : "#DF4584",
+                        color: "#FFFFFF",
+                      }}
+                    >
+                      Change
+                    </button>
+                  </>
+                );
+              })
+            ) : (
+              <button
+                type="primary"
+                size="large"
+                shape="round"
+                onClick={() => showModal(record)}
+                className="rounded-full px-3 py-2"
+                style={{
+                  backgroundColor: "#DF4584",
+                  color: "#FFFFFF",
+                }}
+              >
+                Assign Agent
+              </button>
+            )}
           </div>
         </div>
       ),
@@ -159,7 +178,8 @@ const AreaMap = () => {
   const data = tableData?.map((item) => ({
     key: item.id,
     area: item.area_name,
-    sectors: item.sector_list,
+    sectors: item?.sector_list || [],
+    riders: item?.rider_list || [],
   }));
 
   return (

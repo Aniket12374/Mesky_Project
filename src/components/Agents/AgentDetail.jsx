@@ -104,32 +104,32 @@ const AgentDetail = ({
     {
       title: "ORDER DATE",
       dataIndex: "order_date",
-      align: "center",
+      // align: "center",
       key: "order_date",
     },
     {
       title: "ORDER ID",
       dataIndex: "order_id",
       key: "order_id",
-      align: "center",
+      // align: "center",
     },
     {
       title: "CUSTOMER NAME",
       dataIndex: "customer_name",
-      align: "center",
+      // align: "center",
       key: "customer_name",
     },
     {
       title: "SOCIETY NAME",
       dataIndex: "society_name",
-      align: "center",
+      // align: "center",
       key: "society_name",
     },
 
     {
       title: "DELIVERY ADDRESS",
       dataIndex: "delivery",
-      align: "center",
+      // align: "center",
       key: "delivery",
     },
 
@@ -137,13 +137,13 @@ const AgentDetail = ({
       title: "AGENT NAME",
       dataIndex: "agent_name",
       key: "agent_name",
-      align: "center",
+      // align: "center",
     },
     {
       title: "STATUS",
       dataIndex: "status",
       key: "status",
-      align: "center",
+      // align: "center",
       render: (status) => (
         <div style={{ color: colorStatus[status] }}>{status}</div>
       ),
@@ -152,7 +152,7 @@ const AgentDetail = ({
       title: "IMAGE LOG",
       dataIndex: "image_log",
       key: "image_log",
-      align: "center",
+      // align: "center",
       render: (image_log) => (
         <div style={{ color: colorStatus[image_log] }}>{image_log}</div>
       ),
@@ -273,7 +273,7 @@ const AgentDetail = ({
         <DataTable
           data={historyData}
           columns={HistoryHeaders}
-          pagination={true}
+          pagination={false}
         />
       </div>
     </div>

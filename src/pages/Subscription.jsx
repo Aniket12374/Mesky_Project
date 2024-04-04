@@ -16,7 +16,7 @@ const Subscription = () => {
 
   return (
     <Layout>
-      <Header text={`Orders For ${formattedDate}`} />
+      <Header text={`Orders For ${formattedDate}`} count={`TotalCount ${""}`} />
       <ListingPage />
     </Layout>
   );

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import DataTable from "../Common/DataTable/DataTable";
 import { useQuery } from "react-query";
 import { presentOrders } from "../../services/subscriptionOrders/subscriptionService";
@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 const ListingPage = () => {
   const { data, isLoading, isError } = useQuery("presentOrders", presentOrders);
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
 
   if (isError) {
     return navigate("/login");
@@ -43,12 +44,11 @@ const ListingPage = () => {
       phone_number: listingData?.order?.mobile_number,
       sectors: listingData?.society?.sector,
       delivery: listingData?.order?.line_1 + " " + listingData?.order?.line_2,
-      // align: "center",
       agent_name: listingData?.rider?.map((rider, key) => {
         let comma = ridersCount - 1 !== key ? ", " : "";
         return rider.full_name + comma;
       }),
-      status: listingData?.status?.status || "In Transit", // Defaulting to "In Transit" if no status available
+      status: listingData?.status?.status || "In Transit",
     });
   });
 
@@ -123,13 +123,32 @@ const ListingPage = () => {
     },
   ];
 
+  const handlePageChange = (page) => {
+    console.log("page", page);
+    setCurrentPage(page);
+  };
+
+  const paginationConfig = {
+    current: currentPage,
+    pageSize: 5,
+    total: historyData.length,
+    onChange: handlePageChange,
+  };
+
+  const startIndex = (currentPage - 1) * paginationConfig.pageSize;
+  const endIndex = currentPage * paginationConfig.pageSize;
+
+  const dataForCurrentPage = historyData.slice(startIndex, endIndex);
+
+  console.log("dataForCurrentPage", dataForCurrentPage);
+
   return (
     <div>
       <DataTable
-        data={historyData}
+        data={dataForCurrentPage}
         loading={isLoading}
         columns={HistoryHeaders}
-        pagination={false}
+        pagination={paginationConfig}
       />
     </div>
   );

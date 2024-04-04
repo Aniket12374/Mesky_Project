@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import DashboardTab from "../components/Dashboard";
 import Layout from "../components/Layout/Layout";
 import { useMainStore } from "../store/store";
 import { Header } from "../utils";
 import Cookies from "js-cookie";
+import DashboardDetail from "../components/Dashboard/DashboardDetail";
 
 const Dashboard = () => {
   const user = useMainStore((state) => state.user);
@@ -14,7 +14,7 @@ const Dashboard = () => {
   useEffect(() => {
     const token = Cookies.get("token");
     if (!token) {
-      console.log('check');
+      console.log("check");
       return navigate("/login");
     }
   }, [navigate]);
@@ -22,7 +22,7 @@ const Dashboard = () => {
   return (
     <Layout>
       <Header text={`Hi ${user.name}!`} />
-      <DashboardTab />
+      <DashboardDetail />
     </Layout>
   );
 };

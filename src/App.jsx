@@ -11,6 +11,7 @@ import Subscription from "./pages/Subscription";
 import PrivateRoute from "./components/Auth/PrivateRoute";
 import AreaMapping from "./pages/AreaMapping";
 import Routing from "./pages/Routing";
+import Dashboard from "./pages/Dashboard";
 
 const queryClient = new QueryClient();
 
@@ -20,6 +21,15 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <Routes>
           <Route index path="/" element={<Navigate to="/login" />} />
+
+          <Route
+            path="/dashboard"
+            element={
+              <PrivateRoute>
+                <Dashboard />
+              </PrivateRoute>
+            }
+          />
 
           <Route
             path="/subscription"

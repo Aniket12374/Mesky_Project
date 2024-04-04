@@ -21,6 +21,13 @@ const SidebarNavItems = [
   },
   {
     id: 2,
+    name: "Routing",
+    path: "routing",
+    icon1: Images["RoutingColoredLogo"],
+    icon2: Images["ProductLogo"],
+  },
+  {
+    id: 3,
     name: "Area Mapping",
     path: "AreaMapping",
     icon1: Images["ProductLogoColored"],

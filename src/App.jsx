@@ -10,6 +10,7 @@ import Agents from "./pages/Agent/Agents";
 import Subscription from "./pages/Subscription";
 import PrivateRoute from "./components/Auth/PrivateRoute";
 import AreaMapping from "./pages/AreaMapping";
+import Routing from "./pages/Routing";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,15 @@ function App() {
             element={
               <PrivateRoute>
                 <Subscription />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/routing"
+            element={
+              <PrivateRoute>
+                <Routing />
               </PrivateRoute>
             }
           />

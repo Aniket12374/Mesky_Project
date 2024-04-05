@@ -21,7 +21,7 @@ const Dashboard = () => {
 
   return (
     <Layout>
-      <Header text={`Hi ${user.name}!`} />
+      <Header text="Dashboard - April 1, 2024" />
       <DashboardDetail />
     </Layout>
   );

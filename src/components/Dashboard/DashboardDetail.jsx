@@ -3,23 +3,33 @@ import React from "react";
 const DashboardDetail = () => {
   return (
     <div>
-      <div className="w-1/2">
-        <div className="flex justify-evenly">
-          <div className="border-2 w-1/4 rounded-lg bg-red-500 text-center text-white px-2 py-5">
-            <div className="text-2xl">24</div>
-            <div className="text-sm">orders</div>
+      <div className="w-[45%] space-y-7">
+        <div className="grid grid-cols-3 gap-12">
+          <div className="rounded-lg bg-[#DF4584] text-center text-white px-1 py-5">
+            <div className="text-3xl font-medium">24</div>
+            <div className="text-sm">Orders</div>
           </div>
-          <div className="border-2 rounded-lg w-1/4 bg-red-500 text-center text-white p-2">
-            <div className="text-lg">24</div>
-            <div className="text-sm">orders</div>
+          <div className="rounded-lg bg-[#F9A603] text-center text-white px-1 py-5">
+            <div className="text-3xl font-medium">68</div>
+            <div className="text-sm">Packets</div>
           </div>
-          <div className="border-2 rounded-lg w-1/4 bg-red-500 text-center text-white p-2">
-            <div className="text-lg">24</div>
-            <div className="text-sm">orders</div>
+          <div className="rounded-lg bg-[#65CBF3] text-center text-white px-1 py-5">
+            <div className="text-3xl font-medium">4</div>
+            <div className="text-sm">Riders</div>
           </div>
         </div>
-        <div></div>
+        <div className="grid grid-cols-3 gap-12">
+          <div className="rounded-lg bg-[#FC8172] text-center text-white px-1 py-5">
+            <div className="text-3xl font-medium">24</div>
+            <div className="text-sm">Pincodes</div>
+          </div>
+          <div className="rounded-lg bg-[#AA00FF] text-center text-white px-1 py-5">
+            <div className="text-3xl font-medium">68</div>
+            <div className="text-sm">Sectors</div>
+          </div>
+        </div>
       </div>
+
       <div></div>
     </div>
   );

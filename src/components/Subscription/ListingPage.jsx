@@ -4,10 +4,15 @@ import { useQuery } from "react-query";
 import { presentOrders } from "../../services/subscriptionOrders/subscriptionService";
 import { useNavigate } from "react-router-dom";
 
-const ListingPage = () => {
-  const { data, isLoading, isError } = useQuery("presentOrders", presentOrders);
+const ListingPage = ({ setTotalCount }) => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
+
+  const { data, isLoading, isError } = useQuery(
+    ["presentOrders", currentPage],
+    () => presentOrders(currentPage)
+  );
+  setTotalCount(data?.data?.totalCount);
 
   if (isError) {
     return navigate("/login");
@@ -124,28 +129,20 @@ const ListingPage = () => {
   ];
 
   const handlePageChange = (page) => {
-    console.log("page", page);
     setCurrentPage(page);
   };
 
   const paginationConfig = {
     current: currentPage,
-    pageSize: 5,
-    total: historyData.length,
+    pageSize: 10,
+    total: data?.data?.totalCount,
     onChange: handlePageChange,
   };
-
-  const startIndex = (currentPage - 1) * paginationConfig.pageSize;
-  const endIndex = currentPage * paginationConfig.pageSize;
-
-  const dataForCurrentPage = historyData.slice(startIndex, endIndex);
-
-  console.log("dataForCurrentPage", dataForCurrentPage);
 
   return (
     <div>
       <DataTable
-        data={dataForCurrentPage}
+        data={historyData}
         loading={isLoading}
         columns={HistoryHeaders}
         pagination={paginationConfig}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import DataTable from "../Common/DataTable/DataTable";
 import { useQuery } from "react-query";
 import { presentOrders } from "../../services/subscriptionOrders/subscriptionService";
@@ -7,6 +7,15 @@ import { useNavigate } from "react-router-dom";
 const ListingPage = () => {
   const { data, isLoading, isError } = useQuery("presentOrders", presentOrders);
   const navigate = useNavigate();
+  const [filteredDataCount, setFilteredDataCount] = useState(null);
+  const [totalDataCount, setTotalDataCount] = useState(0);
+
+  useEffect(() => {
+    if (data && data.data && data.data.data) {
+      setTotalDataCount(data.data.data.length);
+      setFilteredDataCount(data.data.data.length);
+    }
+  }, [data]);
 
   if (isError) {
     return navigate("/login");
@@ -52,6 +61,10 @@ const ListingPage = () => {
     });
   });
 
+  const handleFilteredDataCount = (filteredData) => {
+    setFilteredDataCount(filteredData.length);
+  };
+
   const HistoryHeaders = [
     {
       title: "ORDER ID",
@@ -72,7 +85,13 @@ const ListingPage = () => {
         text: societyName,
         value: societyName,
       })),
-      onFilter: (value, record) => record.society_name === value,
+      onFilter: (value, record) => {
+        const filteredData = historyData.filter(
+          (item) => item.society_name === value
+        );
+        handleFilteredDataCount(filteredData);
+        return record.society_name === value;
+      },
     },
     {
       title: "PINCODE",
@@ -82,7 +101,13 @@ const ListingPage = () => {
         text: pincode,
         value: pincode,
       })),
-      onFilter: (value, record) => record.pincode === value,
+      onFilter: (value, record) => {
+        const filteredData = historyData.filter(
+          (item) => item.pincode === value
+        );
+        handleFilteredDataCount(filteredData);
+        return record.pincode === value;
+      },
     },
     {
       title: "PHONE NUMBER",
@@ -94,7 +119,13 @@ const ListingPage = () => {
       dataIndex: "sectors",
       key: "sectors",
       filters: uniqueSectors.map((sector) => ({ text: sector, value: sector })),
-      onFilter: (value, record) => record.sectors === value,
+      onFilter: (value, record) => {
+        const filteredData = historyData.filter(
+          (item) => item.sectors === value
+        );
+        handleFilteredDataCount(filteredData);
+        return record.sectors === value;
+      },
     },
     {
       title: "AGENT NAME",
@@ -104,7 +135,13 @@ const ListingPage = () => {
         text: agentName,
         value: agentName,
       })),
-      onFilter: (value, record) => record.agent_name.includes(value),
+      onFilter: (value, record) => {
+        const filteredData = historyData.filter((item) =>
+          item.agent_name.includes(value)
+        );
+        handleFilteredDataCount(filteredData);
+        return record.agent_name.includes(value);
+      },
     },
     {
       title: "DELIVERY ADDRESS",
@@ -119,7 +156,13 @@ const ListingPage = () => {
         text: status,
         value: status,
       })),
-      onFilter: (value, record) => record.status === value,
+      onFilter: (value, record) => {
+        const filteredData = historyData.filter(
+          (item) => item.status === value
+        );
+        setFilteredDataCount(filteredData.length);
+        return record.status === value;
+      },
     },
   ];
 
@@ -132,11 +175,16 @@ const ListingPage = () => {
         }
       `}
       </style>
+      {/* <div>Total Data Count: {totalDataCount}</div> */}
+      <div className="float-right font-medium">
+        Showing Results: {filteredDataCount}/{totalDataCount}
+      </div>
       <DataTable
         data={historyData}
         loading={isLoading}
         columns={HistoryHeaders}
         pagination={false}
+        onFilteredDataChange={handleFilteredDataCount}
       />
     </div>
   );

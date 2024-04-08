@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery } from "react-query";
 import DataTable from "../Common/DataTable/DataTable";
 import { previousOrders } from "../../services/subscriptionOrders/subscriptionService";
@@ -10,26 +10,19 @@ const ListingPage = () => {
     previousOrders
   );
   const navigate = useNavigate();
+  const [filteredDataCount, setFilteredDataCount] = useState(null);
+  const [totalDataCount, setTotalDataCount] = useState(0);
+
+  useEffect(() => {
+    if (data && data.data && data.data.data) {
+      setTotalDataCount(data.data.data.length);
+      setFilteredDataCount(data.data.data.length);
+    }
+  }, [data]);
 
   if (isError) {
     return navigate("/login");
   }
-
-  const uniqueSocietyNames = Array.from(
-    new Set(data?.data?.data.map((listingData) => listingData?.society?.name))
-  );
-  const uniqueAgentNames = Array.from(
-    new Set(
-      data?.data?.data.flatMap((listingData) =>
-        listingData?.rider?.map((rider) => rider.full_name)
-      )
-    )
-  );
-  const uniqueStatuses = Array.from(
-    new Set(
-      data?.data?.data.map((listingData) => listingData?.status?.del_status)
-    )
-  );
 
   let historyData = [];
   data?.data?.data.map((listingData) => {
@@ -47,6 +40,26 @@ const ListingPage = () => {
       status: listingData?.status?.status || "Pending",
     });
   });
+
+  const handleFilteredDataCount = (filteredData) => {
+    setFilteredDataCount(filteredData.length);
+  };
+
+  const uniqueSocietyNames = Array.from(
+    new Set(data?.data?.data.map((listingData) => listingData?.society?.name))
+  );
+  const uniqueAgentNames = Array.from(
+    new Set(
+      data?.data?.data.flatMap((listingData) =>
+        listingData?.rider?.map((rider) => rider.full_name)
+      )
+    )
+  );
+  const uniqueStatuses = Array.from(
+    new Set(
+      data?.data?.data.map((listingData) => listingData?.status?.del_status)
+    )
+  );
 
   const HistoryHeaders = [
     {
@@ -68,7 +81,13 @@ const ListingPage = () => {
         text: societyName,
         value: societyName,
       })),
-      onFilter: (value, record) => record.society_name === value,
+      onFilter: (value, record) => {
+        const filteredData = historyData.filter(
+          (item) => item.society_name === value
+        );
+        handleFilteredDataCount(filteredData);
+        return record.society_name === value;
+      },
     },
     {
       title: "DELIVERY ADDRESS",
@@ -83,7 +102,13 @@ const ListingPage = () => {
         text: agentName,
         value: agentName,
       })),
-      onFilter: (value, record) => record.agent_name.includes(value),
+      onFilter: (value, record) => {
+        const filteredData = historyData.filter((item) =>
+          item.agent_name.includes(value)
+        );
+        handleFilteredDataCount(filteredData);
+        return record.agent_name.includes(value);
+      },
       width: 200,
     },
     {
@@ -94,7 +119,13 @@ const ListingPage = () => {
         text: status,
         value: status,
       })),
-      onFilter: (value, record) => record.status === value,
+      onFilter: (value, record) => {
+        const filteredData = historyData.filter(
+          (item) => item.status === value
+        );
+        setFilteredDataCount(filteredData.length);
+        return record.status === value;
+      },
     },
   ];
 
@@ -107,11 +138,15 @@ const ListingPage = () => {
         }
       `}
       </style>
+      <div className="float-right font-medium">
+        Showing Results: {filteredDataCount}/{totalDataCount}
+      </div>
       <DataTable
         data={historyData}
         columns={HistoryHeaders}
         pagination={false}
         loading={isLoading}
+        onFilteredDataChange={handleFilteredDataCount}
       />
     </div>
   );

@@ -48,7 +48,7 @@ const ListingPage = () => {
         let comma = ridersCount - 1 !== key ? ", " : "";
         return rider.full_name + comma;
       }),
-      status: listingData?.status?.status || "In Transit", // Defaulting to "In Transit" if no status available
+      status: listingData?.status?.status || "Pending", // Defaulting to "In Transit" if no status available
     });
   });
 

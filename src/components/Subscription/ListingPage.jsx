@@ -125,6 +125,13 @@ const ListingPage = () => {
 
   return (
     <div>
+      <style>
+        {`
+        .ant-table-thead th {
+          vertical-align: bottom; // Aligning titles at the bottom
+        }
+      `}
+      </style>
       <DataTable
         data={historyData}
         loading={isLoading}

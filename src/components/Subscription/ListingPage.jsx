@@ -35,20 +35,20 @@ const ListingPage = () => {
   let historyData = [];
   data?.data?.data.map((listingData) => {
     const ridersCount = listingData?.rider?.length;
+    const truncatedOrderId = listingData?.order?.uid.slice(-8); // Truncate to last 8 characters
     historyData.push({
-      order_id: listingData?.order?.uid,
+      order_id: truncatedOrderId,
       customer_name: listingData?.order?.full_name,
       society_name: listingData?.society?.name,
       pincode: listingData?.order?.pincode,
       phone_number: listingData?.order?.mobile_number,
       sectors: listingData?.society?.sector,
       delivery: listingData?.order?.line_1 + " " + listingData?.order?.line_2,
-      // align: "center",
       agent_name: listingData?.rider?.map((rider, key) => {
         let comma = ridersCount - 1 !== key ? ", " : "";
         return rider.full_name + comma;
       }),
-      status: listingData?.status?.status || "Pending", // Defaulting to "In Transit" if no status available
+      status: listingData?.status?.status || "Pending",
     });
   });
 

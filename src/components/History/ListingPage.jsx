@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery } from "react-query";
 import DataTable from "../Common/DataTable/DataTable";
 import { previousOrders } from "../../services/subscriptionOrders/subscriptionService";
@@ -10,10 +10,40 @@ const ListingPage = () => {
     previousOrders
   );
   const navigate = useNavigate();
+  const [filteredDataCount, setFilteredDataCount] = useState(null);
+  const [totalDataCount, setTotalDataCount] = useState(0);
+
+  useEffect(() => {
+    if (data && data.data && data.data.data) {
+      setTotalDataCount(data.data.data.length);
+      setFilteredDataCount(data.data.data.length);
+    }
+  }, [data]);
 
   if (isError) {
     return navigate("/login");
   }
+
+  let historyData = [];
+  data?.data?.data.map((listingData) => {
+    const ridersCount = listingData?.rider?.length;
+    const truncatedOrderId = listingData?.order?.uid.slice(-8); // Truncate to last 8 characters
+    historyData.push({
+      order_id: truncatedOrderId,
+      customer_name: listingData?.order?.full_name,
+      society_name: listingData?.society?.name,
+      delivery: listingData?.order?.line_1 + " " + listingData?.order?.line_2,
+      agent_name: listingData?.rider?.map((rider, key) => {
+        let comma = ridersCount - 1 !== key ? ", " : "";
+        return rider.full_name + comma;
+      }),
+      status: listingData?.status?.status || "Pending",
+    });
+  });
+
+  const handleFilteredDataCount = (filteredData) => {
+    setFilteredDataCount(filteredData.length);
+  };
 
   const uniqueSocietyNames = Array.from(
     new Set(data?.data?.data.map((listingData) => listingData?.society?.name))
@@ -30,23 +60,6 @@ const ListingPage = () => {
       data?.data?.data.map((listingData) => listingData?.status?.del_status)
     )
   );
-
-  let historyData = [];
-  data?.data?.data.map((listingData) => {
-    const ridersCount = listingData?.rider?.length;
-    historyData.push({
-      order_id: listingData?.order?.uid,
-      customer_name: listingData?.order?.full_name,
-      society_name: listingData?.society?.name,
-      delivery: listingData?.order?.line_1 + " " + listingData?.order?.line_2,
-      // align: "center",
-      agent_name: listingData?.rider?.map((rider, key) => {
-        let comma = ridersCount - 1 !== key ? ", " : "";
-        return rider.full_name + comma;
-      }),
-      status: listingData?.status?.status || "In Transit", // Defaulting to "In Transit" if no status available
-    });
-  });
 
   const HistoryHeaders = [
     {
@@ -68,7 +81,13 @@ const ListingPage = () => {
         text: societyName,
         value: societyName,
       })),
-      onFilter: (value, record) => record.society_name === value,
+      onFilter: (value, record) => {
+        const filteredData = historyData.filter(
+          (item) => item.society_name === value
+        );
+        handleFilteredDataCount(filteredData);
+        return record.society_name === value;
+      },
     },
     {
       title: "DELIVERY ADDRESS",
@@ -83,7 +102,13 @@ const ListingPage = () => {
         text: agentName,
         value: agentName,
       })),
-      onFilter: (value, record) => record.agent_name.includes(value),
+      onFilter: (value, record) => {
+        const filteredData = historyData.filter((item) =>
+          item.agent_name.includes(value)
+        );
+        handleFilteredDataCount(filteredData);
+        return record.agent_name.includes(value);
+      },
       width: 200,
     },
     {
@@ -94,17 +119,34 @@ const ListingPage = () => {
         text: status,
         value: status,
       })),
-      onFilter: (value, record) => record.status === value,
+      onFilter: (value, record) => {
+        const filteredData = historyData.filter(
+          (item) => item.status === value
+        );
+        setFilteredDataCount(filteredData.length);
+        return record.status === value;
+      },
     },
   ];
 
   return (
     <div>
+      <style>
+        {`
+        .ant-table-thead th {
+          vertical-align: bottom; // Aligning titles at the bottom
+        }
+      `}
+      </style>
+      <div className="float-right font-medium">
+        Showing Results: {filteredDataCount}/{totalDataCount}
+      </div>
       <DataTable
         data={historyData}
         columns={HistoryHeaders}
         pagination={false}
         loading={isLoading}
+        onFilteredDataChange={handleFilteredDataCount}
       />
     </div>
   );

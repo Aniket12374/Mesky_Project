@@ -184,10 +184,17 @@ const AreaMap = () => {
 
   return (
     <>
+      <style>
+        {`
+        .ant-table-thead th {
+          vertical-align: bottom; // Aligning titles at the bottom
+        }
+      `}
+      </style>
       <Table columns={columns} dataSource={data} loading={isLoading} />
       <Modal
         title="Select Agents"
-        visible={visible}
+        open={visible}
         onOk={handleOk}
         onCancel={handleCancel}
       >

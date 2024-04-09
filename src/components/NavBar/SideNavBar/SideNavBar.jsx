@@ -23,8 +23,8 @@ const SidebarNavItems = [
     id: 2,
     name: "Area Mapping",
     path: "AreaMapping",
-    icon1: Images["ProductLogoColored"],
-    icon2: Images["ProductLogo"],
+    icon1: Images["AreaMapColoredLogo"],
+    icon2: Images["AreaMapLogo"],
   },
   // {
   //   id: 3,

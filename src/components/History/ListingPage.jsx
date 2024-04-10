@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery } from "react-query";
 import DataTable from "../Common/DataTable/DataTable";
 import { previousOrders } from "../../services/subscriptionOrders/subscriptionService";
@@ -12,6 +12,15 @@ const ListingPage = () => {
     ["previousOrders", currentPage],
     () => previousOrders(currentPage)
   );
+  const [filteredDataCount, setFilteredDataCount] = useState(null);
+  const [totalDataCount, setTotalDataCount] = useState(0);
+
+  useEffect(() => {
+    if (data && data.data && data.data.data) {
+      setTotalDataCount(data.data.data.length);
+      setFilteredDataCount(data.data.data.length);
+    }
+  }, [data]);
 
   if (isError) {
     return navigate("/login");

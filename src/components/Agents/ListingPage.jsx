@@ -140,7 +140,7 @@ const ListingPage = ({ setShowAgentCreation }) => {
           />
           <div className="flex justify-end px-4 py-2">
             <Pagination
-              current={1}
+              current={currentPage}
               total={totalDataCount}
               onChange={handlePageChange}
               showSizeChanger={false}

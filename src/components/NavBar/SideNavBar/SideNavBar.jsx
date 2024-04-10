@@ -5,22 +5,29 @@ import { Image } from "antd";
 import * as Images from "../../../assets/sidebar";
 
 const SidebarNavItems = [
-  // {
-  //   id: 1,
-  //   name: "Dashboard",
-  //   path: "dashboard",
-  //   icon1: Images["DashboardColored"],
-  //   icon2: Images["Dashboard"],
-  // },
   {
     id: 1,
+    name: "Dashboard",
+    path: "dashboard",
+    icon1: Images["DashboardColored"],
+    icon2: Images["Dashboard"],
+  },
+  {
+    id: 2,
     name: "Subscription",
     path: "subscription",
     icon1: Images["DashboardColored"],
     icon2: Images["Dashboard"],
   },
   {
-    id: 2,
+    id: 3,
+    name: "Routing",
+    path: "routing",
+    icon1: Images["RoutingColoredLogo"],
+    icon2: Images["ProductLogo"],
+  },
+  {
+    id: 4,
     name: "Area Mapping",
     path: "AreaMapping",
     icon1: Images["AreaMapColoredLogo"],

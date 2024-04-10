@@ -4,7 +4,7 @@ import { useQuery } from "react-query";
 import { presentOrders } from "../../services/subscriptionOrders/subscriptionService";
 import { useNavigate } from "react-router-dom";
 
-const ListingPage = ({ setTotalCount }) => {
+const ListingPage = () => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -12,7 +12,6 @@ const ListingPage = ({ setTotalCount }) => {
     ["presentOrders", currentPage],
     () => presentOrders(currentPage)
   );
-  setTotalCount(data?.data?.totalCount);
 
   if (isError) {
     return navigate("/login");

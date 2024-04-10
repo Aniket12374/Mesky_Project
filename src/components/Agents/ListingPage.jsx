@@ -13,10 +13,11 @@ const colorStatus = {
 
 const ListingPage = ({ setShowAgentCreation }) => {
   const [selectedRowData, setSelectedRowData] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const { data, isLoading, refetch, isError } = useQuery(
-    "ridersList",
-    ridersList
+    ["ridersList", currentPage],
+    () => ridersList(currentPage)
   );
 
   const navigate = useNavigate();
@@ -86,6 +87,17 @@ const ListingPage = ({ setShowAgentCreation }) => {
     },
   ];
 
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const paginationConfig = {
+    current: currentPage,
+    pageSize: 10,
+    total: data?.data?.totalCount,
+    onChange: handlePageChange,
+  };
+
   return (
     <div>
       {selectedRowData ? (
@@ -106,7 +118,6 @@ const ListingPage = ({ setShowAgentCreation }) => {
           <DataTable
             data={riders}
             columns={HistoryHeaders}
-            pagination={false}
             loading={isLoading}
             onRow={(record, rowIndex) => {
               return {
@@ -116,6 +127,7 @@ const ListingPage = ({ setShowAgentCreation }) => {
                 },
               };
             }}
+            pagination={paginationConfig}
           />
         </div>
       )}

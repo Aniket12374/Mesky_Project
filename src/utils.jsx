@@ -2,10 +2,9 @@ import React from "react";
 import { LoadingOutlined } from "@ant-design/icons";
 import { Spin } from "antd";
 
-export const Header = ({ text, count, className = "" }) => (
+export const Header = ({ text, className = "" }) => (
   <div className={`flex justify-between items-center ${className}`}>
     <div className="text-3xl font-semibold ">{text}</div>
-    {count && <div className="text-xl font-semibold px-4">{count}</div>}
   </div>
 );
 

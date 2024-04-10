@@ -1,15 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import { useQuery } from "react-query";
 import DataTable from "../Common/DataTable/DataTable";
 import { previousOrders } from "../../services/subscriptionOrders/subscriptionService";
 import { useNavigate } from "react-router-dom";
 
 const ListingPage = () => {
-  const { data, isLoading, isError } = useQuery(
-    "previousOrders",
-    previousOrders
-  );
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const { data, isLoading, isError } = useQuery(
+    ["previousOrders", currentPage],
+    () => previousOrders(currentPage)
+  );
 
   if (isError) {
     return navigate("/login");
@@ -98,12 +100,23 @@ const ListingPage = () => {
     },
   ];
 
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const paginationConfig = {
+    current: currentPage,
+    pageSize: 10,
+    total: data?.data?.totalCount,
+    onChange: handlePageChange,
+  };
+
   return (
     <div>
       <DataTable
         data={historyData}
         columns={HistoryHeaders}
-        pagination={false}
+        pagination={paginationConfig}
         loading={isLoading}
       />
     </div>

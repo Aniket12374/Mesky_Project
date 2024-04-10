@@ -6,7 +6,6 @@ import dayjs from "dayjs";
 import { useState } from "react";
 
 const Subscription = () => {
-  const [totalCount, setTotalCount] = useState(0);
   const currentDate = dayjs();
   let formattedDate;
 
@@ -18,11 +17,8 @@ const Subscription = () => {
 
   return (
     <Layout>
-      <Header
-        text={`Orders For ${formattedDate}`}
-        count={`TotalCount ${totalCount}`}
-      />
-      <ListingPage setTotalCount={setTotalCount} />
+      <Header text={`Orders For ${formattedDate}`} />
+      <ListingPage />
     </Layout>
   );
 };

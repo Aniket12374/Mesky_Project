@@ -128,7 +128,7 @@ const ListingPage = () => {
   ];
 
   const handlePageChange = (page) => {
-    setCurrentPage(page);
+    setCurrentPage(page)
   };
 
   const paginationConfig = {

@@ -14,6 +14,8 @@ import WarehouseLogo from "./warehouse-logo.svg";
 import WarehouseColored from "./warehouse-colored.svg";
 import InventoryLogo from "./inventory.png";
 import InventoryColoredLogo from "./inventory-colored.png";
+import AreaMapColoredLogo from "./area-mapping-logo-colored.png";
+import AreaMapLogo from "./area-mapping-logo.png";
 
 export {
   CampaignLogo,
@@ -27,9 +29,11 @@ export {
   SupportLogo,
   SupportLogoColored,
   ProductLogo,
+  AreaMapLogo,
   ProductLogoColored,
+  AreaMapColoredLogo,
   OrdersLogo,
   OrdersLogoColored,
   InventoryLogo,
-  InventoryColoredLogo
+  InventoryColoredLogo,
 };

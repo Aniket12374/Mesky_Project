@@ -100,6 +100,13 @@ const ListingPage = ({ setShowAgentCreation }) => {
 
   return (
     <div>
+      <style>
+        {`
+        .ant-table-thead th {
+          vertical-align: bottom; // Aligning titles at the bottom
+        }
+      `}
+      </style>
       {selectedRowData ? (
         <AgentDetail
           rowData={selectedRowData}

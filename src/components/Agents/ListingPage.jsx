@@ -5,6 +5,7 @@ import { useQuery } from "react-query";
 import { ridersList } from "../../services/riders/riderService";
 import Button from "../Common/Button";
 import { useNavigate } from "react-router-dom";
+import { Pagination } from "antd";
 
 const colorStatus = {
   AVAILABLE: "#9c29c1",
@@ -19,6 +20,7 @@ const ListingPage = ({ setShowAgentCreation }) => {
     ["ridersList", currentPage],
     () => ridersList(currentPage)
   );
+  const totalDataCount = data?.data?.totalCount;
 
   const navigate = useNavigate();
   if (isError) {
@@ -91,12 +93,12 @@ const ListingPage = ({ setShowAgentCreation }) => {
     setCurrentPage(page);
   };
 
-  const paginationConfig = {
-    current: currentPage,
-    pageSize: 10,
-    total: data?.data?.totalCount,
-    onChange: handlePageChange,
-  };
+  // const paginationConfig = {
+  //   current: currentPage,
+  //   pageSize: 10,
+  //   total: data?.data?.totalCount,
+  //   onChange: handlePageChange,
+  // };
 
   return (
     <div>
@@ -134,8 +136,16 @@ const ListingPage = ({ setShowAgentCreation }) => {
                 },
               };
             }}
-            pagination={paginationConfig}
+            // pagination={paginationConfig}
           />
+          <div className="flex justify-end px-4 py-2">
+            <Pagination
+              current={1}
+              total={totalDataCount}
+              onChange={handlePageChange}
+              showSizeChanger={false}
+            />
+          </div>
         </div>
       )}
     </div>

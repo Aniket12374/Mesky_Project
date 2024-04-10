@@ -3,6 +3,7 @@ import { useQuery } from "react-query";
 import DataTable from "../Common/DataTable/DataTable";
 import { previousOrders } from "../../services/subscriptionOrders/subscriptionService";
 import { useNavigate } from "react-router-dom";
+import { Pagination } from "antd";
 
 const ListingPage = () => {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ const ListingPage = () => {
 
   useEffect(() => {
     if (data && data.data && data.data.data) {
-      setTotalDataCount(data.data.data.length);
+      setTotalDataCount(data.data.totalCount);
       setFilteredDataCount(data.data.data.length);
     }
   }, [data]);
@@ -135,12 +136,12 @@ const ListingPage = () => {
     setCurrentPage(page);
   };
 
-  const paginationConfig = {
-    current: currentPage,
-    pageSize: 10,
-    total: data?.data?.totalCount,
-    onChange: handlePageChange,
-  };
+  // const paginationConfig = {
+  //   current: currentPage,
+  //   pageSize: 10,
+  //   total: data?.data?.totalCount,
+  //   onChange: handlePageChange,
+  // };
 
   return (
     <div>
@@ -157,10 +158,18 @@ const ListingPage = () => {
       <DataTable
         data={historyData}
         columns={HistoryHeaders}
-        pagination={paginationConfig}
+        // pagination={paginationConfig}
         loading={isLoading}
         onFilteredDataChange={handleFilteredDataCount}
       />
+      <div className="flex justify-end px-4 py-2">
+        <Pagination
+          current={1}
+          total={totalDataCount}
+          onChange={handlePageChange}
+          showSizeChanger={false}
+        />
+      </div>
     </div>
   );
 };

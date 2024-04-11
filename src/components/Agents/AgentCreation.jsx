@@ -14,7 +14,8 @@ const AgentCreation = ({ setShowAgentCreation }) => {
   const [socitiesList, setSocitiesList] = useState([]);
   const [uploadedFiles, setUploadedFiles] = useState({
     dl: false,
-    adhar: false,
+    adhar_front: false,
+    adhar_back: false,
     veh_n_pl_im: false,
     veh_rc: false,
     veh_is: false,
@@ -49,7 +50,8 @@ const AgentCreation = ({ setShowAgentCreation }) => {
       "full_name",
       "mobile_number",
       "dl",
-      "adhar",
+      "adhar_front",
+      "adhar_back",
       "veh_n_pl_im",
       "veh_rc",
       "veh_is",
@@ -176,7 +178,7 @@ const AgentCreation = ({ setShowAgentCreation }) => {
               <div>Vehicle Insurance</div>
               <div>Vehicle (PUC) Pollution Check</div>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-3 w-2/5">
               <div className="text-lg text-center font-medium">DOCUMENT</div>
               <div className="upload-container">
                 <label
@@ -196,22 +198,41 @@ const AgentCreation = ({ setShowAgentCreation }) => {
                 />
               </div>
 
-              <div className="upload-container">
-                <label
-                  htmlFor="aadhar-card"
-                  className={`w-full block text-center rounded-2xl ${
-                    uploadedFiles.adhar ? "bg-red-500" : "bg-[#df4584]"
-                  } shadow-md shadow-slate-400 text-white py-[2px] text-base`}
-                >
-                  {uploadedFiles.adhar ? "Uploaded" : "Upload"}
-                </label>
-                <input
-                  type="file"
-                  id="aadhar-card"
-                  name="aadhar-card"
-                  onChange={(e) => handleUpload(e, "adhar")}
-                  hidden
-                />
+              <div className="flex justify-between">
+                <div className="upload-container w-[49%]">
+                  <label
+                    htmlFor="aadhar-card-front"
+                    className={`w-full block text-center rounded-2xl ${
+                      uploadedFiles.adhar_front ? "bg-red-500" : "bg-[#df4584]"
+                    } shadow-md shadow-slate-400 text-white py-[2px] text-base`}
+                  >
+                    {uploadedFiles.adhar_front ? "Uploaded" : "Upload"}
+                  </label>
+                  <input
+                    type="file"
+                    id="aadhar-card-front"
+                    name="aadhar-card-front"
+                    onChange={(e) => handleUpload(e, "adhar_front")}
+                    hidden
+                  />
+                </div>
+                <div className="upload-container w-[49%]">
+                  <label
+                    htmlFor="aadhar-card-back"
+                    className={`w-full block text-center rounded-2xl ${
+                      uploadedFiles.adhar_back ? "bg-red-500" : "bg-[#df4584]"
+                    } shadow-md shadow-slate-400 text-white py-[2px] text-base`}
+                  >
+                    {uploadedFiles.adhar_back ? "Uploaded" : "Upload"}
+                  </label>
+                  <input
+                    type="file"
+                    id="aadhar-card-back"
+                    name="aadhar-card-back"
+                    onChange={(e) => handleUpload(e, "adhar_back")}
+                    hidden
+                  />
+                </div>
               </div>
               <div className="upload-container">
                 <label

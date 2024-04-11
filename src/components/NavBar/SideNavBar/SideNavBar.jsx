@@ -16,15 +16,15 @@ const SidebarNavItems = [
     id: 2,
     name: "Subscription",
     path: "subscription",
-    icon1: Images["DashboardColored"],
-    icon2: Images["Dashboard"],
+    icon1: Images["ShoppingColoredLogo"],
+    icon2: Images["ShoppingLogo"],
   },
   {
     id: 3,
     name: "Routing",
     path: "routing",
     icon1: Images["RoutingColoredLogo"],
-    icon2: Images["ProductLogo"],
+    icon2: Images["RoutingLogo"],
   },
   {
     id: 4,

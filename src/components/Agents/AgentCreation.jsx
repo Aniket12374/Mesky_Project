@@ -44,23 +44,28 @@ const AgentCreation = ({ setShowAgentCreation }) => {
   };
 
   const handleSaveAgent = () => {
-    const fields = [...expDts, ...issueDts];
-    fields.push(
+    // Define required fields including documents
+    const requiredFields = [
+      "full_name",
+      "mobile_number",
       "dl",
       "adhar",
       "veh_n_pl_im",
       "veh_rc",
-      "poll_ch",
       "veh_is",
-      "mobile_number",
-      "full_name",
-      "society"
-    );
+      "poll_ch",
+    ];
 
-    if (Object.keys(agent).length < fields.length) {
-      return toast.error("Please fill all the fields");
+    // Check if required fields are filled
+    const missingFields = requiredFields.filter((field) => !agent[field]);
+
+    // If any required fields are missing, show error message
+    if (missingFields.length > 0) {
+      const errorMessage = "Please fill all the required fields.";
+      return toast.error(errorMessage);
     }
 
+    // Save agent information
     addRider(agent)
       .then((res) => {
         toast.success("Saved successfully");

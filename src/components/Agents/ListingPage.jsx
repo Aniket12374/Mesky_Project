@@ -15,10 +15,11 @@ const colorStatus = {
 const ListingPage = ({ setShowAgentCreation }) => {
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [size, setSize] = useState(10);
 
   const { data, isLoading, refetch, isError } = useQuery(
-    ["ridersList", currentPage],
-    () => ridersList(currentPage)
+    ["ridersList", currentPage, size],
+    () => ridersList(currentPage, size)
   );
   const totalDataCount = data?.data?.totalCount;
 
@@ -93,12 +94,14 @@ const ListingPage = ({ setShowAgentCreation }) => {
     setCurrentPage(page);
   };
 
-  // const paginationConfig = {
-  //   current: currentPage,
-  //   pageSize: 10,
-  //   total: data?.data?.totalCount,
-  //   onChange: handlePageChange,
-  // };
+  const pageSizeOptions = Array.from(
+    { length: Math.ceil(totalDataCount / 10) },
+    (_, index) => `${(index + 1) * 10}`
+  );
+
+  const handlePageSizeChange = (current, page) => {
+    setSize(page);
+  };
 
   return (
     <div>
@@ -142,8 +145,13 @@ const ListingPage = ({ setShowAgentCreation }) => {
             <Pagination
               current={currentPage}
               total={totalDataCount}
+              showTotal={(total, range) =>
+                `${range[0]}-${range[1]} of ${totalDataCount} items`
+              }
               onChange={handlePageChange}
-              showSizeChanger={false}
+              showSizeChanger={true}
+              pageSizeOptions={pageSizeOptions}
+              onShowSizeChange={handlePageSizeChange}
             />
           </div>
         </div>

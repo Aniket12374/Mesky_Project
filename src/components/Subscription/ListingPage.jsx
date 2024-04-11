@@ -8,10 +8,11 @@ import { Pagination } from "antd";
 const ListingPage = () => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
+  const [size, setSize] = useState(10);
 
   const { data, isLoading, isError } = useQuery(
-    ["presentOrders", currentPage],
-    () => presentOrders(currentPage)
+    ["presentOrders", currentPage, size],
+    () => presentOrders(currentPage, size)
   );
   const [filteredDataCount, setFilteredDataCount] = useState(null);
   const [totalDataCount, setTotalDataCount] = useState(0);
@@ -176,18 +177,14 @@ const ListingPage = () => {
     setCurrentPage(page);
   };
 
-  // const handlePageSizeChange = (size) => {
-  //   setPageSize(size);
-  //   setCurrentPage(1);
-  // };
+  const pageSizeOptions = Array.from(
+    { length: Math.ceil(totalDataCount / 10) },
+    (_, index) => `${(index + 1) * 10}`
+  );
 
-  // const paginationConfig = {
-  //   current: currentPage,
-  //   pageSize: pageSize,
-  //   total: totalDataCount,
-  //   onChange: handlePageChange,
-  //   onShowSizeChange: handlePageSizeChange,
-  // };
+  const handlePageSizeChange = (current, page) => {
+    setSize(page);
+  };
 
   return (
     <div>
@@ -213,8 +210,13 @@ const ListingPage = () => {
         <Pagination
           current={currentPage}
           total={totalDataCount}
+          showTotal={(total, range) =>
+            `${range[0]}-${range[1]} of ${totalDataCount} items`
+          }
           onChange={handlePageChange}
-          showSizeChanger={false}
+          showSizeChanger={true}
+          pageSizeOptions={pageSizeOptions}
+          onShowSizeChange={handlePageSizeChange}
         />
       </div>
     </div>

@@ -1,9 +1,8 @@
 import { httpVendor } from "../api-client";
 
-export const ridersList = (page = 1) => {
-  const pageSize = 10;
-  const start = (page - 1) * pageSize;
-  const end = start + pageSize;
+export const ridersList = (page = 1,size=10) => {
+   const start = (page - 1) * size;
+  const end = start + size;
   return httpVendor.get(
     `/api/delivery/portal/riders/list?_start=${start}&_end=${end}`
   );

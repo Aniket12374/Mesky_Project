@@ -1,13 +1,17 @@
 import { httpVendor } from "../api-client";
 
-export const presentOrders = () => {
+export const presentOrders = (page = 1, size = 10) => {
+  const start = (page - 1) * size;
+  const end = start + size;
   return httpVendor.get(
-    "/api/delivery/portal/subscription/orders?_start=0&_end=200&is_tom_data=true"
+    `/api/delivery/portal/subscription/orders?_start=${start}&_end=${end}&is_tom_data=true`
   );
 };
 
-export const previousOrders = () => {
+export const previousOrders = (page = 1, size = 10) => {
+  const start = (page - 1) * size;
+  const end = start + size;
   return httpVendor.get(
-    "api/delivery/portal/subscription/orders?_start=0&_end=200&is_tom_data=false"
+    `api/delivery/portal/subscription/orders?_start=${start}&_end=${end}&is_tom_data=false`
   );
 };

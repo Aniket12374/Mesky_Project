@@ -1,18 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import DataTable from "../Common/DataTable/DataTable";
 import { useQuery } from "react-query";
 import { presentOrders } from "../../services/subscriptionOrders/subscriptionService";
 import { useNavigate } from "react-router-dom";
+import { Pagination } from "antd";
 
 const ListingPage = () => {
-  const { data, isLoading, isError } = useQuery("presentOrders", presentOrders);
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [size, setSize] = useState(10);
+
+  const { data, isLoading, isError } = useQuery(
+    ["presentOrders", currentPage, size],
+    () => presentOrders(currentPage, size)
+  );
   const [filteredDataCount, setFilteredDataCount] = useState(null);
   const [totalDataCount, setTotalDataCount] = useState(0);
 
   useEffect(() => {
     if (data && data.data && data.data.data) {
-      setTotalDataCount(data.data.data.length);
+      setTotalDataCount(data.data.totalCount);
       setFilteredDataCount(data.data.data.length);
     }
   }, [data]);
@@ -166,6 +173,19 @@ const ListingPage = () => {
     },
   ];
 
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const pageSizeOptions = Array.from(
+    { length: Math.ceil(totalDataCount / 10) },
+    (_, index) => `${(index + 1) * 10}`
+  );
+
+  const handlePageSizeChange = (current, page) => {
+    setSize(page);
+  };
+
   return (
     <div>
       <style>
@@ -183,9 +203,22 @@ const ListingPage = () => {
         data={historyData}
         loading={isLoading}
         columns={HistoryHeaders}
-        pagination={false}
+        // pagination={paginationConfig}
         onFilteredDataChange={handleFilteredDataCount}
       />
+      <div className="flex justify-end px-4 py-2">
+        <Pagination
+          current={currentPage}
+          total={totalDataCount}
+          showTotal={(total, range) =>
+            `${range[0]}-${range[1]} of ${totalDataCount} items`
+          }
+          onChange={handlePageChange}
+          showSizeChanger={true}
+          pageSizeOptions={pageSizeOptions}
+          onShowSizeChange={handlePageSizeChange}
+        />
+      </div>
     </div>
   );
 };

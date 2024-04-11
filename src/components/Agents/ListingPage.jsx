@@ -5,6 +5,7 @@ import { useQuery } from "react-query";
 import { ridersList } from "../../services/riders/riderService";
 import Button from "../Common/Button";
 import { useNavigate } from "react-router-dom";
+import { Pagination } from "antd";
 
 const colorStatus = {
   AVAILABLE: "#9c29c1",
@@ -13,11 +14,14 @@ const colorStatus = {
 
 const ListingPage = ({ setShowAgentCreation }) => {
   const [selectedRowData, setSelectedRowData] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [size, setSize] = useState(10);
 
   const { data, isLoading, refetch, isError } = useQuery(
-    "ridersList",
-    ridersList
+    ["ridersList", currentPage, size],
+    () => ridersList(currentPage, size)
   );
+  const totalDataCount = data?.data?.totalCount;
 
   const navigate = useNavigate();
   if (isError) {
@@ -86,6 +90,19 @@ const ListingPage = ({ setShowAgentCreation }) => {
     },
   ];
 
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const pageSizeOptions = Array.from(
+    { length: Math.ceil(totalDataCount / 10) },
+    (_, index) => `${(index + 1) * 10}`
+  );
+
+  const handlePageSizeChange = (current, page) => {
+    setSize(page);
+  };
+
   return (
     <div>
       <style>
@@ -113,7 +130,6 @@ const ListingPage = ({ setShowAgentCreation }) => {
           <DataTable
             data={riders}
             columns={HistoryHeaders}
-            pagination={false}
             loading={isLoading}
             onRow={(record, rowIndex) => {
               return {
@@ -123,7 +139,21 @@ const ListingPage = ({ setShowAgentCreation }) => {
                 },
               };
             }}
+            // pagination={paginationConfig}
           />
+          <div className="flex justify-end px-4 py-2">
+            <Pagination
+              current={currentPage}
+              total={totalDataCount}
+              showTotal={(total, range) =>
+                `${range[0]}-${range[1]} of ${totalDataCount} items`
+              }
+              onChange={handlePageChange}
+              showSizeChanger={true}
+              pageSizeOptions={pageSizeOptions}
+              onShowSizeChange={handlePageSizeChange}
+            />
+          </div>
         </div>
       )}
     </div>

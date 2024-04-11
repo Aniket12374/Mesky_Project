@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Table } from "antd";
 import PropTypes from "prop-types";
@@ -32,40 +32,42 @@ export const DataTable = ({
     });
 
   return (
-    <div className="antd-table mt-5 mr-5">
-      <Table
-        className=""
-        onRow={(i) => ({
-          onClick: (e) => {
-            if (
-              e.target.localName === "button" ||
-              e.target.localName === "img" ||
-              e.target.classList.value === "ant-switch-inner" ||
-              e.target.classList.value === "ant-switch-handle" ||
-              e.target.classList.value.includes("non-redirectable")
-            ) {
-              e.preventDefault();
-            } else {
-              navigateTo && navigate(`${navigateTo}${i.id}`);
+    <>
+      <div className="antd-table mt-5 mr-5">
+        <Table
+          className=""
+          onRow={(i) => ({
+            onClick: (e) => {
+              if (
+                e.target.localName === "button" ||
+                e.target.localName === "img" ||
+                e.target.classList.value === "ant-switch-inner" ||
+                e.target.classList.value === "ant-switch-handle" ||
+                e.target.classList.value.includes("non-redirectable")
+              ) {
+                e.preventDefault();
+              } else {
+                navigateTo && navigate(`${navigateTo}${i.id}`);
+              }
+            },
+          })}
+          columns={columns}
+          dataSource={data}
+          size={tableSize}
+          pagination={pagination} 
+          rowSelection={
+            selectionType && {
+              ...rowSelection,
+              type: selectionType,
             }
-          },
-        })}
-        columns={columns}
-        dataSource={data}
-        size={tableSize}
-        pagination={pagination}
-        rowSelection={
-          selectionType && {
-            ...rowSelection,
-            type: selectionType,
           }
-        }
-        loading={loading}
-        scroll={scroll ? scroll : ""}
-        onChange={onChange}
-        {...OtherProps}
-      />
-    </div>
+          loading={loading}
+          scroll={scroll ? scroll : ""}
+          onChange={onChange}
+          {...OtherProps}
+        />
+      </div>
+    </>
   );
 };
 
@@ -73,7 +75,7 @@ DataTable.propTypes = {
   data: PropTypes.array,
   columns: PropTypes.array,
   navigateTo: PropTypes.string,
-  pagination: PropTypes.bool,
+  pagination: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]), 
   checkbox: PropTypes.bool,
   onClick: PropTypes.func,
   tableSize: PropTypes.string,

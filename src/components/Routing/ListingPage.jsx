@@ -1,39 +1,41 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SearchOutlined } from "@ant-design/icons";
 import { Button, Input, Select, Space, Table } from "antd";
 import Highlighter from "react-highlight-words";
+import { routingStats } from "../../services/routing/RoutingService";
 
-const data = [
-  {
-    key: "1",
-    name: "John Brown",
-    age: 32,
-    address: "New York No. 1 Lake Park",
-  },
-  {
-    key: "2",
-    name: "Joe Black",
-    age: 42,
-    address: "London No. 1 Lake Park",
-  },
-  {
-    key: "3",
-    name: "Jim Green",
-    age: 32,
-    address: "Sydney No. 1 Lake Park",
-  },
-  {
-    key: "4",
-    name: "Jim Red",
-    age: 32,
-    address: "London No. 2 Lake Park",
-  },
-];
+import { mappingList } from "../../services/areaMapping/MappingService";
 
 const ListingPage = () => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
+  const [tableData, setTableData] = useState([]);
+  const [allRiders, setAllRiders] = useState([]);
   const searchInput = useRef(null);
+
+  useEffect(() => {
+    // Fetch data when component mounts
+    async function fetchData() {
+      try {
+        const response = await routingStats();
+        setTableData(response.data); // Assuming your API response contains the data array
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
+    fetchData();
+
+    // Fetch all riders data
+    async function fetchAllRiders() {
+      try {
+        const response = await mappingList();
+        setAllRiders(response.data.all_riders);
+      } catch (error) {
+        console.error("Error fetching all riders:", error);
+      }
+    }
+    fetchAllRiders();
+  }, []);
 
   const onChange = (value) => {
     console.log(`selected ${value}`);
@@ -114,46 +116,39 @@ const ListingPage = () => {
 
   const columns = [
     {
-      title: "Name",
+      title: "Society",
       dataIndex: "name",
       key: "name",
-      //   width: "30%",
-      ...getColumnSearchProps("name"),
+      width: "33%",
+      ...getColumnSearchProps("society"),
+    },
+
+    {
+      title: "Sector",
+      dataIndex: "sector",
+      key: "sector",
+      width: "33%",
+      ...getColumnSearchProps("sector"),
     },
     {
-      title: "Age",
-      dataIndex: "age",
-      key: "age",
-      //   width: "20%",
-      ...getColumnSearchProps("age"),
-    },
-    {
-      title: "Address",
-      dataIndex: "address",
-      key: "address",
-      ...getColumnSearchProps("address"),
-    },
-    {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
-      //   width: "30%",
-      ...getColumnSearchProps("name"),
-    },
-    {
-      title: "Age",
-      dataIndex: "age",
-      key: "age",
-      //   width: "20%",
-      ...getColumnSearchProps("age"),
-    },
-    {
-      title: "Address",
-      dataIndex: "address",
-      key: "address",
-      ...getColumnSearchProps("address"),
+      title: "Rank",
+      dataIndex: "rank",
+      key: "rank",
+      width: "33%",
+      ...getColumnSearchProps("rank"),
     },
   ];
+
+  // Duplicate columns for the second set
+  const columnsSecondSet = columns.map((col) => ({
+    ...col,
+    key: col.key + "2",
+  }));
+
+  // Split tableData into two subsets
+  const tableDataFirstSet = tableData.slice(0, 4);
+  const tableDataSecondSet = tableData.slice(4);
+
   const selectStyle = {
     width: "100%",
     fontWeight: "bold",
@@ -162,6 +157,13 @@ const ListingPage = () => {
 
   return (
     <div>
+      <style>
+        {`
+        .ant-table-thead th {
+          vertical-align: bottom; // Aligning titles at the bottom
+        }
+      `}
+      </style>
       <div className="flex justify-end w-full">
         <div className="flex w-1/6 justify-evenly">
           <div className="rounded-2xl bg-[#DF4584] text-white px-4 py-1">
@@ -174,7 +176,6 @@ const ListingPage = () => {
       </div>
       <div className="w-1/5">
         <Select
-          //   className="w-full font-bold"
           style={selectStyle}
           showSearch
           placeholder="Select A Rider"
@@ -182,23 +183,28 @@ const ListingPage = () => {
           onChange={onChange}
           onSearch={onSearch}
           filterOption={filterOption}
-          options={[
-            {
-              value: "jack",
-              label: "Jack",
-            },
-            {
-              value: "lucy",
-              label: "Lucy",
-            },
-            {
-              value: "tom",
-              label: "Tom",
-            },
-          ]}
+          options={allRiders.map((rider) => ({
+            value: rider.id,
+            label: rider.full_name,
+          }))}
         />
       </div>
-      <Table columns={columns} dataSource={data} />
+      <div className="flex w-full">
+        <div className="w-1/2">
+          <Table
+            columns={columns}
+            dataSource={tableDataFirstSet}
+            pagination={false}
+          />
+        </div>
+        <div className="w-1/2">
+          <Table
+            columns={columnsSecondSet}
+            dataSource={tableDataSecondSet}
+            pagination={false}
+          />
+        </div>
+      </div>
     </div>
   );
 };

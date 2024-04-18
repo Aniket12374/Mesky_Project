@@ -4,6 +4,6 @@ export const riderInfo = (data) => {
   return httpVendor.post("/api/delivery/portal/ranking", data);
 };
 
-export const routingStats = () => {
-  return httpVendor.get("/api/delivery/portal/ranking?rider_id=2");
+export const routingStats = (id = null) => {
+  return httpVendor.get("/api/delivery/portal/ranking?rider_id=" + id);
 };

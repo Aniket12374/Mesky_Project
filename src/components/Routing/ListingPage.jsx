@@ -37,8 +37,9 @@ const ListingPage = () => {
     fetchAllRiders();
   }, []);
 
-  const onChange = (value) => {
-    console.log(`selected ${value}`);
+  const onChange = async (value) => {
+    const response = await routingStats(value);
+    setTableData(response.data);
   };
   const onSearch = (value) => {
     console.log("search:", value);
@@ -146,8 +147,8 @@ const ListingPage = () => {
   }));
 
   // Split tableData into two subsets
-  const tableDataFirstSet = tableData.slice(0, 4);
-  const tableDataSecondSet = tableData.slice(4);
+  const tableDataFirstSet = tableData.slice(0, 6);
+  const tableDataSecondSet = tableData.slice(6);
 
   const selectStyle = {
     width: "100%",

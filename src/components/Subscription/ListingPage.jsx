@@ -4,6 +4,8 @@ import { useQuery } from "react-query";
 import { presentOrders } from "../../services/subscriptionOrders/subscriptionService";
 import { useNavigate } from "react-router-dom";
 import { Pagination } from "antd";
+import { subscriptionPause } from "../../services/subscriptionOrders/subscriptionService";
+import toast from "react-hot-toast";
 
 const ListingPage = () => {
   const navigate = useNavigate();
@@ -16,7 +18,6 @@ const ListingPage = () => {
   );
   const [filteredDataCount, setFilteredDataCount] = useState(null);
   const [totalDataCount, setTotalDataCount] = useState(0);
-
   useEffect(() => {
     if (data && data.data && data.data.data) {
       setTotalDataCount(data.data.totalCount);
@@ -53,6 +54,7 @@ const ListingPage = () => {
     const ridersCount = listingData?.rider?.length;
     const truncatedOrderId = listingData?.order?.uid.slice(-8); // Truncate to last 8 characters
     historyData.push({
+      item_uid: listingData?.item_uid,
       order_id: truncatedOrderId,
       customer_name: listingData?.order?.full_name,
       society_name: listingData?.society?.name,
@@ -70,6 +72,17 @@ const ListingPage = () => {
 
   const handleFilteredDataCount = (filteredData) => {
     setFilteredDataCount(filteredData.length);
+  };
+
+  const handlePause = async (item_uid) => {
+    try {
+      const data = { item_uid };
+      const response = await subscriptionPause(data);
+
+      toast.success(response?.data.message);
+    } catch (error) {
+      toast.error(error);
+    }
   };
 
   const HistoryHeaders = [
@@ -170,6 +183,19 @@ const ListingPage = () => {
         setFilteredDataCount(filteredData.length);
         return record.status === value;
       },
+    },
+    {
+      title: "PAUSE ITEM",
+      key: "item_uid",
+      dataIndex: "item_uid",
+      render: (item_uid) => (
+        <button
+          className="bg-[#DF4584] rounded-2xl text-white p-2"
+          onClick={() => handlePause(item_uid)}
+        >
+          Pause
+        </button>
+      ),
     },
   ];
 

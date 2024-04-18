@@ -15,3 +15,7 @@ export const previousOrders = (page = 1, size = 10) => {
     `api/delivery/portal/subscription/orders?_start=${start}&_end=${end}&is_tom_data=false`
   );
 };
+
+export const subscriptionPause = (data) => {
+  return httpVendor.post("/api/delivery/portal/pause_item", data);
+};

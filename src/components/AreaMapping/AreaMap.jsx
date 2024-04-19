@@ -15,14 +15,10 @@ const AreaMap = () => {
   const [areaId, setAreaId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(null);
-  // console.log(localStorage.getItem("assignedRider"), "assignedRider");
-  // const [assignedRider, setAssignedRider] = useState(
-  //   localStorage.getItem("assignedRider") !== undefined
-  //     ? JSON.parse(localStorage.getItem("assignedRider"))
-  //     : null
-  // ); // Initialize assignedRider state with data from localStorage
 
-  const [assignedRider, setAssignedRider] = useState(null);
+  const [assignedRider, setAssignedRider] = useState(
+    JSON.parse(localStorage.getItem("assignedRider")) || null
+  ); // Initialize assignedRider state with data from localStorage
 
   useEffect(() => {
     mappingList()

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Table } from "antd";
 import PropTypes from "prop-types";
+import { CSVLink } from "react-csv";
 
 export const DataTable = ({
   data,
@@ -15,6 +16,7 @@ export const DataTable = ({
   tableSize = "middle",
   loading = false,
   scroll,
+  fileName = "Listing.csv",
   onChange = {},
   ...OtherProps
 }) => {
@@ -33,6 +35,13 @@ export const DataTable = ({
 
   return (
     <>
+      <CSVLink
+        filename={fileName}
+        data={data}
+        className="btn btn-primary p-1 mt-2"
+      >
+        Export to CSV
+      </CSVLink>
       <div className="antd-table mt-5 mr-5">
         <Table
           className=""
@@ -54,7 +63,7 @@ export const DataTable = ({
           columns={columns}
           dataSource={data}
           size={tableSize}
-          pagination={pagination} 
+          pagination={pagination}
           rowSelection={
             selectionType && {
               ...rowSelection,
@@ -75,7 +84,7 @@ DataTable.propTypes = {
   data: PropTypes.array,
   columns: PropTypes.array,
   navigateTo: PropTypes.string,
-  pagination: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]), 
+  pagination: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
   checkbox: PropTypes.bool,
   onClick: PropTypes.func,
   tableSize: PropTypes.string,

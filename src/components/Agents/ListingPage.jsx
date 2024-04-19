@@ -129,6 +129,7 @@ const ListingPage = ({ setShowAgentCreation }) => {
           </div>
           <DataTable
             data={riders}
+            fileName="Agents_Listing.csv"
             columns={HistoryHeaders}
             loading={isLoading}
             onRow={(record, rowIndex) => {

@@ -15,6 +15,7 @@ const AreaMap = () => {
   const [areaId, setAreaId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(null);
+
   const [assignedRider, setAssignedRider] = useState(
     JSON.parse(localStorage.getItem("assignedRider")) || null
   ); // Initialize assignedRider state with data from localStorage

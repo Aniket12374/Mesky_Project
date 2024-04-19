@@ -274,6 +274,7 @@ const AgentDetail = ({
           data={historyData}
           columns={HistoryHeaders}
           pagination={false}
+          fileName={`${rowData?.agent_name}_Agent_Past_Trips.csv`}
         />
       </div>
     </div>

@@ -4,6 +4,8 @@ import { useQuery } from "react-query";
 import { presentOrders } from "../../services/subscriptionOrders/subscriptionService";
 import { useNavigate } from "react-router-dom";
 import { Pagination } from "antd";
+import { subscriptionPause } from "../../services/subscriptionOrders/subscriptionService";
+import toast from "react-hot-toast";
 
 const ListingPage = () => {
   const navigate = useNavigate();
@@ -16,7 +18,6 @@ const ListingPage = () => {
   );
   const [filteredDataCount, setFilteredDataCount] = useState(null);
   const [totalDataCount, setTotalDataCount] = useState(0);
-
   useEffect(() => {
     if (data && data.data && data.data.data) {
       setTotalDataCount(data.data.totalCount);
@@ -52,9 +53,14 @@ const ListingPage = () => {
   data?.data?.data.map((listingData) => {
     const ridersCount = listingData?.rider?.length;
     const truncatedOrderId = listingData?.order?.uid.slice(-8); // Truncate to last 8 characters
+    const customerName = listingData?.order?.full_name;
+    let arr = customerName.split(" ");
+    let name = arr.filter((x) => x !== "");
+    let finalCustomerName = name.reduce((x, acc) => x + " " + acc);
     historyData.push({
+      item_uid: listingData?.item_uid,
       order_id: truncatedOrderId,
-      customer_name: listingData?.order?.full_name,
+      customer_name: finalCustomerName,
       society_name: listingData?.society?.name,
       pincode: listingData?.order?.pincode,
       phone_number: listingData?.order?.mobile_number,
@@ -70,6 +76,17 @@ const ListingPage = () => {
 
   const handleFilteredDataCount = (filteredData) => {
     setFilteredDataCount(filteredData.length);
+  };
+
+  const handlePause = async (item_uid) => {
+    try {
+      const data = { item_uid };
+      const response = await subscriptionPause(data);
+
+      toast.success(response?.data.message);
+    } catch (error) {
+      toast.error(error);
+    }
   };
 
   const HistoryHeaders = [
@@ -171,6 +188,19 @@ const ListingPage = () => {
         return record.status === value;
       },
     },
+    {
+      title: "PAUSE ITEM",
+      key: "item_uid",
+      dataIndex: "item_uid",
+      render: (item_uid) => (
+        <button
+          className="bg-[#DF4584] rounded-2xl text-white p-2"
+          onClick={() => handlePause(item_uid)}
+        >
+          Pause
+        </button>
+      ),
+    },
   ];
 
   const handlePageChange = (page) => {
@@ -202,6 +232,7 @@ const ListingPage = () => {
       <DataTable
         data={historyData}
         loading={isLoading}
+        fileName="Subscription_Listing.csv"
         columns={HistoryHeaders}
         // pagination={paginationConfig}
         onFilteredDataChange={handleFilteredDataCount}

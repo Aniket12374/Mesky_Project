@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { SearchOutlined } from "@ant-design/icons";
 import { Button, Input, Select, Space, Table } from "antd";
 import Highlighter from "react-highlight-words";
+import { CSVLink } from "react-csv";
 import { routingStats } from "../../services/routing/RoutingService";
 
 import { mappingList } from "../../services/areaMapping/MappingService";

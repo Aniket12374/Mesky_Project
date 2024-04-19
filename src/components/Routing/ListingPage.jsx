@@ -14,26 +14,31 @@ const ListingPage = () => {
   const searchInput = useRef(null);
 
   useEffect(() => {
-    // Fetch data when component mounts
-    async function fetchData() {
+    // Fetch data for a specific rider when component mounts
+    async function fetchDataForRider(riderId) {
       try {
-        const response = await routingStats();
-        setTableData(response.data); // Assuming your API response contains the data array
+        const response = await routingStats(riderId);
+        setTableData(response.data); // Set the response data as table data
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     }
-    fetchData();
 
     // Fetch all riders data
     async function fetchAllRiders() {
       try {
         const response = await mappingList();
         setAllRiders(response.data.all_riders);
+        // Assuming you want to show the first rider's data by default
+        if (response.data.all_riders.length > 0) {
+          const defaultRiderId = response.data.all_riders[0].id;
+          fetchDataForRider(defaultRiderId);
+        }
       } catch (error) {
         console.error("Error fetching all riders:", error);
       }
     }
+
     fetchAllRiders();
   }, []);
 

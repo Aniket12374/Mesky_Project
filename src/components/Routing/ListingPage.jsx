@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { SearchOutlined } from "@ant-design/icons";
 import { Button, Input, Select, Space, Table } from "antd";
 import Highlighter from "react-highlight-words";
+import { CSVLink } from "react-csv";
 
 const data = [
   {
@@ -198,6 +199,13 @@ const ListingPage = () => {
           ]}
         />
       </div>
+      <CSVLink
+        filename="Routing_Listing.csv"
+        data={data}
+        className="btn btn-primary p-1 mt-2"
+      >
+        Export to CSV
+      </CSVLink>
       <Table columns={columns} dataSource={data} />
     </div>
   );

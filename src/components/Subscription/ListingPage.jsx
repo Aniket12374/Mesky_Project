@@ -228,6 +228,7 @@ const ListingPage = () => {
       <DataTable
         data={historyData}
         loading={isLoading}
+        fileName="Subscription_Listing.csv"
         columns={HistoryHeaders}
         // pagination={paginationConfig}
         onFilteredDataChange={handleFilteredDataCount}

@@ -163,6 +163,7 @@ const ListingPage = () => {
         // pagination={paginationConfig}
         loading={isLoading}
         onFilteredDataChange={handleFilteredDataCount}
+        fileName="History_Listing.csv"
       />
       <div className="flex justify-end px-4 py-2">
         <Pagination

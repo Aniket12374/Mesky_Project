@@ -53,10 +53,14 @@ const ListingPage = () => {
   data?.data?.data.map((listingData) => {
     const ridersCount = listingData?.rider?.length;
     const truncatedOrderId = listingData?.order?.uid.slice(-8); // Truncate to last 8 characters
+    const customerName = listingData?.order?.full_name;
+    let arr = customerName.split(" ");
+    let name = arr.filter((x) => x !== "");
+    let finalCustomerName = name.reduce((x, acc) => x + " " + acc);
     historyData.push({
       item_uid: listingData?.item_uid,
       order_id: truncatedOrderId,
-      customer_name: listingData?.order?.full_name,
+      customer_name: finalCustomerName,
       society_name: listingData?.society?.name,
       pincode: listingData?.order?.pincode,
       phone_number: listingData?.order?.mobile_number,

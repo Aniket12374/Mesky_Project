@@ -64,6 +64,8 @@ const ListingPage = () => {
       society_name: listingData?.society?.name,
       pincode: listingData?.order?.pincode,
       phone_number: listingData?.order?.mobile_number,
+      unit_qty: listingData?.order?.unit_quantity,
+      qty: listingData?.order?.quantity,
       sectors: listingData?.society?.sector,
       delivery: listingData?.order?.line_1 + " " + listingData?.order?.line_2,
       agent_name: listingData?.rider?.map((rider, key) => {
@@ -138,6 +140,7 @@ const ListingPage = () => {
       dataIndex: "phone_number",
       key: "phone_number",
     },
+
     {
       title: "SECTOR",
       dataIndex: "sectors",
@@ -150,6 +153,16 @@ const ListingPage = () => {
         handleFilteredDataCount(filteredData);
         return record.sectors === value;
       },
+    },
+    {
+      title: "UNIT QUANTITY",
+      dataIndex: "unit_qty",
+      key: "unit_qty",
+    },
+    {
+      title: "QUANTITY",
+      dataIndex: "qty",
+      key: "qty",
     },
     {
       title: "AGENT NAME",

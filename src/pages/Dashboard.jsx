@@ -5,6 +5,7 @@ import { useMainStore } from "../store/store";
 import { Header } from "../utils";
 import Cookies from "js-cookie";
 import DashboardDetail from "../components/Dashboard/DashboardDetail";
+import dayjs from "dayjs";
 
 const Dashboard = () => {
   const user = useMainStore((state) => state.user);
@@ -19,9 +20,18 @@ const Dashboard = () => {
     }
   }, [navigate]);
 
+  const currentDate = dayjs();
+  let formattedDate;
+
+  if (currentDate.hour() < 12) {
+    formattedDate = currentDate.format("MMMM DD, YYYY");
+  } else {
+    formattedDate = currentDate.add(1, "day").format("MMMM DD, YYYY");
+  }
+
   return (
     <Layout>
-      <Header text="Dashboard - April 1, 2024" />
+      <Header text={`Dashboard - ${formattedDate}`} />
       <DashboardDetail />
     </Layout>
   );

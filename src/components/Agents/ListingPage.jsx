@@ -41,20 +41,19 @@ const ListingPage = ({ setShowAgentCreation }) => {
       s_no: rider.id,
       phone_number: rider.mobile_number,
       assigned_area: areasList,
-      delivery_area: areasList,
+      verify: rider.r_verif,
       status: rider?.status,
-      align: "center",
       agent_name: rider?.full_name,
     });
   });
 
   const HistoryHeaders = [
-    {
-      title: "S.NO",
-      dataIndex: "s_no",
-      key: "s_no",
-      // width: 50,
-    },
+    // {
+    //   title: "S.NO",
+    //   dataIndex: "s_no",
+    //   key: "s_no",
+    //   // width: 50,
+    // },
     {
       title: "AGENTS",
       dataIndex: "agent_name",
@@ -74,9 +73,9 @@ const ListingPage = ({ setShowAgentCreation }) => {
       // width: 50,
     },
     {
-      title: "DELIVERY AREA",
-      dataIndex: "delivery_area",
-      key: "delivery_area",
+      title: "VERIFICATION",
+      dataIndex: "verify",
+      key: "verify",
       // width: 50,
     },
     {

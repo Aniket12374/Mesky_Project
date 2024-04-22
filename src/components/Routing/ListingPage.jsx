@@ -123,6 +123,13 @@ const ListingPage = () => {
 
   const columns = [
     {
+      title: "Sector",
+      dataIndex: "sector",
+      key: "sector",
+      width: "33%",
+      ...getColumnSearchProps("sector"),
+    },
+    {
       title: "Society",
       dataIndex: "name",
       key: "name",
@@ -130,13 +137,6 @@ const ListingPage = () => {
       ...getColumnSearchProps("society"),
     },
 
-    {
-      title: "Sector",
-      dataIndex: "sector",
-      key: "sector",
-      width: "33%",
-      ...getColumnSearchProps("sector"),
-    },
     {
       title: "Rank",
       dataIndex: "rank",
@@ -153,8 +153,8 @@ const ListingPage = () => {
   }));
 
   // Split tableData into two subsets
-  const tableDataFirstSet = tableData.slice(0, 6);
-  const tableDataSecondSet = tableData.slice(6);
+  const tableDataFirstSet = tableData.slice(0, 10);
+  const tableDataSecondSet = tableData.slice(10);
 
   const selectStyle = {
     width: "100%",

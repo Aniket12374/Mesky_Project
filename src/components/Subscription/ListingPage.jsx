@@ -64,8 +64,8 @@ const ListingPage = () => {
       society_name: listingData?.society?.name,
       pincode: listingData?.order?.pincode,
       phone_number: listingData?.order?.mobile_number,
-      unit_qty: listingData?.order?.unit_quantity,
-      qty: listingData?.order?.quantity,
+      unit_qty: listingData?.unit_quantity,
+      qty: listingData?.quantity,
       sectors: listingData?.society?.sector,
       delivery: listingData?.order?.line_1 + " " + listingData?.order?.line_2,
       agent_name: listingData?.rider?.map((rider, key) => {

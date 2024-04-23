@@ -1,4 +1,3 @@
-import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import classNames from "classnames";
 import { Image } from "antd";
@@ -33,27 +32,7 @@ const SidebarNavItems = [
     icon1: Images["AreaMapColoredLogo"],
     icon2: Images["AreaMapLogo"],
   },
-  // {
-  //   id: 3,
-  //   name: "Orders",
-  //   path: "orders",
-  //   icon1: Images["OrdersLogoColored"],
-  //   icon2: Images["OrdersLogo"],
-  // },
-  // {
-  //   id: 4,
-  //   name: "Inventory",
-  //   path: "inventory",
-  //   icon1: Images["InventoryColoredLogo"],
-  //   icon2: Images["InventoryLogo"],
-  // },
-  // {
-  //   id: 5,
-  //   name: "Warehouses",
-  //   path: "warehouses",
-  //   icon1: Images["WarehouseColored"],
-  //   icon2: Images["WarehouseLogo"],
-  // },
+
   {
     id: 6,
     name: "History",
@@ -62,28 +41,6 @@ const SidebarNavItems = [
     icon2: Images["OrdersLogo"],
   },
 
-  // {
-  //   id: 6,
-  //   name: "Posts",
-  //   path: "posts",
-  //   icon1: Images["PostLogoColored"],
-  //   icon2: Images["PostLogo"],
-  // },
-
-  // {
-  //   id: 7,
-  //   name: "Campaigns",
-  //   path: "campaigns",
-  //   icon1: Images["CampaignLogoColored"],
-  //   icon2: Images["CampaignLogo"],
-  // },
-  // {
-  //   id: 8,
-  //   name: "Support",
-  //   path: "support",
-  //   icon1: Images["SupportLogoColored"],
-  //   icon2: Images["SupportLogo"],
-  // },
   {
     id: 8,
     name: "Agents",

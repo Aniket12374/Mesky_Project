@@ -72,7 +72,7 @@ const ListingPage = () => {
         let comma = ridersCount - 1 !== key ? ", " : "";
         return rider.full_name + comma;
       }),
-      status: listingData?.status?.status || "Pending",
+      status: listingData?.status?.del_img || "Pending",
     });
   });
 
@@ -200,7 +200,15 @@ const ListingPage = () => {
         setFilteredDataCount(filteredData.length);
         return record.status === value;
       },
+      render: (status, record) => {
+        if (record.status === "Pending") {
+          return <img src={status} alt="Status" />;
+        } else {
+          return "Pending";
+        }
+      },
     },
+
     {
       title: "PAUSE ITEM",
       key: "item_uid",

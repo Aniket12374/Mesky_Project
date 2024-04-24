@@ -201,10 +201,10 @@ const ListingPage = () => {
         return record.status === value;
       },
       render: (status, record) => {
-        if (record.status === "Pending") {
-          return <img src={status} alt="Status" />;
+        if (!status || status === "Pending") {
+          return <span style={{ color: "red" }}>Pending</span>;
         } else {
-          return "Pending";
+          return <img src={record.status} alt="Status" />;
         }
       },
     },

@@ -14,12 +14,25 @@ const ListingPage = () => {
   const [allRiders, setAllRiders] = useState([]);
   const searchInput = useRef(null);
 
+  const mergeSame = (arr) => {
+    let mapData = new Map();
+    arr.map((x) => {
+      if (mapData.has(x.sector)) {
+        mapData.set(x.sector, [...mapData.get(x.sector), x]);
+      } else mapData.set(x.sector, [x]);
+    });
+
+    return Array.from(mapData.values()).flat();
+  };
+
   useEffect(() => {
     // Fetch data for a specific rider when component mounts
     async function fetchDataForRider(riderId) {
       try {
         const response = await routingStats(riderId);
-        setTableData(response.data); // Set the response data as table data
+        // Set the response data as table data
+        const data = mergeSame(response.data);
+        setTableData(data);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -45,7 +58,8 @@ const ListingPage = () => {
 
   const onChange = async (value) => {
     const response = await routingStats(value);
-    setTableData(response.data);
+    const finalData = mergeSame(response.data);
+    setTableData(finalData);
   };
   const onSearch = (value) => {
     console.log("search:", value);

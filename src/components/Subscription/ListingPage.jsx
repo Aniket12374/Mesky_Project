@@ -201,11 +201,11 @@ const ListingPage = () => {
             />
           );
         } else if (record.delStatus) {
-          // If del_status is present, show the status text
-          return record.delStatus;
+          // If del_status is present, show the status text in blue color
+          return <span style={{ color: "blue" }}>{record.delStatus}</span>;
         } else {
-          // If both are empty, show "Pending"
-          return "Pending";
+          // If both are empty, show "Pending" in red color
+          return <span style={{ color: "red" }}>PENDING</span>;
         }
       },
     },

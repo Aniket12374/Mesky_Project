@@ -72,7 +72,8 @@ const ListingPage = () => {
         let comma = ridersCount - 1 !== key ? ", " : "";
         return rider.full_name + comma;
       }),
-      status: listingData?.status?.del_img || "Pending",
+      delStatus: listingData?.status?.del_status,
+      delImg: listingData?.status?.del_img,
     });
   });
 
@@ -189,22 +190,22 @@ const ListingPage = () => {
       title: "STATUS",
       dataIndex: "status",
       key: "status",
-      filters: uniqueStatuses.map((status) => ({
-        text: status,
-        value: status,
-      })),
-      onFilter: (value, record) => {
-        const filteredData = historyData.filter(
-          (item) => item.status === value
-        );
-        setFilteredDataCount(filteredData.length);
-        return record.status === value;
-      },
-      render: (status, record) => {
-        if (!status || status === "Pending") {
-          return <span style={{ color: "red" }}>Pending</span>;
+      render: (text, record) => {
+        if (record.delImg) {
+          // If del_img is present, render the image
+          return (
+            <img
+              src={record.delImg}
+              alt="Delivery Image"
+              style={{ maxWidth: "100px" }}
+            />
+          );
+        } else if (record.delStatus) {
+          // If del_status is present, show the status text
+          return record.delStatus;
         } else {
-          return <img src={record.status} alt="Status" />;
+          // If both are empty, show "Pending"
+          return "Pending";
         }
       },
     },

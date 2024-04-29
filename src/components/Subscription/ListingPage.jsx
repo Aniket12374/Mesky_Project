@@ -126,8 +126,8 @@ const ListingPage = () => {
         text: customerName,
         value: customerName,
       })),
-      filterMode: "tree",
-      filterSearch: true,
+      // filterMode: "tree",
+      // filterSearch: true,
       onFilter: (value, record) => record.customer_name.indexOf(value) === 0,
     },
     {

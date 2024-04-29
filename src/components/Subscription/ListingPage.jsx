@@ -11,6 +11,7 @@ const ListingPage = () => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [size, setSize] = useState(10);
+  const [selectedFilters, setSelectedFilters] = useState({});
 
   const { data, isLoading, isError } = useQuery(
     ["presentOrders", currentPage, size],
@@ -21,7 +22,10 @@ const ListingPage = () => {
   useEffect(() => {
     if (data && data.data && data.data.data) {
       setTotalDataCount(data.data.totalCount);
-      setFilteredDataCount(data.data.data.length);
+      Object.keys(selectedFilters).length == 0 &&
+        setFilteredDataCount(data.data.data.length);
+
+      Object.keys(selectedFilters).length > 0 && handleChange(currentPage, selectedFilters, null)
     }
   }, [data]);
 
@@ -57,6 +61,12 @@ const ListingPage = () => {
     let arr = customerName.split(" ");
     let name = arr.filter((x) => x !== "");
     let finalCustomerName = name.reduce((x, acc) => x + " " + acc);
+    let delStatus =
+      Object.keys(listingData?.status).length === 0
+        ? "PENDING"
+        : listingData?.status?.del_status == "DELIVERED"
+        ? "DELIVERED"
+        : "NOT DELIVERED";
     historyData.push({
       item_uid: listingData?.item_uid,
       order_id: truncatedOrderId,
@@ -72,12 +82,13 @@ const ListingPage = () => {
         let comma = ridersCount - 1 !== key ? ", " : "";
         return rider.full_name + comma;
       }),
-      delStatus: listingData?.status?.del_status,
+      status: delStatus,
       delImg: listingData?.status?.del_img,
     });
   });
 
   const totalCustomerNames = historyData.map((x) => x.customer_name);
+  const totalPhoneNumbers = historyData.map((x) => x.phone_number);
 
   const handleFilteredDataCount = (filteredData) => {
     setFilteredDataCount(filteredData.length);
@@ -109,6 +120,8 @@ const ListingPage = () => {
         text: customerName,
         value: customerName,
       })),
+      filterMode: "tree",
+      filterSearch: true,
       onFilter: (value, record) => record.customer_name.indexOf(value) === 0,
     },
     {
@@ -119,13 +132,7 @@ const ListingPage = () => {
         text: societyName,
         value: societyName,
       })),
-      onFilter: (value, record) => {
-        const filteredData = historyData.filter(
-          (item) => item.society_name === value
-        );
-        handleFilteredDataCount(filteredData);
-        return record.society_name === value;
-      },
+      onFilter: (value, record) => record.society_name === value,
     },
     // {
     //   title: "PINCODE",
@@ -147,6 +154,11 @@ const ListingPage = () => {
       title: "PHONE NUMBER",
       dataIndex: "phone_number",
       key: "phone_number",
+      filters: totalPhoneNumbers.map((phoneNumber) => ({
+        text: phoneNumber,
+        value: phoneNumber,
+      })),
+      onFilter: (value, record) => record.phone_number.indexOf(value) == 0,
     },
 
     {
@@ -154,13 +166,7 @@ const ListingPage = () => {
       dataIndex: "sectors",
       key: "sectors",
       filters: uniqueSectors.map((sector) => ({ text: sector, value: sector })),
-      onFilter: (value, record) => {
-        const filteredData = historyData.filter(
-          (item) => item.sectors === value
-        );
-        handleFilteredDataCount(filteredData);
-        return record.sectors === value;
-      },
+      onFilter: (value, record) => record.sectors === value,
     },
     // {
     //   title: "UNIT QUANTITY",
@@ -180,18 +186,15 @@ const ListingPage = () => {
         text: agentName,
         value: agentName,
       })),
-      onFilter: (value, record) => {
-        const filteredData = historyData.filter((item) =>
-          item.agent_name.includes(value)
-        );
-        handleFilteredDataCount(filteredData);
-        return record.agent_name.includes(value);
-      },
+       width: 120,
+      onFilter: (value, record) => record.agent_name.includes(value),
     },
     {
       title: "DELIVERY ADDRESS",
       dataIndex: "delivery",
       key: "delivery",
+      ellipsis: true,
+        width: 150,
     },
     {
       title: "STATUS",
@@ -200,40 +203,19 @@ const ListingPage = () => {
       filters: [
         {
           text: "DELIVERED",
-          value: "delivered",
+          value: "DELIVERED",
         },
         {
           text: "NOT DELIVERED",
-          value: "not delivered",
+          value: "NOT DELIVERED",
         },
         {
           text: "PENDING",
-          value: "pending",
+          value: "PENDING",
         },
       ],
-      onFilter: (value, record) => {
-        if (value == "not delivered") {
-          let filterData = historyData.filter(
-            (x) => x.delStatus == "NOT DELIVERED"
-          );
-          handleFilteredDataCount(filterData);
-          return record.delStatus == "NOT DELIVERED";
-        }
-        if (value == "pending") {
-          let filterData = historyData.filter((x) => x.delStatus == undefined);
-          handleFilteredDataCount(filterData);
-
-          return record.delStatus == undefined;
-        }
-        if (value == "delivered") {
-          let filterData = historyData.filter(
-            (x) => x.delStatus == "DELIVERED"
-          );
-          handleFilteredDataCount(filterData);
-
-          return record.delStatus == "DELIVERED";
-        }
-      },
+        width: 90,
+      onFilter: (value, record) => record.status == value,
       render: (text, record) => {
         if (record.delImg) {
           // If del_img is present, render the image
@@ -244,12 +226,14 @@ const ListingPage = () => {
               style={{ maxWidth: "100px", maxHeight: "100px" }}
             />
           );
-        } else if (record.delStatus) {
-          // If del_status is present, show the status text in blue color
-          return <span style={{ color: "blue" }}>{record.delStatus}</span>;
-        } else {
-          // If both are empty, show "Pending" in red color
-          return <span style={{ color: "red" }}>PENDING</span>;
+        } else if (record.status) {
+          return (
+            <span
+              style={{ color: record.status == "PENDING" ? "red" : "blue" }}
+            >
+              {record.status}
+            </span>
+          );
         }
       },
     },
@@ -258,15 +242,16 @@ const ListingPage = () => {
       title: "PAUSE ITEM",
       key: "item_uid",
       dataIndex: "item_uid",
+      width: 60,
       render: (item_uid, record) =>
-        record.delStatus == undefined && (
+        (record.status = "PENDING" && (
           <button
             className="bg-[#DF4584] rounded-2xl text-white p-2"
             onClick={() => handlePause(item_uid)}
           >
             Pause
           </button>
-        ),
+        )),
     },
   ];
 
@@ -281,6 +266,29 @@ const ListingPage = () => {
 
   const handlePageSizeChange = (current, page) => {
     setSize(page);
+  };
+
+  const handleChange = (pagination, filters, sorter) => {
+    const nonEmptyFilters = {};
+    Object.keys(filters).map((x) => {
+      if (filters[x]?.length > 0) nonEmptyFilters[x] = filters[x];
+    });
+    setSelectedFilters(nonEmptyFilters);
+    let filteredData = historyData.filter((item) => {
+      for (let key in nonEmptyFilters) {
+        if(key === 'agent_name') {
+          if(!item[key].some( (agent) => nonEmptyFilters[key].includes(agent))){
+            return false
+          }
+        }else {
+          if (!nonEmptyFilters[key].includes(item[key])) {
+            return false;
+          }
+        }
+      }
+      return true;
+    });
+    handleFilteredDataCount(filteredData);
   };
 
   return (
@@ -301,6 +309,7 @@ const ListingPage = () => {
         loading={isLoading}
         fileName="Subscription_Listing.csv"
         columns={HistoryHeaders}
+        onChange={handleChange}
         // pagination={paginationConfig}
         onFilteredDataChange={handleFilteredDataCount}
       />

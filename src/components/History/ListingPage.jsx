@@ -16,11 +16,12 @@ const ListingPage = () => {
 
   const [filteredDataCount, setFilteredDataCount] = useState(null);
   const [totalDataCount, setTotalDataCount] = useState(0);
+  const [selectedFilters, setSelectedFilters] = useState({});
 
   useEffect(() => {
     if (data && data.data && data.data.data) {
       setTotalDataCount(data.data.totalCount);
-      setFilteredDataCount(data.data.data.length);
+      Object.keys(selectedFilters).length == 0 && setFilteredDataCount(data.data.data.length);
     }
   }, [data]);
 
@@ -36,6 +37,7 @@ const ListingPage = () => {
     let arr = customerName.split(" ");
     let name = arr.filter((x) => x !== "");
     let finalCustomerName = name.reduce((x, acc) => x + " " + acc);
+     let delStatus =  Object.keys(listingData?.status).length === 0  ? 'PENDING' : listingData?.status?.del_status == 'DELIVERED' ? "DELIVERED" : 'NOT DELIVERED'
     historyData.push({
       order_id: truncatedOrderId,
       customer_name: finalCustomerName,
@@ -45,10 +47,13 @@ const ListingPage = () => {
         let comma = ridersCount - 1 !== key ? ", " : "";
         return rider.full_name + comma;
       }),
-      delStatus: listingData?.status?.del_status,
+      status: delStatus,
       delImg: listingData?.status?.del_img,
     });
   });
+
+
+   const totalCustomerNames = historyData.map((x) => x.customer_name);
 
   const handleFilteredDataCount = (filteredData) => {
     setFilteredDataCount(filteredData.length);
@@ -64,11 +69,6 @@ const ListingPage = () => {
       )
     )
   );
-  const uniqueStatuses = Array.from(
-    new Set(
-      data?.data?.data.map((listingData) => listingData?.status?.del_status)
-    )
-  );
 
   const HistoryHeaders = [
     {
@@ -81,6 +81,11 @@ const ListingPage = () => {
       title: "CUSTOMER NAME",
       dataIndex: "customer_name",
       key: "customer_name",
+      filters: totalCustomerNames.map((customerName) => ({
+        text: customerName,
+        value: customerName,
+      })),
+     onFilter: (value, record) => record.customer_name.indexOf(value) === 0,
     },
     {
       title: "SOCIETY NAME",
@@ -90,13 +95,7 @@ const ListingPage = () => {
         text: societyName,
         value: societyName,
       })),
-      onFilter: (value, record) => {
-        const filteredData = historyData.filter(
-          (item) => item.society_name === value
-        );
-        handleFilteredDataCount(filteredData);
-        return record.society_name === value;
-      },
+      onFilter: (value, record) => record.society_name === value,
     },
     {
       title: "DELIVERY ADDRESS",
@@ -111,19 +110,29 @@ const ListingPage = () => {
         text: agentName,
         value: agentName,
       })),
-      onFilter: (value, record) => {
-        const filteredData = historyData.filter((item) =>
-          item.agent_name.includes(value)
-        );
-        handleFilteredDataCount(filteredData);
-        return record.agent_name.includes(value);
-      },
+      onFilter: (value, record) => record.agent_name.includes(value),
       width: 200,
     },
     {
       title: "STATUS",
       dataIndex: "status",
       key: "status",
+      filters: [
+        {
+          text: "DELIVERED",
+          value: "DELIVERED",
+        },
+        {
+          text: "NOT DELIVERED",
+          value: "NOT DELIVERED",
+        },
+        {
+          text: "PENDING",
+          value: "PENDING",
+        },
+      ],
+
+      onFilter: (value, record) => record.status == value,
       render: (text, record) => {
         if (record.delImg) {
           // If del_img is present, render the image
@@ -131,15 +140,11 @@ const ListingPage = () => {
             <img
               src={record.delImg}
               alt="Delivery Image"
-              style={{ maxWidth: "100px" }}
+              style={{ maxWidth: "100px", maxHeight: '100px' }}
             />
           );
-        } else if (record.delStatus) {
-          // If del_status is present, show the status text in blue color
-          return <span style={{ color: "blue" }}>{record.delStatus}</span>;
-        } else {
-          // If both are empty, show "Pending" in red color
-          return <span style={{ color: "red" }}>PENDING</span>;
+        } else if (record.status) {
+          return <span style={{ color: record.status === 'PENDING' ? 'red' : "blue" }}>{record.status}</span>;
         }
       },
     },
@@ -157,6 +162,35 @@ const ListingPage = () => {
   const handlePageSizeChange = (current, page) => {
     setSize(page);
   };
+
+   const handleChange = (pagination, filters, sorter) => {
+    const nonEmptyFilters = {};
+    Object.keys(filters).map((x) => {
+      if (filters[x]?.length > 0) nonEmptyFilters[x] = filters[x];
+    });
+    setSelectedFilters(nonEmptyFilters);
+
+    let filteredData = historyData.filter((item) => {
+      for (let key in nonEmptyFilters) {
+        if(key == 'agent_name') {
+          if( !item[key].some((x) => nonEmptyFilters[key].includes(x))){
+            return false;
+          }
+        }
+        else {
+          if (!nonEmptyFilters[key].includes(item[key])) {
+            return false;
+          } 
+        }
+      }
+
+      return true;
+    });
+
+    handleFilteredDataCount(filteredData);
+  };
+
+
   return (
     <div>
       <style>
@@ -175,6 +209,7 @@ const ListingPage = () => {
         // pagination={paginationConfig}
         loading={isLoading}
         onFilteredDataChange={handleFilteredDataCount}
+        onChange={handleChange}
         fileName="History_Listing.csv"
       />
       <div className="flex justify-end px-4 py-2">

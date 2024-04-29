@@ -139,6 +139,9 @@ const ListingPage = ({ setShowAgentCreation }) => {
                 },
               };
             }}
+            scroll={{
+              y: "calc(100vh - 340px)",
+            }}
             // pagination={paginationConfig}
           />
           <div className="flex justify-end px-4 py-2">

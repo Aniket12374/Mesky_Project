@@ -22,6 +22,8 @@ const ListingPage = () => {
     if (data && data.data && data.data.data) {
       setTotalDataCount(data.data.totalCount);
       Object.keys(selectedFilters).length == 0 && setFilteredDataCount(data.data.data.length);
+       Object.keys(selectedFilters).length > 0 &&
+        handleChange(currentPage, selectedFilters, null);
     }
   }, [data]);
 
@@ -49,25 +51,25 @@ const ListingPage = () => {
       }),
       status: delStatus,
       delImg: listingData?.status?.del_img,
+      del_time: listingData?.delivery_date ? listingData?.delivery_date?.split(' ')[1] : null
     });
   });
 
 
-   const totalCustomerNames = historyData.map((x) => x.customer_name);
-
+   let totalCustomerNames = Array.from(
+    new Set(historyData.map((x) => x.customer_name).sort((a,b) => a.localeCompare(b)))
+  );
+  
   const handleFilteredDataCount = (filteredData) => {
     setFilteredDataCount(filteredData.length);
   };
 
   const uniqueSocietyNames = Array.from(
-    new Set(data?.data?.data.map((listingData) => listingData?.society?.name))
+    new Set(historyData.map((listingData) => listingData?.society_name).sort())
   );
+  
   const uniqueAgentNames = Array.from(
-    new Set(
-      data?.data?.data.flatMap((listingData) =>
-        listingData?.rider?.map((rider) => rider.full_name)
-      )
-    )
+    new Set(historyData.map((listingData) => listingData?.agent_name).flat().sort())
   );
 
   const HistoryHeaders = [
@@ -137,11 +139,14 @@ const ListingPage = () => {
         if (record.delImg) {
           // If del_img is present, render the image
           return (
+            <>
             <img
               src={record.delImg}
               alt="Delivery Image"
               style={{ maxWidth: "100px", maxHeight: '100px' }}
             />
+            <div>DELIVERED AT {record.del_time}</div>
+            </>
           );
         } else if (record.status) {
           return <span style={{ color: record.status === 'PENDING' ? 'red' : "blue" }}>{record.status}</span>;
@@ -211,6 +216,9 @@ const ListingPage = () => {
         onFilteredDataChange={handleFilteredDataCount}
         onChange={handleChange}
         fileName="History_Listing.csv"
+         scroll={{
+          y: "calc(100vh - 333px)",
+        }} 
       />
       <div className="flex justify-end px-4 py-2">
         <Pagination

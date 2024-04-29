@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { Pagination } from "antd";
 import { subscriptionPause } from "../../services/subscriptionOrders/subscriptionService";
 import toast from "react-hot-toast";
+import { customAlphNumericSort } from "../../utils";
 
 const ListingPage = () => {
   const navigate = useNavigate();
@@ -25,33 +26,14 @@ const ListingPage = () => {
       Object.keys(selectedFilters).length == 0 &&
         setFilteredDataCount(data.data.data.length);
 
-      Object.keys(selectedFilters).length > 0 && handleChange(currentPage, selectedFilters, null)
+      Object.keys(selectedFilters).length > 0 &&
+        handleChange(currentPage, selectedFilters, null);
     }
   }, [data]);
 
   if (isError) {
     return navigate("/login");
   }
-
-  const uniqueSocietyNames = Array.from(
-    new Set(data?.data?.data.map((listingData) => listingData?.society?.name))
-  );
-  const uniquePincodes = Array.from(
-    new Set(data?.data?.data.map((listingData) => listingData?.order?.pincode))
-  );
-  const uniqueSectors = Array.from(
-    new Set(data?.data?.data.map((listingData) => listingData?.society?.sector))
-  );
-  const uniqueAgentNames = Array.from(
-    new Set(
-      data?.data?.data.flatMap((listingData) =>
-        listingData?.rider?.map((rider) => rider.full_name)
-      )
-    )
-  );
-  const uniqueStatuses = Array.from(
-    new Set(data?.data?.data.map((listingData) => listingData?.status?.name))
-  );
 
   let historyData = [];
   data?.data?.data.map((listingData) => {
@@ -84,11 +66,35 @@ const ListingPage = () => {
       }),
       status: delStatus,
       delImg: listingData?.status?.del_img,
+      del_time: listingData?.delivery_date
+        ? listingData?.delivery_date?.split(" ")[1]
+        : null,
     });
   });
 
-  const totalCustomerNames = historyData.map((x) => x.customer_name);
-  const totalPhoneNumbers = historyData.map((x) => x.phone_number);
+  const uniqueSocietyNames = Array.from(
+    new Set(historyData.map((listingData) => listingData?.society_name).sort())
+  );
+  // const uniquePincodes = Array.from(
+  //   new Set(historyData.map((listingData) => listingData?.order?.pincode))
+  // );
+  const uniqueSectors = Array.from(
+    new Set(historyData.map((listingData) => listingData?.sectors).sort(customAlphNumericSort))
+  );
+
+  const uniqueAgentNames = Array.from(
+    new Set(historyData.map((listingData) => listingData?.agent_name).flat().sort())
+  );
+
+  const uniqueStatuses = Array.from(
+    new Set(historyData.map((listingData) => listingData?.status?.name))
+  );
+
+ let totalCustomerNames = Array.from(
+    new Set(historyData.map((x) => x.customer_name).sort((a,b) => a.localeCompare(b)))
+  );
+
+  const totalPhoneNumbers = historyData.map((x) => x.phone_number).sort();
 
   const handleFilteredDataCount = (filteredData) => {
     setFilteredDataCount(filteredData.length);
@@ -120,8 +126,8 @@ const ListingPage = () => {
         text: customerName,
         value: customerName,
       })),
-      filterMode: "tree",
-      filterSearch: true,
+      // filterMode: "tree",
+      // filterSearch: true,
       onFilter: (value, record) => record.customer_name.indexOf(value) === 0,
     },
     {
@@ -186,7 +192,7 @@ const ListingPage = () => {
         text: agentName,
         value: agentName,
       })),
-       width: 120,
+      //  width: 120,
       onFilter: (value, record) => record.agent_name.includes(value),
     },
     {
@@ -194,7 +200,7 @@ const ListingPage = () => {
       dataIndex: "delivery",
       key: "delivery",
       ellipsis: true,
-        width: 150,
+      // width: 150,
     },
     {
       title: "STATUS",
@@ -214,17 +220,20 @@ const ListingPage = () => {
           value: "PENDING",
         },
       ],
-        width: 90,
+      // width: 90,
       onFilter: (value, record) => record.status == value,
       render: (text, record) => {
         if (record.delImg) {
           // If del_img is present, render the image
           return (
-            <img
-              src={record.delImg}
-              alt="Delivery Image"
-              style={{ maxWidth: "100px", maxHeight: "100px" }}
-            />
+            <>
+              <img
+                src={record.delImg}
+                alt="Delivery Image"
+                style={{ maxWidth: "100px", maxHeight: "100px" }}
+              />
+              <div>DELIVERED AT {record.del_time}</div>
+            </>
           );
         } else if (record.status) {
           return (
@@ -242,7 +251,7 @@ const ListingPage = () => {
       title: "PAUSE ITEM",
       key: "item_uid",
       dataIndex: "item_uid",
-      width: 60,
+      // width: 60,
       render: (item_uid, record) =>
         (record.status = "PENDING" && (
           <button
@@ -276,11 +285,13 @@ const ListingPage = () => {
     setSelectedFilters(nonEmptyFilters);
     let filteredData = historyData.filter((item) => {
       for (let key in nonEmptyFilters) {
-        if(key === 'agent_name') {
-          if(!item[key].some( (agent) => nonEmptyFilters[key].includes(agent))){
-            return false
+        if (key === "agent_name") {
+          if (
+            !item[key].some((agent) => nonEmptyFilters[key].includes(agent))
+          ) {
+            return false;
           }
-        }else {
+        } else {
           if (!nonEmptyFilters[key].includes(item[key])) {
             return false;
           }
@@ -312,6 +323,9 @@ const ListingPage = () => {
         onChange={handleChange}
         // pagination={paginationConfig}
         onFilteredDataChange={handleFilteredDataCount}
+        scroll={{
+          y: "calc(100vh - 350px)",
+        }}
       />
       <div className="flex justify-end px-4 py-2">
         <Pagination

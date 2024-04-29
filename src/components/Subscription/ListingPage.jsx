@@ -77,6 +77,8 @@ const ListingPage = () => {
     });
   });
 
+  const totalCustomerNames = historyData.map( (x) => x.customer_name)
+
   const handleFilteredDataCount = (filteredData) => {
     setFilteredDataCount(filteredData.length);
   };
@@ -103,6 +105,11 @@ const ListingPage = () => {
       title: "CUSTOMER NAME",
       dataIndex: "customer_name",
       key: "customer_name",
+      filters: totalCustomerNames.map( (customerName) => ({
+        text: customerName,
+        value: customerName,
+      })),
+      onFilter: (value, record) => record.customer_name.indexOf(value) === 0,
     },
     {
       title: "SOCIETY NAME",
@@ -120,22 +127,22 @@ const ListingPage = () => {
         return record.society_name === value;
       },
     },
-    {
-      title: "PINCODE",
-      dataIndex: "pincode",
-      key: "pincode",
-      filters: uniquePincodes.map((pincode) => ({
-        text: pincode,
-        value: pincode,
-      })),
-      onFilter: (value, record) => {
-        const filteredData = historyData.filter(
-          (item) => item.pincode === value
-        );
-        handleFilteredDataCount(filteredData);
-        return record.pincode === value;
-      },
-    },
+    // {
+    //   title: "PINCODE",
+    //   dataIndex: "pincode",
+    //   key: "pincode",
+    //   filters: uniquePincodes.map((pincode) => ({
+    //     text: pincode,
+    //     value: pincode,
+    //   })),
+    //   onFilter: (value, record) => {
+    //     const filteredData = historyData.filter(
+    //       (item) => item.pincode === value
+    //     );
+    //     handleFilteredDataCount(filteredData);
+    //     return record.pincode === value;
+    //   },
+    // },
     {
       title: "PHONE NUMBER",
       dataIndex: "phone_number",
@@ -155,11 +162,11 @@ const ListingPage = () => {
         return record.sectors === value;
       },
     },
-    {
-      title: "UNIT QUANTITY",
-      dataIndex: "unit_qty",
-      key: "unit_qty",
-    },
+    // {
+    //   title: "UNIT QUANTITY",
+    //   dataIndex: "unit_qty",
+    //   key: "unit_qty",
+    // },
     {
       title: "QUANTITY",
       dataIndex: "qty",
@@ -190,6 +197,7 @@ const ListingPage = () => {
       title: "STATUS",
       dataIndex: "status",
       key: "status",
+      // filters: 
       render: (text, record) => {
         if (record.delImg) {
           // If del_img is present, render the image
@@ -197,7 +205,7 @@ const ListingPage = () => {
             <img
               src={record.delImg}
               alt="Delivery Image"
-              style={{ maxWidth: "100px" }}
+              style={{ maxWidth: "100px", maxHeight: '100px' }}
             />
           );
         } else if (record.delStatus) {
@@ -252,7 +260,7 @@ const ListingPage = () => {
         Showing Results: {filteredDataCount}/{totalDataCount}
       </div>
       <DataTable
-        data={historyData}
+        data={historyData} 
         loading={isLoading}
         fileName="Subscription_Listing.csv"
         columns={HistoryHeaders}

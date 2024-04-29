@@ -49,6 +49,7 @@ const ListingPage = () => {
       }),
       status: delStatus,
       delImg: listingData?.status?.del_img,
+      del_time: listingData?.delivery_date ? listingData?.delivery_date?.split(' ')[1] : null
     });
   });
 
@@ -137,11 +138,14 @@ const ListingPage = () => {
         if (record.delImg) {
           // If del_img is present, render the image
           return (
+            <>
             <img
               src={record.delImg}
               alt="Delivery Image"
               style={{ maxWidth: "100px", maxHeight: '100px' }}
             />
+            <div>DELIVERED AT {record.del_time}</div>
+            </>
           );
         } else if (record.status) {
           return <span style={{ color: record.status === 'PENDING' ? 'red' : "blue" }}>{record.status}</span>;

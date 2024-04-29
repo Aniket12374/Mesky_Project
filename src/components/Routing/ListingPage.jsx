@@ -4,7 +4,7 @@ import { Button, Input, Select, Space, Table } from "antd";
 import Highlighter from "react-highlight-words";
 import { CSVLink } from "react-csv";
 import { routingStats } from "../../services/routing/RoutingService";
-
+import { rankInfo } from "../../services/routing/RoutingService";
 import { mappingList } from "../../services/areaMapping/MappingService";
 
 const ListingPage = () => {
@@ -13,6 +13,8 @@ const ListingPage = () => {
   const [tableData, setTableData] = useState([]);
   const [allRiders, setAllRiders] = useState([]);
   const searchInput = useRef(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [buttonText, setButtonText] = useState("Edit");
 
   const mergeSame = (arr) => {
     let mapData = new Map();
@@ -23,6 +25,16 @@ const ListingPage = () => {
     });
 
     return Array.from(mapData.values()).flat();
+  };
+
+  const updateRankInfo = async (record) => {
+    try {
+      // Make API request to update rank information
+      await rankInfo(record.id, record.rank); // Assuming 'id' and 'rank' are properties of 'record'
+      console.log("Rank updated successfully!");
+    } catch (error) {
+      console.error("Error updating rank:", error);
+    }
   };
 
   useEffect(() => {
@@ -72,6 +84,29 @@ const ListingPage = () => {
     confirm();
     setSearchText(selectedKeys[0]);
     setSearchedColumn(dataIndex);
+  };
+
+  const handleEditClick = async () => {
+    if (isEditMode) {
+      // Save changes (update rank)
+      // Iterate over tableData to find edited records
+      for (const record of tableData) {
+        if (record.isEdited) {
+          await updateRankInfo(record);
+        }
+      }
+      setIsEditMode(false); // Exit edit mode after saving
+      setButtonText("Edit"); // Change button text back to 'Edit'
+    } else {
+      // Enter edit mode
+      setIsEditMode(true);
+      setButtonText("Save"); // Change button text to 'Save'
+    }
+  };
+
+  const handleCancelClick = () => {
+    setIsEditMode(false);
+    // If you want to discard changes, you might need to fetch the data again from the server
   };
 
   const getColumnSearchProps = (dataIndex) => ({
@@ -150,13 +185,29 @@ const ListingPage = () => {
       width: "33%",
       ...getColumnSearchProps("society"),
     },
-
     {
       title: "Rank",
       dataIndex: "rank",
       key: "rank",
       width: "33%",
       ...getColumnSearchProps("rank"),
+      render: (text, record) =>
+        isEditMode ? (
+          <Input
+            value={text}
+            onChange={(e) => {
+              // Update the rank in the record
+              const updatedRecord = { ...record, rank: e.target.value };
+              // Update the table data with the updated record
+              const updatedData = tableData.map((item) =>
+                item.key === record.key ? updatedRecord : item
+              );
+              setTableData(updatedData);
+            }}
+          />
+        ) : (
+          text
+        ),
     },
   ];
 
@@ -187,10 +238,17 @@ const ListingPage = () => {
       </style>
       <div className="flex justify-end w-full">
         <div className="flex w-1/6 justify-evenly">
-          <div className="rounded-2xl bg-[#DF4584] text-white px-4 py-1">
-            Edit
+          <div
+            className="rounded-2xl bg-[#DF4584] text-white px-4 py-1"
+            onClick={handleEditClick}
+          >
+            {buttonText} {/* Display the buttonText state */}
           </div>
-          <div className="rounded-2xl bg-[#A8A8A8] text-white px-4 py-1">
+
+          <div
+            className="rounded-2xl bg-[#A8A8A8] text-white px-4 py-1"
+            onClick={handleCancelClick}
+          >
             Cancel
           </div>
         </div>

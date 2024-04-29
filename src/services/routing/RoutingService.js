@@ -1,6 +1,6 @@
 import { httpVendor } from "../api-client";
 
-export const riderInfo = (data) => {
+export const rankInfo = (data) => {
   return httpVendor.post("/api/delivery/portal/ranking", data);
 };
 

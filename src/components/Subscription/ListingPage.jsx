@@ -186,7 +186,7 @@ const ListingPage = () => {
         text: agentName,
         value: agentName,
       })),
-       width: 120,
+      //  width: 120,
       onFilter: (value, record) => record.agent_name.includes(value),
     },
     {
@@ -194,7 +194,7 @@ const ListingPage = () => {
       dataIndex: "delivery",
       key: "delivery",
       ellipsis: true,
-        width: 150,
+      // width: 150,
     },
     {
       title: "STATUS",
@@ -214,7 +214,7 @@ const ListingPage = () => {
           value: "PENDING",
         },
       ],
-        width: 90,
+        // width: 90,
       onFilter: (value, record) => record.status == value,
       render: (text, record) => {
         if (record.delImg) {
@@ -242,7 +242,7 @@ const ListingPage = () => {
       title: "PAUSE ITEM",
       key: "item_uid",
       dataIndex: "item_uid",
-      width: 60,
+      // width: 60,
       render: (item_uid, record) =>
         (record.status = "PENDING" && (
           <button
@@ -312,6 +312,9 @@ const ListingPage = () => {
         onChange={handleChange}
         // pagination={paginationConfig}
         onFilteredDataChange={handleFilteredDataCount}
+        scroll={{
+          y: "calc(100vh - 350px)",
+        }} 
       />
       <div className="flex justify-end px-4 py-2">
         <Pagination

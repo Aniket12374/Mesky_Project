@@ -22,6 +22,8 @@ const ListingPage = () => {
     if (data && data.data && data.data.data) {
       setTotalDataCount(data.data.totalCount);
       Object.keys(selectedFilters).length == 0 && setFilteredDataCount(data.data.data.length);
+       Object.keys(selectedFilters).length > 0 &&
+        handleChange(currentPage, selectedFilters, null);
     }
   }, [data]);
 
@@ -54,21 +56,20 @@ const ListingPage = () => {
   });
 
 
-   const totalCustomerNames = historyData.map((x) => x.customer_name);
-
+   let totalCustomerNames = Array.from(
+    new Set(historyData.map((x) => x.customer_name).sort((a,b) => a.localeCompare(b)))
+  );
+  
   const handleFilteredDataCount = (filteredData) => {
     setFilteredDataCount(filteredData.length);
   };
 
   const uniqueSocietyNames = Array.from(
-    new Set(data?.data?.data.map((listingData) => listingData?.society?.name))
+    new Set(historyData.map((listingData) => listingData?.society_name).sort())
   );
+  
   const uniqueAgentNames = Array.from(
-    new Set(
-      data?.data?.data.flatMap((listingData) =>
-        listingData?.rider?.map((rider) => rider.full_name)
-      )
-    )
+    new Set(historyData.map((listingData) => listingData?.agent_name).flat().sort())
   );
 
   const HistoryHeaders = [

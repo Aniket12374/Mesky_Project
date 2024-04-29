@@ -77,7 +77,7 @@ const ListingPage = () => {
     });
   });
 
-  const totalCustomerNames = historyData.map( (x) => x.customer_name)
+  const totalCustomerNames = historyData.map((x) => x.customer_name);
 
   const handleFilteredDataCount = (filteredData) => {
     setFilteredDataCount(filteredData.length);
@@ -105,7 +105,7 @@ const ListingPage = () => {
       title: "CUSTOMER NAME",
       dataIndex: "customer_name",
       key: "customer_name",
-      filters: totalCustomerNames.map( (customerName) => ({
+      filters: totalCustomerNames.map((customerName) => ({
         text: customerName,
         value: customerName,
       })),
@@ -197,7 +197,43 @@ const ListingPage = () => {
       title: "STATUS",
       dataIndex: "status",
       key: "status",
-      // filters: 
+      filters: [
+        {
+          text: "DELIVERED",
+          value: "delivered",
+        },
+        {
+          text: "NOT DELIVERED",
+          value: "not delivered",
+        },
+        {
+          text: "PENDING",
+          value: "pending",
+        },
+      ],
+      onFilter: (value, record) => {
+        if (value == "not delivered") {
+          let filterData = historyData.filter(
+            (x) => x.delStatus == "NOT DELIVERED"
+          );
+          handleFilteredDataCount(filterData);
+          return record.delStatus == "NOT DELIVERED";
+        }
+        if (value == "pending") {
+          let filterData = historyData.filter((x) => x.delStatus == undefined);
+          handleFilteredDataCount(filterData);
+
+          return record.delStatus == undefined;
+        }
+        if (value == "delivered") {
+          let filterData = historyData.filter(
+            (x) => x.delStatus == "DELIVERED"
+          );
+          handleFilteredDataCount(filterData);
+
+          return record.delStatus == "DELIVERED";
+        }
+      },
       render: (text, record) => {
         if (record.delImg) {
           // If del_img is present, render the image
@@ -205,7 +241,7 @@ const ListingPage = () => {
             <img
               src={record.delImg}
               alt="Delivery Image"
-              style={{ maxWidth: "100px", maxHeight: '100px' }}
+              style={{ maxWidth: "100px", maxHeight: "100px" }}
             />
           );
         } else if (record.delStatus) {
@@ -222,14 +258,15 @@ const ListingPage = () => {
       title: "PAUSE ITEM",
       key: "item_uid",
       dataIndex: "item_uid",
-      render: (item_uid) => (
-        <button
-          className="bg-[#DF4584] rounded-2xl text-white p-2"
-          onClick={() => handlePause(item_uid)}
-        >
-          Pause
-        </button>
-      ),
+      render: (item_uid, record) =>
+        record.delStatus == undefined && (
+          <button
+            className="bg-[#DF4584] rounded-2xl text-white p-2"
+            onClick={() => handlePause(item_uid)}
+          >
+            Pause
+          </button>
+        ),
     },
   ];
 
@@ -260,7 +297,7 @@ const ListingPage = () => {
         Showing Results: {filteredDataCount}/{totalDataCount}
       </div>
       <DataTable
-        data={historyData} 
+        data={historyData}
         loading={isLoading}
         fileName="Subscription_Listing.csv"
         columns={HistoryHeaders}

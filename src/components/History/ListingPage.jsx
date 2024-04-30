@@ -42,7 +42,9 @@ const ListingPage = () => {
      let delStatus =  Object.keys(listingData?.status).length === 0  ? 'PENDING' : listingData?.status?.del_status == 'DELIVERED' ? "DELIVERED" : 'NOT DELIVERED'
     historyData.push({
       order_id: truncatedOrderId,
+      date: listingData?.delivery_date ? listingData?.delivery_date.split(' ')[0] : null,
       customer_name: finalCustomerName,
+      quantity: listingData?.quantity,
       society_name: listingData?.society?.name,
       delivery: listingData?.order?.line_1 + " " + listingData?.order?.line_2,
       agent_name: listingData?.rider?.map((rider, key) => {
@@ -71,6 +73,9 @@ const ListingPage = () => {
   const uniqueAgentNames = Array.from(
     new Set(historyData.map((listingData) => listingData?.agent_name).flat().sort())
   );
+  const uniqueDates = Array.from(
+    new Set(historyData.map((listingData) => listingData?.date).sort( (a,b) => new Date(a) - new Date(b)))
+  );
 
   const HistoryHeaders = [
     {
@@ -78,6 +83,17 @@ const ListingPage = () => {
       dataIndex: "order_id",
       key: "order_id",
       width: 100,
+    },
+    {
+      title: "DATE",
+      dataIndex: "date",
+      key: "date",
+      width: 120,
+       filters: uniqueDates.map((deliveredDate) => ({
+        text: deliveredDate,
+        value: deliveredDate,
+      })),
+     onFilter: (value, record) => record.date == value,
     },
     {
       title: "CUSTOMER NAME",
@@ -88,6 +104,12 @@ const ListingPage = () => {
         value: customerName,
       })),
      onFilter: (value, record) => record.customer_name.indexOf(value) === 0,
+    },
+     {
+      title: "QTY",
+      dataIndex: "quantity",
+      key: "quantity",
+      width: 60,
     },
     {
       title: "SOCIETY NAME",

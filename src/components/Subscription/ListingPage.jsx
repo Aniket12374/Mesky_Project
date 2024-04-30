@@ -253,7 +253,7 @@ const ListingPage = () => {
       dataIndex: "item_uid",
       // width: 60,
       render: (item_uid, record) =>
-        (record.status = "PENDING" && (
+        (!record.del_time && (
           <button
             className="bg-[#DF4584] rounded-2xl text-white p-2"
             onClick={() => handlePause(item_uid)}

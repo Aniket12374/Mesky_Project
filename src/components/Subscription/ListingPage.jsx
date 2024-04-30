@@ -180,9 +180,10 @@ const ListingPage = () => {
     //   key: "unit_qty",
     // },
     {
-      title: "QUANTITY",
+      title: "QTY",
       dataIndex: "qty",
       key: "qty",
+      width: 60,
     },
     {
       title: "AGENT NAME",
@@ -199,8 +200,8 @@ const ListingPage = () => {
       title: "DELIVERY ADDRESS",
       dataIndex: "delivery",
       key: "delivery",
-      ellipsis: true,
-      // width: 150,
+      // ellipsis: true,
+      width: 150,
     },
     {
       title: "STATUS",

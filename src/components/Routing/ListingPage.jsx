@@ -15,6 +15,7 @@ const ListingPage = () => {
   const searchInput = useRef(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [buttonText, setButtonText] = useState("Edit");
+  const [riderID, setRiderID] = useState();
 
   const mergeSame = (arr) => {
     let mapData = new Map();
@@ -30,7 +31,7 @@ const ListingPage = () => {
   const updateRankInfo = async (record) => {
     try {
       // Make API request to update rank information
-      await rankInfo(record.id, record.rank); // Assuming 'id' and 'rank' are properties of 'record'
+      await rankInfo(record); // Assuming 'id' and 'rank' are properties of 'record'
       console.log("Rank updated successfully!");
     } catch (error) {
       console.error("Error updating rank:", error);
@@ -40,6 +41,7 @@ const ListingPage = () => {
   useEffect(() => {
     // Fetch data for a specific rider when component mounts
     async function fetchDataForRider(riderId) {
+      setRiderID(riderId);
       try {
         const response = await routingStats(riderId);
         // Set the response data as table data
@@ -88,15 +90,12 @@ const ListingPage = () => {
 
   const handleEditClick = async () => {
     if (isEditMode) {
-      // Save changes (update rank)
-      // Iterate over tableData to find edited records
-      for (const record of tableData) {
-        if (record.isEdited) {
-          await updateRankInfo(record);
-        }
-      }
-      setIsEditMode(false); // Exit edit mode after saving
-      setButtonText("Edit"); // Change button text back to 'Edit'
+      const payload = { rider_id: riderID, society_list: tableData };
+
+      await updateRankInfo(payload);
+
+      setIsEditMode(false);
+      setButtonText("Edit");
     } else {
       // Enter edit mode
       setIsEditMode(true);

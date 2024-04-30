@@ -270,8 +270,8 @@ const ListingPage = () => {
   };
 
   const pageSizeOptions = Array.from(
-    { length: Math.ceil(totalDataCount / 10) },
-    (_, index) => `${(index + 1) * 10}`
+    { length: Math.ceil(totalDataCount / 50) },
+    (_, index) => `${(index + 1) * 50}`
   );
 
   const handlePageSizeChange = (current, page) => {

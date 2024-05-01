@@ -7,12 +7,15 @@ import { Pagination } from "antd";
 import { subscriptionPause } from "../../services/subscriptionOrders/subscriptionService";
 import toast from "react-hot-toast";
 import { customAlphNumericSort } from "../../utils";
+import { Modal } from "antd";
 
 const ListingPage = () => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [size, setSize] = useState(10);
   const [selectedFilters, setSelectedFilters] = useState({});
+  const [imagePopupVisible, setImagePopupVisible] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const { data, isLoading, isError } = useQuery(
     ["presentOrders", currentPage, size],
@@ -79,19 +82,30 @@ const ListingPage = () => {
   //   new Set(historyData.map((listingData) => listingData?.order?.pincode))
   // );
   const uniqueSectors = Array.from(
-    new Set(historyData.map((listingData) => listingData?.sectors).sort(customAlphNumericSort))
+    new Set(
+      historyData
+        .map((listingData) => listingData?.sectors)
+        .sort(customAlphNumericSort)
+    )
   );
 
   const uniqueAgentNames = Array.from(
-    new Set(historyData.map((listingData) => listingData?.agent_name).flat().sort())
+    new Set(
+      historyData
+        .map((listingData) => listingData?.agent_name)
+        .flat()
+        .sort()
+    )
   );
 
   const uniqueStatuses = Array.from(
     new Set(historyData.map((listingData) => listingData?.status?.name))
   );
 
- let totalCustomerNames = Array.from(
-    new Set(historyData.map((x) => x.customer_name).sort((a,b) => a.localeCompare(b)))
+  let totalCustomerNames = Array.from(
+    new Set(
+      historyData.map((x) => x.customer_name).sort((a, b) => a.localeCompare(b))
+    )
   );
 
   const totalPhoneNumbers = historyData.map((x) => x.phone_number).sort();
@@ -109,6 +123,16 @@ const ListingPage = () => {
     } catch (error) {
       toast.error(error?.response.data.message);
     }
+  };
+
+  const openImagePopup = (imageUrl) => {
+    setSelectedImage(imageUrl);
+    setImagePopupVisible(true);
+  };
+
+  const closeImagePopup = () => {
+    setSelectedImage(null);
+    setImagePopupVisible(false);
   };
 
   const HistoryHeaders = [
@@ -228,11 +252,13 @@ const ListingPage = () => {
           // If del_img is present, render the image
           return (
             <>
-              <img
-                src={record.delImg}
-                alt="Delivery Image"
-                style={{ maxWidth: "100px", maxHeight: "100px" }}
-              />
+              <div onClick={() => openImagePopup(record.delImg)}>
+                <img
+                  src={record.delImg}
+                  alt="Delivery Image"
+                  style={{ maxWidth: "100px", maxHeight: "100px" }}
+                />
+              </div>
               <div>DELIVERED AT {record.del_time}</div>
             </>
           );
@@ -254,14 +280,14 @@ const ListingPage = () => {
       dataIndex: "item_uid",
       // width: 60,
       render: (item_uid, record) =>
-        (!record.del_time && (
+        !record.del_time && (
           <button
             className="bg-[#DF4584] rounded-2xl text-white p-2"
             onClick={() => handlePause(item_uid)}
           >
             Pause
           </button>
-        )),
+        ),
     },
   ];
 
@@ -341,6 +367,20 @@ const ListingPage = () => {
           onShowSizeChange={handlePageSizeChange}
         />
       </div>
+      <Modal
+        open={imagePopupVisible}
+        onCancel={closeImagePopup}
+        footer={null}
+        centered
+      >
+        {selectedImage && (
+          <img
+            src={selectedImage}
+            alt="Delivery Image"
+            style={{ maxWidth: "100%" }}
+          />
+        )}
+      </Modal>
     </div>
   );
 };

@@ -125,33 +125,35 @@ const AreaMap = () => {
       // align: "center",
 
       render: (riders, record) => (
-        <div className="flex">
-          <div className="w-5/12 flex justify-start items-center">
+        <div className="flex ">
+          <div className="w-3/5 flex flex-col space-y-2 justify-start items-center">
             {riders?.length ? (
               riders?.map((rider) => {
                 return (
                   <>
-                    {rider.full_name && <span>{rider.full_name}</span>}
-                    <button
-                      type="primary"
-                      size="large"
-                      shape="round"
-                      onClick={() =>
-                        showModal({
-                          key: record.key,
-                          ...rider,
-                        })
-                      }
-                      className="rounded-full ml-2 px-3 py-2"
-                      style={{
-                        backgroundColor: rider?.full_name
-                          ? "#AA00FF"
-                          : "#DF4584",
-                        color: "#FFFFFF",
-                      }}
-                    >
-                      Change
-                    </button>
+                    <div className="flex space-x-7">
+                      {rider.full_name && <span>{rider.full_name}</span>}
+                      <button
+                        type="primary"
+                        size="large"
+                        shape="round"
+                        onClick={() =>
+                          showModal({
+                            key: record.key,
+                            ...rider,
+                          })
+                        }
+                        className="rounded-full ml-2 px-3 py-2"
+                        style={{
+                          backgroundColor: rider?.full_name
+                            ? "#AA00FF"
+                            : "#DF4584",
+                          color: "#FFFFFF",
+                        }}
+                      >
+                        Change
+                      </button>
+                    </div>
                   </>
                 );
               })

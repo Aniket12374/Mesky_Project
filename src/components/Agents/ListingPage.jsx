@@ -47,6 +47,15 @@ const ListingPage = ({ setShowAgentCreation }) => {
     });
   });
 
+  const uniqueAssignedArea = Array.from(
+    new Set(
+      riders
+        .map((listingData) => listingData?.assigned_area)
+        .flat()
+        .sort()
+    )
+  );
+
   const HistoryHeaders = [
     // {
     //   title: "S.NO",
@@ -71,6 +80,12 @@ const ListingPage = ({ setShowAgentCreation }) => {
       dataIndex: "assigned_area",
       key: "assigned_area",
       // width: 50,
+      filters: uniqueAssignedArea.map((assignedArea) => ({
+        text: assignedArea,
+        value: assignedArea,
+      })),
+      //  width: 120,
+      onFilter: (value, record) => record.assigned_area.includes(value),
     },
     {
       title: "VERIFICATION",

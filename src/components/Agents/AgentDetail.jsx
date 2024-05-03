@@ -56,7 +56,7 @@ const AgentDetail = ({
       let list = [];
       res?.data?.data.map((x) => {
         list.push({
-          order_date: x.order.uid,
+          order_date: x.accept_date,
           order_id: x.order.uid,
           customer_name: x.order.full_name,
           society_name: x.society.name,
@@ -106,6 +106,7 @@ const AgentDetail = ({
       dataIndex: "order_date",
       // align: "center",
       key: "order_date",
+      width: 100,
     },
     {
       title: "ORDER ID",

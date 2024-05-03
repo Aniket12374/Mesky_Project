@@ -29,8 +29,37 @@ const AgentCreation = ({ setShowAgentCreation }) => {
   const handleUpload = (event, key) => {
     let files = event.target.files;
 
+    // Check if a file is selected
+    if (files.length === 0) {
+      return; // No file selected
+    }
+
+    // Check file type
+    const allowedTypes = [
+      "application/pdf",
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+    ];
+    const fileType = files[0].type;
+
+    // Extract file extension from the file name
+    const fileName = files[0].name;
+    const fileExtension = fileName.split(".").pop().toLowerCase();
+
+    // Check both MIME type and file extension
+    if (
+      !allowedTypes.includes(fileType) ||
+      !["pdf", "jpeg", "jpg", "png"].includes(fileExtension)
+    ) {
+      // Invalid file type
+      toast.error("Please upload PDF, JPEG, JPG, or PNG files only.");
+      return;
+    }
+
+    // Proceed with file upload
     const formData = new FormData();
-    formData.append("files", files[0], files[0].name);
+    formData.append("files", files[0], fileName);
 
     httpVendorUpload
       .post("/api/upload/multiple-image", formData)

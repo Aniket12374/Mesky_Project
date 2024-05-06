@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { dashboardStats } from "../../services/dashboard/DashboardService";
-import { Select } from "antd";
+import { Select, Table } from "antd";
 import { mappingList } from "../../services/areaMapping/MappingService";
 import { sectorDataStats } from "../../services/dashboard/DashboardService";
 
@@ -70,10 +70,45 @@ const DashboardDetail = () => {
   const filterOption = (input, option) =>
     option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
 
+  const columns = [
+    {
+      title: "Name",
+      dataIndex: "name",
+    },
+    {
+      title: "Age",
+      dataIndex: "age",
+    },
+    {
+      title: "Address",
+      dataIndex: "address",
+    },
+  ];
+  const data = [
+    {
+      key: "1",
+      name: "John Brown",
+      age: 32,
+      address: "New York No. 1 Lake Park",
+    },
+    {
+      key: "2",
+      name: "Jim Green",
+      age: 42,
+      address: "London No. 1 Lake Park",
+    },
+    {
+      key: "3",
+      name: "Joe Black",
+      age: 32,
+      address: "Sydney No. 1 Lake Park",
+    },
+  ];
+
   return (
     <div className="flex justify-between mt-12">
       <div className="w-[45%] space-y-7">
-        <div className="grid grid-cols-3 gap-12">
+        <div className="grid grid-cols-5 gap-4">
           {stats && (
             <>
               <div className="rounded-lg bg-[#DF4584] text-center text-white px-1 py-5">
@@ -92,12 +127,6 @@ const DashboardDetail = () => {
                 </div>
                 <div className="text-sm">Riders</div>
               </div>
-            </>
-          )}
-        </div>
-        <div className="grid grid-cols-3 gap-12">
-          {stats && (
-            <>
               <div className="rounded-lg bg-[#FC8172] text-center text-white px-1 py-5">
                 <div className="text-3xl font-medium">
                   {stats.total_pincodes}
@@ -112,6 +141,15 @@ const DashboardDetail = () => {
               </div>
             </>
           )}
+        </div>
+        <div>
+          {" "}
+          <Table
+            columns={columns}
+            dataSource={data}
+            size="middle"
+            pagination={false}
+          />
         </div>
       </div>
 

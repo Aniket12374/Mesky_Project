@@ -198,11 +198,16 @@ const ListingPage = () => {
       filters: uniqueSectors.map((sector) => ({ text: sector, value: sector })),
       onFilter: (value, record) => record.sectors === value,
     },
-    // {
-    //   title: "UNIT QUANTITY",
-    //   dataIndex: "unit_qty",
-    //   key: "unit_qty",
-    // },
+    {
+      title: "PRODUCT",
+      dataIndex: "product",
+      key: "product",
+    },
+    {
+      title: "UNIT QUANTITY",
+      dataIndex: "unit_qty",
+      key: "unit_qty",
+    },
     {
       title: "QTY",
       dataIndex: "qty",

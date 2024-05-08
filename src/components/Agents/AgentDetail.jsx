@@ -25,6 +25,8 @@ const AgentDetail = ({
 }) => {
   const [socitiesList, setSocitiesList] = useState([]);
   const [agent, setAgent] = useState({});
+  console.log("agent", agent);
+  const [phoneNum, setPhoneNum] = useState("");
   const [historyData, setHistoryData] = useState([]);
   const [editable, setEditable] = useState(false);
 
@@ -87,6 +89,10 @@ const AgentDetail = ({
       "assigned_area",
       selectedOption.map((x) => x.label)
     );
+  };
+
+  const handleChangePhoneNum = (e) => {
+    setAgent({ ...agent, phone_number: e.target.value });
   };
 
   const statusOptions = [
@@ -240,6 +246,7 @@ const AgentDetail = ({
               className="w-full h-12 rounded-lg border-select__control  p-2"
               value={agent?.phone_number}
               disabled={!editable}
+              onChange={handleChangePhoneNum}
               //   placeholder="Warehouse Name"
             />
           </div>

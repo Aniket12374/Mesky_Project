@@ -44,6 +44,7 @@ const ListingPage = ({ setShowAgentCreation }) => {
       verify: rider.r_verif,
       status: rider?.status,
       agent_name: rider?.full_name,
+      society_ids: rider?.society?.map((x) => x.id),
     });
   });
 

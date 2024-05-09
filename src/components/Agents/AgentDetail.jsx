@@ -89,6 +89,10 @@ const AgentDetail = ({
     );
   };
 
+  const handleChangePhoneNum = (e) => {
+    setAgent({ ...agent, phone_number: e.target.value });
+  };
+
   const statusOptions = [
     {
       label: "AVAILABLE",
@@ -240,6 +244,7 @@ const AgentDetail = ({
               className="w-full h-12 rounded-lg border-select__control  p-2"
               value={agent?.phone_number}
               disabled={!editable}
+              onChange={handleChangePhoneNum}
               //   placeholder="Warehouse Name"
             />
           </div>

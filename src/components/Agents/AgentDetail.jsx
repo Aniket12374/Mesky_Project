@@ -25,8 +25,6 @@ const AgentDetail = ({
 }) => {
   const [socitiesList, setSocitiesList] = useState([]);
   const [agent, setAgent] = useState({});
-  console.log("agent", agent);
-  const [phoneNum, setPhoneNum] = useState("");
   const [historyData, setHistoryData] = useState([]);
   const [editable, setEditable] = useState(false);
 

@@ -294,7 +294,7 @@ const ListingPage = () => {
       dataIndex: "name",
       key: "name",
       width: "33%",
-      ...getColumnSearchProps("society"),
+      ...getColumnSearchProps("name"),
     },
     {
       title: "Rank",

@@ -21,8 +21,9 @@ const ListingPage = () => {
   useEffect(() => {
     if (data && data.data && data.data.data) {
       setTotalDataCount(data.data.totalCount);
-      Object.keys(selectedFilters).length == 0 && setFilteredDataCount(data.data.data.length);
-       Object.keys(selectedFilters).length > 0 &&
+      Object.keys(selectedFilters).length == 0 &&
+        setFilteredDataCount(data.data.data.length);
+      Object.keys(selectedFilters).length > 0 &&
         handleChange(currentPage, selectedFilters, null);
     }
   }, [data]);
@@ -39,10 +40,17 @@ const ListingPage = () => {
     let arr = customerName.split(" ");
     let name = arr.filter((x) => x !== "");
     let finalCustomerName = name.reduce((x, acc) => x + " " + acc);
-     let delStatus =  Object.keys(listingData?.status).length === 0  ? 'PENDING' : listingData?.status?.del_status == 'DELIVERED' ? "DELIVERED" : 'NOT DELIVERED'
+    let delStatus =
+      Object.keys(listingData?.status).length === 0
+        ? "PENDING"
+        : listingData?.status?.del_status == "DELIVERED"
+        ? "DELIVERED"
+        : "NOT DELIVERED";
     historyData.push({
       order_id: truncatedOrderId,
-      date: listingData?.delivery_date ? listingData?.delivery_date.split(' ')[0] : null,
+      date: listingData?.delivery_date
+        ? listingData?.delivery_date.split(" ")[0]
+        : null,
       customer_name: finalCustomerName,
       quantity: listingData?.quantity,
       society_name: listingData?.society?.name,
@@ -53,15 +61,18 @@ const ListingPage = () => {
       }),
       status: delStatus,
       delImg: listingData?.status?.del_img,
-      del_time: listingData?.delivery_date ? listingData?.delivery_date?.split(' ')[1] : null
+      del_time: listingData?.delivery_date
+        ? listingData?.delivery_date?.split(" ")[1]
+        : null,
     });
   });
 
-
-   let totalCustomerNames = Array.from(
-    new Set(historyData.map((x) => x.customer_name).sort((a,b) => a.localeCompare(b)))
+  let totalCustomerNames = Array.from(
+    new Set(
+      historyData.map((x) => x.customer_name).sort((a, b) => a.localeCompare(b))
+    )
   );
-  
+
   const handleFilteredDataCount = (filteredData) => {
     setFilteredDataCount(filteredData.length);
   };
@@ -69,12 +80,21 @@ const ListingPage = () => {
   const uniqueSocietyNames = Array.from(
     new Set(historyData.map((listingData) => listingData?.society_name).sort())
   );
-  
+
   const uniqueAgentNames = Array.from(
-    new Set(historyData.map((listingData) => listingData?.agent_name).flat().sort())
+    new Set(
+      historyData
+        .map((listingData) => listingData?.agent_name)
+        .flat()
+        .sort()
+    )
   );
   const uniqueDates = Array.from(
-    new Set(historyData.map((listingData) => listingData?.date).sort( (a,b) => new Date(a) - new Date(b)))
+    new Set(
+      historyData
+        .map((listingData) => listingData?.date)
+        .sort((a, b) => new Date(a) - new Date(b))
+    )
   );
 
   const HistoryHeaders = [
@@ -89,11 +109,12 @@ const ListingPage = () => {
       dataIndex: "date",
       key: "date",
       width: 120,
-       filters: uniqueDates.map((deliveredDate) => ({
+      filters: uniqueDates.map((deliveredDate) => ({
         text: deliveredDate,
         value: deliveredDate,
       })),
-     onFilter: (value, record) => record.date == value,
+      filterSearch: true, // Enable search bar for this filter
+      onFilter: (value, record) => record.date == value,
     },
     {
       title: "CUSTOMER NAME",
@@ -103,9 +124,10 @@ const ListingPage = () => {
         text: customerName,
         value: customerName,
       })),
-     onFilter: (value, record) => record.customer_name.indexOf(value) === 0,
+      filterSearch: true, // Enable search bar for this filter
+      onFilter: (value, record) => record.customer_name.indexOf(value) === 0,
     },
-     {
+    {
       title: "QTY",
       dataIndex: "quantity",
       key: "quantity",
@@ -119,6 +141,7 @@ const ListingPage = () => {
         text: societyName,
         value: societyName,
       })),
+      filterSearch: true, // Enable search bar for this filter
       onFilter: (value, record) => record.society_name === value,
     },
     {
@@ -134,6 +157,7 @@ const ListingPage = () => {
         text: agentName,
         value: agentName,
       })),
+      filterSearch: true, // Enable search bar for this filter
       onFilter: (value, record) => record.agent_name.includes(value),
       width: 200,
     },
@@ -155,6 +179,7 @@ const ListingPage = () => {
           value: "PENDING",
         },
       ],
+      filterSearch: true, // Enable search bar for this filter
 
       onFilter: (value, record) => record.status == value,
       render: (text, record) => {
@@ -162,16 +187,22 @@ const ListingPage = () => {
           // If del_img is present, render the image
           return (
             <>
-            <img
-              src={record.delImg}
-              alt="Delivery Image"
-              style={{ maxWidth: "100px", maxHeight: '100px' }}
-            />
-            <div>DELIVERED AT {record.del_time}</div>
+              <img
+                src={record.delImg}
+                alt="Delivery Image"
+                style={{ maxWidth: "100px", maxHeight: "100px" }}
+              />
+              <div>DELIVERED AT {record.del_time}</div>
             </>
           );
         } else if (record.status) {
-          return <span style={{ color: record.status === 'PENDING' ? 'red' : "blue" }}>{record.status}</span>;
+          return (
+            <span
+              style={{ color: record.status === "PENDING" ? "red" : "blue" }}
+            >
+              {record.status}
+            </span>
+          );
         }
       },
     },
@@ -190,7 +221,7 @@ const ListingPage = () => {
     setSize(page);
   };
 
-   const handleChange = (pagination, filters, sorter) => {
+  const handleChange = (pagination, filters, sorter) => {
     const nonEmptyFilters = {};
     Object.keys(filters).map((x) => {
       if (filters[x]?.length > 0) nonEmptyFilters[x] = filters[x];
@@ -199,15 +230,14 @@ const ListingPage = () => {
 
     let filteredData = historyData.filter((item) => {
       for (let key in nonEmptyFilters) {
-        if(key == 'agent_name') {
-          if( !item[key].some((x) => nonEmptyFilters[key].includes(x))){
+        if (key == "agent_name") {
+          if (!item[key].some((x) => nonEmptyFilters[key].includes(x))) {
             return false;
           }
-        }
-        else {
+        } else {
           if (!nonEmptyFilters[key].includes(item[key])) {
             return false;
-          } 
+          }
         }
       }
 
@@ -216,7 +246,6 @@ const ListingPage = () => {
 
     handleFilteredDataCount(filteredData);
   };
-
 
   return (
     <div>
@@ -238,9 +267,9 @@ const ListingPage = () => {
         onFilteredDataChange={handleFilteredDataCount}
         onChange={handleChange}
         fileName="History_Listing.csv"
-         scroll={{
+        scroll={{
           y: "calc(100vh - 333px)",
-        }} 
+        }}
       />
       <div className="flex justify-end px-4 py-2">
         <Pagination

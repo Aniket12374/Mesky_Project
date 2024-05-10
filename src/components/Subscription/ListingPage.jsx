@@ -150,9 +150,8 @@ const ListingPage = () => {
         text: customerName,
         value: customerName,
       })),
-      // filterMode: "tree",
-      // filterSearch: true,
-      onFilter: (value, record) => record.customer_name.indexOf(value) === 0,
+      filterSearch: true, // Enable search bar for this filter
+      onFilter: (value, record) => record.customer_name.includes(value),
     },
     {
       title: "SOCIETY NAME",
@@ -162,24 +161,9 @@ const ListingPage = () => {
         text: societyName,
         value: societyName,
       })),
+      filterSearch: true, // Enable search bar for this filter
       onFilter: (value, record) => record.society_name === value,
     },
-    // {
-    //   title: "PINCODE",
-    //   dataIndex: "pincode",
-    //   key: "pincode",
-    //   filters: uniquePincodes.map((pincode) => ({
-    //     text: pincode,
-    //     value: pincode,
-    //   })),
-    //   onFilter: (value, record) => {
-    //     const filteredData = historyData.filter(
-    //       (item) => item.pincode === value
-    //     );
-    //     handleFilteredDataCount(filteredData);
-    //     return record.pincode === value;
-    //   },
-    // },
     {
       title: "PHONE NUMBER",
       dataIndex: "phone_number",
@@ -188,26 +172,16 @@ const ListingPage = () => {
         text: phoneNumber,
         value: phoneNumber,
       })),
-      onFilter: (value, record) => record.phone_number.indexOf(value) == 0,
+      filterSearch: true, // Enable search bar for this filter
+      onFilter: (value, record) => record.phone_number.includes(value),
     },
-
     {
       title: "SECTOR",
       dataIndex: "sectors",
       key: "sectors",
       filters: uniqueSectors.map((sector) => ({ text: sector, value: sector })),
+      filterSearch: true, // Enable search bar for this filter
       onFilter: (value, record) => record.sectors === value,
-    },
-    // {
-    //   title: "UNIT QUANTITY",
-    //   dataIndex: "unit_qty",
-    //   key: "unit_qty",
-    // },
-    {
-      title: "QTY",
-      dataIndex: "qty",
-      key: "qty",
-      width: 60,
     },
     {
       title: "AGENT NAME",
@@ -217,15 +191,8 @@ const ListingPage = () => {
         text: agentName,
         value: agentName,
       })),
-      //  width: 120,
+      filterSearch: true, // Enable search bar for this filter
       onFilter: (value, record) => record.agent_name.includes(value),
-    },
-    {
-      title: "DELIVERY ADDRESS",
-      dataIndex: "delivery",
-      key: "delivery",
-      // ellipsis: true,
-      width: 150,
     },
     {
       title: "STATUS",
@@ -245,40 +212,13 @@ const ListingPage = () => {
           value: "PENDING",
         },
       ],
-      // width: 90,
-      onFilter: (value, record) => record.status == value,
-      render: (text, record) => {
-        if (record.delImg) {
-          // If del_img is present, render the image
-          return (
-            <>
-              <div onClick={() => openImagePopup(record.delImg)}>
-                <img
-                  src={record.delImg}
-                  alt="Delivery Image"
-                  style={{ maxWidth: "100px", maxHeight: "100px" }}
-                />
-              </div>
-              <div>DELIVERED AT {record.del_time}</div>
-            </>
-          );
-        } else if (record.status) {
-          return (
-            <span
-              style={{ color: record.status == "PENDING" ? "red" : "blue" }}
-            >
-              {record.status}
-            </span>
-          );
-        }
-      },
+      filterSearch: true, // Enable search bar for this filter
+      onFilter: (value, record) => record.status === value,
     },
-
     {
       title: "PAUSE ITEM",
       key: "item_uid",
       dataIndex: "item_uid",
-      // width: 60,
       render: (item_uid, record) =>
         !record.del_time && (
           <button

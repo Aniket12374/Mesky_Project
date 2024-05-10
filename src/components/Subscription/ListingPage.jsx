@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import DataTable from "../Common/DataTable/DataTable";
 import { useQuery } from "react-query";
-import { presentOrders } from "../../services/subscriptionOrders/subscriptionService";
+import {
+  presentOrders,
+  reAssignAgent,
+} from "../../services/subscriptionOrders/subscriptionService";
 import { useNavigate } from "react-router-dom";
 import { Pagination } from "antd";
 import { subscriptionPause } from "../../services/subscriptionOrders/subscriptionService";
@@ -342,6 +345,12 @@ const ListingPage = () => {
       <div className="float-right font-medium">
         Showing Results: {filteredDataCount}/{totalDataCount}
       </div>
+      <button
+        className="bg-[#ff0000] text-white p-2 mr-2 rounded-lg"
+        onClick={() => reAssignAgent()}
+      >
+        Re-Assign Agents
+      </button>
       <DataTable
         data={historyData}
         loading={isLoading}

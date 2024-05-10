@@ -105,6 +105,10 @@ body {
   background-color: #1677ff !important;
 }
 
+.ant-btn-primary {
+  background-color: #1677ff !important;
+}
+
 .tags-select {
   padding: 8px;
 }

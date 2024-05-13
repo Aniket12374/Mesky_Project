@@ -156,6 +156,10 @@ const ListingPage = () => {
       }),
     };
 
+    if (payload.qty == 0) {
+      return toast.error("Updated quantity can't be zero");
+    }
+
     subscriptionQtyChange(payload)
       .then((res) => {
         toast.success("Quantity changed successfully!");

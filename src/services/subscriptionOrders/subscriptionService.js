@@ -19,3 +19,7 @@ export const previousOrders = (page = 1, size = 10) => {
 export const subscriptionPause = (data) => {
   return httpVendor.post("/api/delivery/portal/pause_item", data);
 };
+
+export const subscriptionQtyChange = (data) => {
+  return httpVendor.post("/api/delivery/portal/qty_update", data);
+};

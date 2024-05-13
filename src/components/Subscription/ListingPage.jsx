@@ -3,8 +3,11 @@ import DataTable from "../Common/DataTable/DataTable";
 import { useQuery } from "react-query";
 import { presentOrders } from "../../services/subscriptionOrders/subscriptionService";
 import { useNavigate } from "react-router-dom";
-import { Pagination } from "antd";
-import { subscriptionPause } from "../../services/subscriptionOrders/subscriptionService";
+import { Button, Pagination } from "antd";
+import {
+  subscriptionPause,
+  subscriptionQtyChange,
+} from "../../services/subscriptionOrders/subscriptionService";
 import toast from "react-hot-toast";
 import { customAlphNumericSort } from "../../utils";
 import { Modal } from "antd";
@@ -23,6 +26,13 @@ const ListingPage = () => {
   );
   const [filteredDataCount, setFilteredDataCount] = useState(null);
   const [totalDataCount, setTotalDataCount] = useState(0);
+  const [quantityChange, setQuantityChange] = useState({
+    modalOpen: false,
+    modalData: {},
+    for_future_order: false,
+    changedQty: 0,
+  });
+
   useEffect(() => {
     if (data && data.data && data.data.data) {
       setTotalDataCount(data.data.totalCount);
@@ -123,6 +133,33 @@ const ListingPage = () => {
     } catch (error) {
       toast.error(error?.response.data.message);
     }
+  };
+
+  const handleQuantityModal = (record) => {
+    setQuantityChange((prev) => ({
+      ...prev,
+      modalData: record,
+      modalOpen: !quantityChange?.modalOpen,
+    }));
+  };
+
+  const handleSubmitQuantityChange = () => {
+    const isFutureOrder = quantityChange?.for_future_order;
+    let payload = {
+      qty: quantityChange?.changedQty,
+      item_uid: quantityChange?.modalData?.item_uid,
+      ...(isFutureOrder && {
+        for_future_order: quantityChange?.for_future_order,
+      }),
+    };
+
+    subscriptionQtyChange(payload)
+      .then((res) => {
+        toast.success("Quantity changed successfully!");
+      })
+      .catch((err) => {
+        toast.error("Something went wrong! please try again...");
+      });
   };
 
   const openImagePopup = (imageUrl) => {
@@ -289,6 +326,20 @@ const ListingPage = () => {
           </button>
         ),
     },
+    {
+      title: "QTY CHANGE",
+      key: "quantity_change",
+      dataIndex: "quantity_change",
+      // width: 60,
+      render: (quantity_change, record) => (
+        <button
+          className="bg-[#DF4584] rounded-2xl text-white p-2"
+          onClick={() => handleQuantityModal(record)}
+        >
+          Qty Change
+        </button>
+      ),
+    },
   ];
 
   const handlePageChange = (page) => {
@@ -327,6 +378,13 @@ const ListingPage = () => {
       return true;
     });
     handleFilteredDataCount(filteredData);
+  };
+
+  const handleQuantityOption = (option) => {
+    setQuantityChange((prev) => ({
+      ...prev,
+      for_future_order: option,
+    }));
   };
 
   return (
@@ -380,6 +438,86 @@ const ListingPage = () => {
             style={{ maxWidth: "100%" }}
           />
         )}
+      </Modal>
+      <Modal
+        style={{
+          fontFamily: "Fredoka, sans-serif",
+        }}
+        title="Quantity Change Modal"
+        titleColor="#9c29c1"
+        open={quantityChange?.modalOpen}
+        onCancel={() => handleQuantityModal({})}
+        width={700}
+        // height={700}
+        okText="Submit"
+        onOk={handleSubmitQuantityChange}
+        centered
+      >
+        <div>
+          <span>Item uid:</span>
+          <span className="font-bold ml-2">
+            {quantityChange?.modalData?.item_uid}{" "}
+          </span>
+        </div>
+        <div>
+          <span>Customer Name:</span>
+          <span className="font-bold ml-2">
+            {quantityChange?.modalData?.customer_name}
+          </span>
+        </div>
+        <div>
+          <span>Customer Phone Number:</span>
+          <span className="font-bold ml-2">
+            {quantityChange?.modalData?.phone_number}
+          </span>
+        </div>
+        <div className="font-bold text-lg mt-3 text-[#df4584]">
+          Please select one option
+        </div>
+        <div className="flex flex-col">
+          <label>
+            <input
+              type="checkbox"
+              onChange={() => handleQuantityOption(false)}
+              checked={quantityChange.for_future_order === false}
+              value="Only for current order"
+            />
+            <span className="ml-3">Only for current order</span>
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              onChange={() => handleQuantityOption(true)}
+              checked={quantityChange.for_future_order === true}
+              value="For all current and future orders"
+            />
+            <span className="ml-3">For all current and future orders</span>
+          </label>
+        </div>
+        <div className="mt-3 flex space-x-5">
+          <div className="flex space-x-3">
+            <div>Current Quantity:</div>
+            <div className="border-2 w-36 text-center">
+              {quantityChange?.modalData?.qty}
+            </div>
+          </div>
+          <div className="flex space-x-3">
+            <div>New Quantity:</div>
+            <div className="border-2  text-center">
+              <input
+                type="number"
+                className="text-center"
+                value={quantityChange?.changedQty}
+                onChange={(e) =>
+                  setQuantityChange((prev) => ({
+                    ...prev,
+                    changedQty: e.target.value,
+                  }))
+                }
+              />
+            </div>
+          </div>
+        </div>
       </Modal>
     </div>
   );

@@ -180,20 +180,31 @@ const ListingPage = () => {
     setSearchedColumn(dataIndex);
   };
 
+  // Save data to localStorage
   const handleEditClick = async () => {
     if (isEditMode) {
       const payload = { rider_id: riderID, society_list: tableData };
+
+      // Save tableData to localStorage before sending the API request
+      localStorage.setItem("tableData", JSON.stringify(tableData));
 
       await updateRankInfo(payload);
 
       setIsEditMode(false);
       setButtonText("Edit");
     } else {
-      // Enter edit mode
       setIsEditMode(true);
-      setButtonText("Save"); // Change button text to 'Save'
+      setButtonText("Save");
     }
   };
+
+  useEffect(() => {
+    // Fetch saved data from localStorage when component mounts
+    const savedTableData = localStorage.getItem("tableData");
+    if (savedTableData) {
+      setTableData(JSON.parse(savedTableData));
+    }
+  }, []);
 
   const handleCancelClick = () => {
     setIsEditMode(false);
@@ -229,7 +240,10 @@ const ListingPage = () => {
             Search
           </Button>
           <Button
-            onClick={() => clearFilters && clearFilters()}
+            onClick={() => {
+              setSelectedKeys([]); // Clear selected keys
+              handleSearch([], confirm, dataIndex); // Clear search and confirm
+            }}
             size="small"
             style={{ width: 90 }}
           >
@@ -242,10 +256,15 @@ const ListingPage = () => {
       <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
     ),
     onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+      record[dataIndex]
+        ? record[dataIndex]
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase())
+        : "",
     onFilterDropdownVisibleChange: (visible) => {
       if (visible) {
-        setTimeout(() => searchInput.current?.select());
+        setTimeout(() => searchInput.current && searchInput.current.select());
       }
     },
     render: (text) =>
@@ -275,7 +294,7 @@ const ListingPage = () => {
       dataIndex: "name",
       key: "name",
       width: "33%",
-      ...getColumnSearchProps("society"),
+      ...getColumnSearchProps("name"),
     },
     {
       title: "Rank",

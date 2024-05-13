@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import DataTable from "../Common/DataTable/DataTable";
 import { useQuery } from "react-query";
-import { presentOrders } from "../../services/subscriptionOrders/subscriptionService";
+import {
+  presentOrders,
+  reAssignAgent,
+} from "../../services/subscriptionOrders/subscriptionService";
 import { useNavigate } from "react-router-dom";
 import { Button, Pagination } from "antd";
 import {
@@ -187,8 +190,8 @@ const ListingPage = () => {
         text: customerName,
         value: customerName,
       })),
-      // filterMode: "tree",
-      // filterSearch: true,
+
+      filterSearch: true,
       onFilter: (value, record) => record.customer_name.indexOf(value) === 0,
     },
     {
@@ -199,6 +202,7 @@ const ListingPage = () => {
         text: societyName,
         value: societyName,
       })),
+      filterSearch: true,
       onFilter: (value, record) => record.society_name === value,
     },
     // {
@@ -225,6 +229,7 @@ const ListingPage = () => {
         text: phoneNumber,
         value: phoneNumber,
       })),
+      filterSearch: true,
       onFilter: (value, record) => record.phone_number.indexOf(value) == 0,
     },
 
@@ -233,6 +238,7 @@ const ListingPage = () => {
       dataIndex: "sectors",
       key: "sectors",
       filters: uniqueSectors.map((sector) => ({ text: sector, value: sector })),
+      filterSearch: true,
       onFilter: (value, record) => record.sectors === value,
     },
     // {
@@ -255,6 +261,7 @@ const ListingPage = () => {
         value: agentName,
       })),
       //  width: 120,
+      filterSearch: true,
       onFilter: (value, record) => record.agent_name.includes(value),
     },
     {
@@ -284,6 +291,7 @@ const ListingPage = () => {
       ],
       // width: 90,
       onFilter: (value, record) => record.status == value,
+      filterSearch: true,
       render: (text, record) => {
         if (record.delImg) {
           // If del_img is present, render the image
@@ -400,6 +408,12 @@ const ListingPage = () => {
       <div className="float-right font-medium">
         Showing Results: {filteredDataCount}/{totalDataCount}
       </div>
+      <button
+        className="bg-[#ff0000] text-white p-2 mr-2 rounded-lg"
+        onClick={() => reAssignAgent()}
+      >
+        Re-Assign Agents
+      </button>
       <DataTable
         data={historyData}
         loading={isLoading}

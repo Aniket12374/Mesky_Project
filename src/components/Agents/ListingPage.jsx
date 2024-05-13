@@ -86,6 +86,7 @@ const ListingPage = ({ setShowAgentCreation }) => {
         value: assignedArea,
       })),
       //  width: 120,
+      filterSearch: true, // Enable search bar for this filter
       onFilter: (value, record) => record.assigned_area.includes(value),
     },
     {

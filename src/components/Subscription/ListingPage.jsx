@@ -23,7 +23,7 @@ const ListingPage = () => {
   const [imagePopupVisible, setImagePopupVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
 
-  const { data, isLoading, isError } = useQuery(
+  const { data, isLoading, isError, refetch } = useQuery(
     ["presentOrders", currentPage, size],
     () => presentOrders(currentPage, size)
   );
@@ -138,14 +138,17 @@ const ListingPage = () => {
     }
   };
 
+  //quantity change modal - open, close
   const handleQuantityModal = (record) => {
     setQuantityChange((prev) => ({
       ...prev,
       modalData: record,
       modalOpen: !quantityChange?.modalOpen,
+      changedQty: 0,
     }));
   };
 
+  //handle ok in quantity change modal
   const handleSubmitQuantityChange = () => {
     const isFutureOrder = quantityChange?.for_future_order;
     let payload = {
@@ -163,6 +166,8 @@ const ListingPage = () => {
     subscriptionQtyChange(payload)
       .then((res) => {
         toast.success("Quantity changed successfully!");
+        handleQuantityModal({});
+        refetch();
       })
       .catch((err) => {
         toast.error("Something went wrong! please try again...");
@@ -399,6 +404,18 @@ const ListingPage = () => {
     }));
   };
 
+  const {
+    modalOpen,
+    for_future_order: futureOrder,
+    changedQty,
+    modalData: {
+      item_uid: itemUid,
+      customer_name: custmerName,
+      phone_number: phNumber,
+      qty: customerQty,
+    },
+  } = quantityChange;
+
   return (
     <div>
       <style>
@@ -463,7 +480,7 @@ const ListingPage = () => {
         }}
         title="Quantity Change Modal"
         titleColor="#9c29c1"
-        open={quantityChange?.modalOpen}
+        open={modalOpen}
         onCancel={() => handleQuantityModal({})}
         width={700}
         // height={700}
@@ -473,21 +490,15 @@ const ListingPage = () => {
       >
         <div>
           <span>Item uid:</span>
-          <span className="font-bold ml-2">
-            {quantityChange?.modalData?.item_uid}{" "}
-          </span>
+          <span className="font-bold ml-2">{itemUid}</span>
         </div>
         <div>
           <span>Customer Name:</span>
-          <span className="font-bold ml-2">
-            {quantityChange?.modalData?.customer_name}
-          </span>
+          <span className="font-bold ml-2">{custmerName}</span>
         </div>
         <div>
           <span>Customer Phone Number:</span>
-          <span className="font-bold ml-2">
-            {quantityChange?.modalData?.phone_number}
-          </span>
+          <span className="font-bold ml-2">{phNumber}</span>
         </div>
         <div className="font-bold text-lg mt-3 text-[#df4584]">
           Please select one option
@@ -497,7 +508,7 @@ const ListingPage = () => {
             <input
               type="checkbox"
               onChange={() => handleQuantityOption(false)}
-              checked={quantityChange.for_future_order === false}
+              checked={futureOrder === false}
               value="Only for current order"
             />
             <span className="ml-3">Only for current order</span>
@@ -506,7 +517,7 @@ const ListingPage = () => {
             <input
               type="checkbox"
               onChange={() => handleQuantityOption(true)}
-              checked={quantityChange.for_future_order === true}
+              checked={futureOrder === true}
               value="For all current and future orders"
             />
             <span className="ml-3">For all current and future orders</span>
@@ -515,9 +526,7 @@ const ListingPage = () => {
         <div className="mt-3 flex space-x-5">
           <div className="flex space-x-3">
             <div>Current Quantity:</div>
-            <div className="border-2 w-36 text-center">
-              {quantityChange?.modalData?.qty}
-            </div>
+            <div className="border-2 w-36 text-center">{customerQty}</div>
           </div>
           <div className="flex space-x-3">
             <div>New Quantity:</div>
@@ -525,7 +534,7 @@ const ListingPage = () => {
               <input
                 type="number"
                 className="text-center"
-                value={quantityChange?.changedQty}
+                value={changedQty}
                 onChange={(e) =>
                   setQuantityChange((prev) => ({
                     ...prev,

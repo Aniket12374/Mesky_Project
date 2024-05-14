@@ -2,13 +2,21 @@ import { useState, useEffect } from "react";
 import { dashboardStats } from "../../services/dashboard/DashboardService";
 import { Select, Table } from "antd";
 import { mappingList } from "../../services/areaMapping/MappingService";
-import { sectorDataStats } from "../../services/dashboard/DashboardService";
+import {
+  sectorDataStats,
+  dashboardTable,
+} from "../../services/dashboard/DashboardService";
+import { useQuery } from "react-query";
 
 const DashboardDetail = () => {
   const [stats, setStats] = useState(null);
   const [allRiders, setAllRiders] = useState([]);
   const [sectorData, setSectorData] = useState([]);
   const [selectedRider, setSelectedRider] = useState(null); // Track selected rider
+  const { data, isLoading, isError } = useQuery(
+    "dashboardTable",
+    dashboardTable
+  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -70,38 +78,42 @@ const DashboardDetail = () => {
   const filterOption = (input, option) =>
     option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
 
-  const columns = [
+  let historyData = [];
+  data?.data?.map((rider) => {
+    historyData.push({
+      rider: rider.rider_name,
+      assignedOrders: rider.total_orders,
+      completedOrders: rider.completed_order_count,
+      pendingOrders: rider.pending_order_count,
+      escalatedOrders: rider.escelated_order_count,
+    });
+  });
+
+  const HistoryHeaders = [
     {
-      title: "Name",
-      dataIndex: "name",
+      title: "Rider",
+      dataIndex: "rider",
+      key: "rider",
     },
     {
-      title: "Age",
-      dataIndex: "age",
+      title: "Assigned Orders",
+      dataIndex: "assignedOrders",
+      key: "assignedOrders",
     },
     {
-      title: "Address",
-      dataIndex: "address",
-    },
-  ];
-  const data = [
-    {
-      key: "1",
-      name: "John Brown",
-      age: 32,
-      address: "New York No. 1 Lake Park",
+      title: "Completed Orders",
+      dataIndex: "completedOrders",
+      key: "completedOrders",
     },
     {
-      key: "2",
-      name: "Jim Green",
-      age: 42,
-      address: "London No. 1 Lake Park",
+      title: "Pending Orders",
+      dataIndex: "pendingOrders",
+      key: "pendingOrders",
     },
     {
-      key: "3",
-      name: "Joe Black",
-      age: 32,
-      address: "Sydney No. 1 Lake Park",
+      title: "Escalated Orders",
+      dataIndex: "escalatedOrders",
+      key: "escalatedOrders",
     },
   ];
 
@@ -143,12 +155,11 @@ const DashboardDetail = () => {
           )}
         </div>
         <div>
-          {" "}
           <Table
-            columns={columns}
-            dataSource={data}
-            size="middle"
-            pagination={false}
+            columns={HistoryHeaders}
+            dataSource={historyData}
+            rowKey={(record) => record.rider_id} // Assuming rider_id is a unique identifier
+            pagination={false} // Optional: Configure pagination as needed
           />
         </div>
       </div>

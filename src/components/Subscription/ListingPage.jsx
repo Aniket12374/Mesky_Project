@@ -33,7 +33,7 @@ const ListingPage = () => {
     modalOpen: false,
     modalData: {},
     for_future_order: false,
-    changedQty: 0,
+    changedQty: 1,
   });
 
   useEffect(() => {
@@ -144,7 +144,7 @@ const ListingPage = () => {
       ...prev,
       modalData: record,
       modalOpen: !quantityChange?.modalOpen,
-      changedQty: 0,
+      changedQty: 1,
     }));
   };
 
@@ -159,8 +159,8 @@ const ListingPage = () => {
       }),
     };
 
-    if (payload.qty == 0) {
-      return toast.error("Updated quantity can't be zero");
+    if (payload.qty <= 0) {
+      return toast.error("Updated quantity can't be less or equal to zero");
     }
 
     subscriptionQtyChange(payload)
@@ -535,6 +535,7 @@ const ListingPage = () => {
                 type="number"
                 className="text-center"
                 value={changedQty}
+                min={1}
                 onChange={(e) =>
                   setQuantityChange((prev) => ({
                     ...prev,

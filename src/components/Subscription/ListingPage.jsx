@@ -22,7 +22,7 @@ const ListingPage = () => {
   const [selectedFilters, setSelectedFilters] = useState({});
   const [imagePopupVisible, setImagePopupVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [pausedItems, setPausedItems] = useState([]);
+  // const [pausedItems, setPausedItems] = useState([]);
 
   const { data, isLoading, isError, refetch } = useQuery(
     ["presentOrders", currentPage, size],
@@ -135,7 +135,7 @@ const ListingPage = () => {
       const response = await subscriptionPause(data);
 
       toast.success(response?.data.message);
-      setPausedItems([...pausedItems, item_uid]);
+      // setPausedItems([...pausedItems, item_uid]);
       // Update local state (optimistic update)
       refetch();
     } catch (error) {
@@ -343,25 +343,11 @@ const ListingPage = () => {
           <button
             className="bg-[#DF4584] rounded-2xl text-white p-2"
             onClick={() => handlePause(item_uid)}
-            disabled={pausedItems.includes(item_uid)} // Disable button for paused items
+            // disabled={pausedItems.includes(item_uid)} // Disable button for paused items
           >
             Pause
           </button>
         ),
-    },
-    {
-      title: "QTY CHANGE",
-      key: "quantity_change",
-      dataIndex: "quantity_change",
-      // width: 60,
-      render: (quantity_change, record) => (
-        <button
-          className="bg-[#DF4584] rounded-2xl text-white p-2"
-          onClick={() => handleQuantityModal(record)}
-        >
-          Qty Change
-        </button>
-      ),
     },
 
     {

@@ -1,14 +1,22 @@
 import { useState, useEffect } from "react";
 import { dashboardStats } from "../../services/dashboard/DashboardService";
-import { Select } from "antd";
+import { Select, Table } from "antd";
 import { mappingList } from "../../services/areaMapping/MappingService";
-import { sectorDataStats } from "../../services/dashboard/DashboardService";
+import {
+  sectorDataStats,
+  dashboardTable,
+} from "../../services/dashboard/DashboardService";
+import { useQuery } from "react-query";
 
 const DashboardDetail = () => {
   const [stats, setStats] = useState(null);
   const [allRiders, setAllRiders] = useState([]);
   const [sectorData, setSectorData] = useState([]);
   const [selectedRider, setSelectedRider] = useState(null); // Track selected rider
+  const { data, isLoading, isError } = useQuery(
+    "dashboardTable",
+    dashboardTable
+  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -70,10 +78,49 @@ const DashboardDetail = () => {
   const filterOption = (input, option) =>
     option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
 
+  let historyData = [];
+  data?.data?.map((rider) => {
+    historyData.push({
+      rider: rider.rider_name,
+      assignedOrders: rider.total_orders,
+      completedOrders: rider.completed_order_count,
+      pendingOrders: rider.pending_order_count,
+      escalatedOrders: rider.escelated_order_count,
+    });
+  });
+
+  const HistoryHeaders = [
+    {
+      title: "Rider",
+      dataIndex: "rider",
+      key: "rider",
+    },
+    {
+      title: "Assigned Orders",
+      dataIndex: "assignedOrders",
+      key: "assignedOrders",
+    },
+    {
+      title: "Completed Orders",
+      dataIndex: "completedOrders",
+      key: "completedOrders",
+    },
+    {
+      title: "Pending Orders",
+      dataIndex: "pendingOrders",
+      key: "pendingOrders",
+    },
+    {
+      title: "Escalated Orders",
+      dataIndex: "escalatedOrders",
+      key: "escalatedOrders",
+    },
+  ];
+
   return (
     <div className="flex justify-between mt-12">
       <div className="w-[45%] space-y-7">
-        <div className="grid grid-cols-3 gap-12">
+        <div className="grid grid-cols-5 gap-4">
           {stats && (
             <>
               <div className="rounded-lg bg-[#DF4584] text-center text-white px-1 py-5">
@@ -92,12 +139,6 @@ const DashboardDetail = () => {
                 </div>
                 <div className="text-sm">Riders</div>
               </div>
-            </>
-          )}
-        </div>
-        <div className="grid grid-cols-3 gap-12">
-          {stats && (
-            <>
               <div className="rounded-lg bg-[#FC8172] text-center text-white px-1 py-5">
                 <div className="text-3xl font-medium">
                   {stats.total_pincodes}
@@ -112,6 +153,14 @@ const DashboardDetail = () => {
               </div>
             </>
           )}
+        </div>
+        <div>
+          <Table
+            columns={HistoryHeaders}
+            dataSource={historyData}
+            rowKey={(record) => record.rider_id} // Assuming rider_id is a unique identifier
+            pagination={false} // Optional: Configure pagination as needed
+          />
         </div>
       </div>
 

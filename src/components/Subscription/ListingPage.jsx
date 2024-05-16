@@ -74,6 +74,7 @@ const ListingPage = () => {
       phone_number: listingData?.order?.mobile_number,
       unit_qty: listingData?.unit_quantity,
       qty: listingData?.quantity,
+      product: listingData?.product_name,
       sectors: listingData?.society?.sector,
       delivery: listingData?.order?.line_1 + " " + listingData?.order?.line_2,
       agent_name: listingData?.rider?.map((rider, key) => {
@@ -250,11 +251,16 @@ const ListingPage = () => {
       filterSearch: true,
       onFilter: (value, record) => record.sectors === value,
     },
-    // {
-    //   title: "UNIT QUANTITY",
-    //   dataIndex: "unit_qty",
-    //   key: "unit_qty",
-    // },
+    {
+      title: "PRODUCT",
+      dataIndex: "product",
+      key: "product",
+    },
+    {
+      title: "UNIT QUANTITY",
+      dataIndex: "unit_qty",
+      key: "unit_qty",
+    },
     {
       title: "QTY",
       dataIndex: "qty",

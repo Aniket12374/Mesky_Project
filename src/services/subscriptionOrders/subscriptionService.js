@@ -25,10 +25,13 @@ export const reAssignAgent = () => {
   return httpVendor
     .get("/api/delivery/portal/reassign_agent")
     .then((res) => {
-      console.log({ res });
+      toast.error("Re-assigned Agent Successfully!");
     })
     .catch((err) => {
-      console.log({ err });
       toast.error("Not working properly!");
     });
+};
+
+export const subscriptionQtyChange = (data) => {
+  return httpVendor.post("/api/delivery/portal/qty_update", data);
 };

@@ -3,7 +3,7 @@ import { useQuery } from "react-query";
 import DataTable from "../Common/DataTable/DataTable";
 import { previousOrders } from "../../services/subscriptionOrders/subscriptionService";
 import { useNavigate } from "react-router-dom";
-import { Pagination } from "antd";
+import { Modal, Pagination } from "antd";
 
 const ListingPage = () => {
   const navigate = useNavigate();
@@ -17,6 +17,8 @@ const ListingPage = () => {
   const [filteredDataCount, setFilteredDataCount] = useState(null);
   const [totalDataCount, setTotalDataCount] = useState(0);
   const [selectedFilters, setSelectedFilters] = useState({});
+  const [imagePopupVisible, setImagePopupVisible] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
     if (data && data.data && data.data.data) {
@@ -96,6 +98,16 @@ const ListingPage = () => {
         .sort((a, b) => new Date(a) - new Date(b))
     )
   );
+
+  const openImagePopup = (imageUrl) => {
+    setSelectedImage(imageUrl);
+    setImagePopupVisible(true);
+  };
+
+  const closeImagePopup = () => {
+    setSelectedImage(null);
+    setImagePopupVisible(false);
+  };
 
   const HistoryHeaders = [
     {
@@ -184,14 +196,15 @@ const ListingPage = () => {
       onFilter: (value, record) => record.status == value,
       render: (text, record) => {
         if (record.delImg) {
-          // If del_img is present, render the image
           return (
             <>
-              <img
-                src={record.delImg}
-                alt="Delivery Image"
-                style={{ maxWidth: "100px", maxHeight: "100px" }}
-              />
+              <div onClick={() => openImagePopup(record.delImg)}>
+                <img
+                  src={record.delImg}
+                  alt="Delivery Image"
+                  style={{ maxWidth: "100px", maxHeight: "100px" }}
+                />
+              </div>
               <div>DELIVERED AT {record.del_time}</div>
             </>
           );
@@ -284,6 +297,20 @@ const ListingPage = () => {
           onShowSizeChange={handlePageSizeChange}
         />
       </div>
+      <Modal
+        open={imagePopupVisible}
+        onCancel={closeImagePopup}
+        footer={null}
+        centered
+      >
+        {selectedImage && (
+          <img
+            src={selectedImage}
+            alt="Delivery Image"
+            style={{ maxWidth: "100%" }}
+          />
+        )}
+      </Modal>
     </div>
   );
 };

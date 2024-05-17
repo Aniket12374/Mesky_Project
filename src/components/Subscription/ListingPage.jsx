@@ -22,6 +22,7 @@ const ListingPage = () => {
   const [selectedFilters, setSelectedFilters] = useState({});
   const [imagePopupVisible, setImagePopupVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  // const [pausedItems, setPausedItems] = useState([]);
 
   const { data, isLoading, isError, refetch } = useQuery(
     ["presentOrders", currentPage, size],
@@ -73,6 +74,7 @@ const ListingPage = () => {
       pincode: listingData?.order?.pincode,
       phone_number: listingData?.order?.mobile_number,
       unit_qty: listingData?.unit_quantity,
+      wallet_amount: listingData?.wallet_amount,
       qty: listingData?.quantity,
       product: listingData?.product_name,
       sectors: listingData?.society?.sector,
@@ -134,6 +136,9 @@ const ListingPage = () => {
       const response = await subscriptionPause(data);
 
       toast.success(response?.data.message);
+      // setPausedItems([...pausedItems, item_uid]);
+      // Update local state (optimistic update)
+      refetch();
     } catch (error) {
       toast.error(error?.response.data.message);
     }
@@ -344,11 +349,13 @@ const ListingPage = () => {
           <button
             className="bg-[#DF4584] rounded-2xl text-white p-2"
             onClick={() => handlePause(item_uid)}
+            // disabled={pausedItems.includes(item_uid)} // Disable button for paused items
           >
             Pause
           </button>
         ),
     },
+
     {
       title: "QTY CHANGE",
       key: "quantity_change",
@@ -362,6 +369,12 @@ const ListingPage = () => {
           Qty Change
         </button>
       ),
+    },
+    {
+      title: "WALLET",
+      dataIndex: "wallet_amount",
+      key: "wallet_amount",
+      // width: 60,
     },
   ];
 

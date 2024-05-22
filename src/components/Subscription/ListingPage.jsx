@@ -77,7 +77,7 @@ const ListingPage = () => {
       wallet_amount: listingData?.wallet_amount,
       qty: listingData?.quantity,
       product: listingData?.product_name,
-      sectors: listingData?.society?.sector,
+      sectors: listingData?.society?.sector || "",
       delivery: listingData?.order?.line_1 + " " + listingData?.order?.line_2,
       agent_name: listingData?.rider?.map((rider, key) => {
         let comma = ridersCount - 1 !== key ? ", " : "";
@@ -190,6 +190,8 @@ const ListingPage = () => {
     setImagePopupVisible(false);
   };
 
+  console.log({ uniqueSectors });
+
   const HistoryHeaders = [
     {
       title: "ORDER ID",
@@ -218,7 +220,7 @@ const ListingPage = () => {
         value: societyName,
       })),
       filterSearch: true,
-      onFilter: (value, record) => record.society_name === value,
+      onFilter: (value, record) => record.society_name.indexOf(value) == 0,
     },
     // {
     //   title: "PINCODE",
@@ -254,7 +256,10 @@ const ListingPage = () => {
       key: "sectors",
       filters: uniqueSectors.map((sector) => ({ text: sector, value: sector })),
       filterSearch: true,
-      onFilter: (value, record) => record.sectors === value,
+      onFilter: (value, record) => {
+        console.log({ value });
+        return record.sectors === value;
+      },
     },
     {
       title: "PRODUCT",

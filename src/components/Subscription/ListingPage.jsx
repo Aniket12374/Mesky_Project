@@ -190,8 +190,6 @@ const ListingPage = () => {
     setImagePopupVisible(false);
   };
 
-  console.log({ uniqueSectors });
-
   const HistoryHeaders = [
     {
       title: "ORDER ID",
@@ -256,10 +254,7 @@ const ListingPage = () => {
       key: "sectors",
       filters: uniqueSectors.map((sector) => ({ text: sector, value: sector })),
       filterSearch: true,
-      onFilter: (value, record) => {
-        console.log({ value });
-        return record.sectors === value;
-      },
+      onFilter: (value, record) => record.sectors === value,
     },
     {
       title: "PRODUCT",

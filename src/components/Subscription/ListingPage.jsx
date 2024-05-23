@@ -478,7 +478,6 @@ const ListingPage = () => {
         onFilteredDataChange={handleFilteredDataCount}
         scroll={{
           y: "calc(100vh - 350px)",
-          x: "800",
         }}
       />
       <div className="flex justify-end px-4 py-2">

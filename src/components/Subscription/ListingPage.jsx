@@ -105,6 +105,14 @@ const ListingPage = () => {
     )
   );
 
+  const uniqueProducts = Array.from(
+    new Set(
+      historyData
+        .map((listingData) => listingData?.product)
+        .sort(customAlphNumericSort)
+    )
+  );
+
   const uniqueAgentNames = Array.from(
     new Set(
       historyData
@@ -260,6 +268,13 @@ const ListingPage = () => {
       title: "PRODUCT",
       dataIndex: "product",
       key: "product",
+      width: 100,
+      filters: uniqueProducts.map((product) => ({
+        text: product,
+        value: product,
+      })),
+      filterSearch: true,
+      onFilter: (value, record) => record.product === value,
     },
     {
       title: "UNIT QUANTITY",
@@ -280,7 +295,7 @@ const ListingPage = () => {
         text: agentName,
         value: agentName,
       })),
-      //  width: 120,
+      // width: 120,
       filterSearch: true,
       onFilter: (value, record) => record.agent_name.includes(value),
     },
@@ -360,7 +375,6 @@ const ListingPage = () => {
       title: "QTY CHANGE",
       key: "quantity_change",
       dataIndex: "quantity_change",
-      // width: 60,
       render: (quantity_change, record) => (
         <button
           className="bg-[#DF4584] rounded-2xl text-white p-2"
@@ -370,12 +384,12 @@ const ListingPage = () => {
         </button>
       ),
     },
-    {
-      title: "WALLET",
-      dataIndex: "wallet_amount",
-      key: "wallet_amount",
-      // width: 60,
-    },
+    // {
+    //   title: "WALLET",
+    //   dataIndex: "wallet_amount",
+    //   key: "wallet_amount",
+    //   width: 60,
+    // },
   ];
 
   const handlePageChange = (page) => {

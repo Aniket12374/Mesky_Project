@@ -13,16 +13,31 @@ const DashboardDetail = () => {
   const [allRiders, setAllRiders] = useState([]);
   const [sectorData, setSectorData] = useState([]);
   const [selectedRider, setSelectedRider] = useState(null); // Track selected rider
+  const [otherProducts, setOtherProducts] = useState([]); // State for other products data
   const { data, isLoading, isError } = useQuery(
     "dashboardTable",
     dashboardTable
   );
+
+  const colors = [
+    "#DF4584",
+    "#F9A603",
+    "#65CBF3",
+    "#FC8172",
+    "#AA00FF",
+    "#4CAF50",
+    "#FFEB3B",
+    "#00BCD4",
+    "#9C27B0",
+    "#FF9800",
+  ];
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await dashboardStats();
         setStats(response.data);
+        setOtherProducts(response.data.other_products); // Set other products data
       } catch (error) {
         console.error("Error fetching dashboard stats:", error);
       }
@@ -153,6 +168,18 @@ const DashboardDetail = () => {
               </div>
             </>
           )}
+        </div>
+        <div className="grid grid-cols-5 gap-4">
+          {otherProducts.map((product, index) => (
+            <div
+              key={index}
+              className="rounded-lg text-center text-white px-1 py-5"
+              style={{ backgroundColor: colors[index % colors.length] }}
+            >
+              <div className="text-3xl font-medium">{product.count}</div>
+              <div className="text-sm">{product.name}</div>
+            </div>
+          ))}
         </div>
         <div>
           <Table

@@ -125,6 +125,9 @@ const ListingPage = () => {
   const uniqueStatuses = Array.from(
     new Set(historyData.map((listingData) => listingData?.status?.name))
   );
+  const uniquePhoneNumbers = Array.from(
+    new Set(historyData.map((x) => x.phone_number))
+  ).sort();
 
   let totalCustomerNames = Array.from(
     new Set(
@@ -132,7 +135,7 @@ const ListingPage = () => {
     )
   );
 
-  const totalPhoneNumbers = historyData.map((x) => x.phone_number).sort();
+  // const totalPhoneNumbers = historyData.map((x) => x.phone_number).sort();
 
   const handleFilteredDataCount = (filteredData) => {
     setFilteredDataCount(filteredData.length);
@@ -248,7 +251,7 @@ const ListingPage = () => {
       title: "PHONE NUMBER",
       dataIndex: "phone_number",
       key: "phone_number",
-      filters: totalPhoneNumbers.map((phoneNumber) => ({
+      filters: uniquePhoneNumbers.map((phoneNumber) => ({
         text: phoneNumber,
         value: phoneNumber,
       })),

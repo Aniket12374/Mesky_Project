@@ -48,6 +48,17 @@ const ListingPage = ({ setShowAgentCreation }) => {
     });
   });
 
+  // Sort riders by status: "AVAILABLE" first, then "NOT AVAILABLE"
+  riders.sort((a, b) => {
+    if (a.status === "AVAILABLE" && b.status !== "AVAILABLE") {
+      return -1;
+    }
+    if (a.status !== "AVAILABLE" && b.status === "AVAILABLE") {
+      return 1;
+    }
+    return 0;
+  });
+
   const uniqueAssignedArea = Array.from(
     new Set(
       riders

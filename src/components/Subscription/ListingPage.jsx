@@ -463,7 +463,7 @@ const ListingPage = () => {
         Showing Results: {filteredDataCount}/{totalDataCount}
       </div>
       <button
-        className="bg-[#ff0000] text-white p-2 mr-2 rounded-lg"
+        className="bg-[#ff0000] text-white p-2 mr-2 rounded-lg relative top-2"
         onClick={() => reAssignAgent()}
       >
         Re-Assign Agents

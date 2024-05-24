@@ -2,6 +2,12 @@ import { Link, useLocation } from "react-router-dom";
 import classNames from "classnames";
 import { Image } from "antd";
 import * as Images from "../../../assets/sidebar";
+import { useMainStore } from "../../../store/store";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faSquareCaretLeft,
+  faSquareCaretRight,
+} from "@fortawesome/free-solid-svg-icons";
 
 const SidebarNavItems = [
   {
@@ -32,7 +38,6 @@ const SidebarNavItems = [
     icon1: Images["AreaMapColoredLogo"],
     icon2: Images["AreaMapLogo"],
   },
-
   {
     id: 6,
     name: "History",
@@ -40,7 +45,6 @@ const SidebarNavItems = [
     icon1: Images["OrdersLogoColored"],
     icon2: Images["OrdersLogo"],
   },
-
   {
     id: 8,
     name: "Agents",
@@ -52,13 +56,15 @@ const SidebarNavItems = [
 
 const SideNavBar = () => {
   let location = useLocation();
+  const close = useMainStore((state) => state.sidebarOpen);
+  const setClose = useMainStore((state) => state.setSideBarOpen);
 
   const samePath = (page) => location.pathname.includes(page);
 
   const LiItem = ({ path, name, icon1, icon2 }) => (
     <li
       className={classNames({
-        "bg-gradient-to-l  to-neutral-50 from-[#d3b5e2] rounded-lg":
+        "bg-gradient-to-l to-neutral-50 from-[#d3b5e2] rounded-lg":
           samePath(path),
       })}
     >
@@ -70,14 +76,16 @@ const SideNavBar = () => {
           width={24}
           height={24}
         />
-        <span
-          className={classNames("flex-1 ml-3 ", {
-            "text-[#AA00FF]": samePath(path),
-            "text-gray-600": !samePath(path),
-          })}
-        >
-          {name}
-        </span>
+        {close && (
+          <span
+            className={classNames("flex-1 ml-3", {
+              "text-[#AA00FF]": samePath(path),
+              "text-gray-600": !samePath(path),
+            })}
+          >
+            {name}
+          </span>
+        )}
       </Link>
     </li>
   );
@@ -85,10 +93,18 @@ const SideNavBar = () => {
   return (
     <div
       id="logo-sidebar"
-      className="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white sm:translate-x-0"
+      className="fixed top-0 left-0 z-40  h-screen pt-20 transition-transform -translate-x-full bg-white sm:translate-x-0"
       aria-label="Sidebar"
     >
-      <div className="h-full px-3 pb-4 overflow-y-auto">
+      <div className="h-full px-3 pb-4 w-max">
+        <div className="flex mt-2 justify-end">
+          <button onClick={() => setClose(!close)}>
+            <FontAwesomeIcon
+              size="2x"
+              icon={close ? faSquareCaretLeft : faSquareCaretRight}
+            />
+          </button>
+        </div>
         <ul className="py-2 space-y-2">
           {SidebarNavItems.map((sidebarItem, index) => (
             <LiItem

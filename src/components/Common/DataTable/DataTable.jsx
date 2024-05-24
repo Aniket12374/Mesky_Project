@@ -38,7 +38,7 @@ export const DataTable = ({
       <CSVLink
         filename={fileName}
         data={data}
-        className="btn btn-primary p-1 mt-2"
+        className="bg-[#ff0000] text-white rounded-lg px-2 py-[10px] mt-2"
       >
         Export to CSV
       </CSVLink>

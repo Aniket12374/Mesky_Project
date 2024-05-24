@@ -4,6 +4,7 @@ import DataTable from "../Common/DataTable/DataTable";
 import { previousOrders } from "../../services/subscriptionOrders/subscriptionService";
 import { useNavigate } from "react-router-dom";
 import { Modal, Pagination } from "antd";
+import { customAlphNumericSort } from "../../utils";
 
 const ListingPage = () => {
   const navigate = useNavigate();
@@ -55,6 +56,7 @@ const ListingPage = () => {
         : null,
       customer_name: finalCustomerName,
       quantity: listingData?.quantity,
+      product: listingData?.product_name,
       society_name: listingData?.society?.name,
       delivery: listingData?.order?.line_1 + " " + listingData?.order?.line_2,
       agent_name: listingData?.rider?.map((rider, key) => {
@@ -96,6 +98,14 @@ const ListingPage = () => {
       historyData
         .map((listingData) => listingData?.date)
         .sort((a, b) => new Date(a) - new Date(b))
+    )
+  );
+
+  const uniqueProducts = Array.from(
+    new Set(
+      historyData
+        .map((listingData) => listingData?.product)
+        .sort(customAlphNumericSort)
     )
   );
 
@@ -144,6 +154,18 @@ const ListingPage = () => {
       dataIndex: "quantity",
       key: "quantity",
       width: 60,
+    },
+    {
+      title: "PRODUCT",
+      dataIndex: "product",
+      key: "product",
+      width: 100,
+      filters: uniqueProducts.map((product) => ({
+        text: product,
+        value: product,
+      })),
+      filterSearch: true,
+      onFilter: (value, record) => record.product === value,
     },
     {
       title: "SOCIETY NAME",

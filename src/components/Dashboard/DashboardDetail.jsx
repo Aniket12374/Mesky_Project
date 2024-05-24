@@ -170,7 +170,7 @@ const DashboardDetail = () => {
           )}
         </div>
         <div className="grid grid-cols-5 gap-4">
-          {otherProducts.map((product, index) => (
+          {otherProducts?.map((product, index) => (
             <div
               key={index}
               className="rounded-lg text-center text-white px-1 py-5"

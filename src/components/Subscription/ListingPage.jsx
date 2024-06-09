@@ -55,7 +55,7 @@ const ListingPage = () => {
   let historyData = [];
   data?.data?.data.map((listingData) => {
     const ridersCount = listingData?.rider?.length;
-    const truncatedOrderId = listingData?.order?.uid.slice(-8); // Truncate to last 8 characters
+    const truncatedOrderId = listingData?.order?.uid.slice(-8);
     const customerName = listingData?.order?.full_name;
     let arr = customerName.split(" ");
     let name = arr.filter((x) => x !== "");
@@ -79,10 +79,9 @@ const ListingPage = () => {
       product: listingData?.product_name,
       sectors: listingData?.society?.sector || "",
       delivery: listingData?.order?.line_1 + " " + listingData?.order?.line_2,
-      agent_name: listingData?.rider?.map((rider, key) => {
-        let comma = ridersCount - 1 !== key ? ", " : "";
-        return rider.full_name + comma;
-      }),
+      agent_name: listingData?.rider
+        ? listingData.rider.map((rider) => rider.full_name).join(", ")
+        : "",
       status: delStatus,
       delImg: listingData?.status?.del_img,
       del_time: listingData?.delivery_date
@@ -121,6 +120,8 @@ const ListingPage = () => {
         .sort()
     )
   );
+
+  console.log(uniqueAgentNames);
 
   const uniqueStatuses = Array.from(
     new Set(historyData.map((listingData) => listingData?.status?.name))
@@ -295,12 +296,17 @@ const ListingPage = () => {
       dataIndex: "agent_name",
       key: "agent_name",
       filters: uniqueAgentNames.map((agentName) => ({
-        text: agentName,
+        text: agentName === "" ? "" : agentName, 
         value: agentName,
       })),
       // width: 120,
       filterSearch: true,
-      onFilter: (value, record) => record.agent_name.includes(value),
+      onFilter: (value, record) => {
+        if (value === "") {
+          return record.agent_name === "";
+        }
+        return record.agent_name.includes(value);
+      },
     },
     {
       title: "DELIVERY ADDRESS",

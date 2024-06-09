@@ -55,7 +55,7 @@ const ListingPage = () => {
   let historyData = [];
   data?.data?.data.map((listingData) => {
     const ridersCount = listingData?.rider?.length;
-    const truncatedOrderId = listingData?.order?.uid.slice(-8); // Truncate to last 8 characters
+    const truncatedOrderId = listingData?.order?.uid.slice(-8);
     const customerName = listingData?.order?.full_name;
     let arr = customerName.split(" ");
     let name = arr.filter((x) => x !== "");
@@ -79,10 +79,9 @@ const ListingPage = () => {
       product: listingData?.product_name,
       sectors: listingData?.society?.sector || "",
       delivery: listingData?.order?.line_1 + " " + listingData?.order?.line_2,
-      agent_name: listingData?.rider?.map((rider, key) => {
-        let comma = ridersCount - 1 !== key ? ", " : "";
-        return rider.full_name + comma;
-      }),
+      agent_name: listingData?.rider
+        ? listingData?.rider.map((rider) => rider?.full_name).join(", ")
+        : "",
       status: delStatus,
       delImg: listingData?.status?.del_img,
       del_time: listingData?.delivery_date
@@ -92,7 +91,7 @@ const ListingPage = () => {
   });
 
   const uniqueSocietyNames = Array.from(
-    new Set(historyData.map((listingData) => listingData?.society_name).sort())
+    new Set(historyData?.map((listingData) => listingData?.society_name).sort())
   );
   // const uniquePincodes = Array.from(
   //   new Set(historyData.map((listingData) => listingData?.order?.pincode))
@@ -113,14 +112,15 @@ const ListingPage = () => {
     )
   );
 
-  const uniqueAgentNames = Array.from(
+  const uniqueAgentNames = Array?.from(
     new Set(
       historyData
-        .map((listingData) => listingData?.agent_name)
+        ?.map((listingData) => listingData?.agent_name)
         .flat()
         .sort()
     )
   );
+
 
   const uniqueStatuses = Array.from(
     new Set(historyData.map((listingData) => listingData?.status?.name))
@@ -294,13 +294,18 @@ const ListingPage = () => {
       title: "AGENT NAME",
       dataIndex: "agent_name",
       key: "agent_name",
-      filters: uniqueAgentNames.map((agentName) => ({
-        text: agentName,
+      filters: uniqueAgentNames?.map((agentName) => ({
+        text: agentName === "" ? "" : agentName, 
         value: agentName,
       })),
       // width: 120,
       filterSearch: true,
-      onFilter: (value, record) => record.agent_name.includes(value),
+      onFilter: (value, record) => {
+        if (value === "") {
+          return record?.agent_name === "";
+        }
+        return record?.agent_name?.includes(value);
+      },
     },
     {
       title: "DELIVERY ADDRESS",
@@ -410,28 +415,31 @@ const ListingPage = () => {
 
   const handleChange = (pagination, filters, sorter) => {
     const nonEmptyFilters = {};
-    Object.keys(filters).map((x) => {
+    Object.keys(filters).forEach((x) => {
       if (filters[x]?.length > 0) nonEmptyFilters[x] = filters[x];
     });
+  
     setSelectedFilters(nonEmptyFilters);
-    let filteredData = historyData.filter((item) => {
+  
+    const filteredData = historyData?.filter((item) => {
       for (let key in nonEmptyFilters) {
         if (key === "agent_name") {
-          if (
-            !item[key].some((agent) => nonEmptyFilters[key].includes(agent))
-          ) {
+          const agentNames = item[key] ? item[key].split(',').map(name => name.trim()) : [''];
+          if (!agentNames.some((agent) => nonEmptyFilters[key]?.includes(agent))) {
             return false;
           }
         } else {
-          if (!nonEmptyFilters[key].includes(item[key])) {
+          if (!nonEmptyFilters[key]?.includes(item[key])) {
             return false;
           }
         }
       }
       return true;
     });
+  
     handleFilteredDataCount(filteredData);
   };
+  
 
   const handleQuantityOption = (option) => {
     setQuantityChange((prev) => ({

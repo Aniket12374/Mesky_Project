@@ -1,9 +1,9 @@
 import { httpVendor } from "../api-client";
 
 export const assignAgent = (data) => {
-  return httpVendor.post("/api/delivery/portal/area_mapping", data);
+  return httpVendor.post("/api/delivery/portal/area_mapping_v2", data);
 };
 
 export const mappingList = () => {
-  return httpVendor.get("api/delivery/portal/area_mapping?_start=0&_end=200");
+  return httpVendor.get("/api/delivery/portal/area_mapping_v2");
 };

@@ -140,8 +140,8 @@ const AreaMap = () => {
     },
     {
       title: "ORDERS",
-      dataIndex: "order",
-      key: "order",
+      dataIndex: "order_count",
+      key: "order_count",
       // align: "center",
       // width: "20%",
     },
@@ -155,42 +155,36 @@ const AreaMap = () => {
         <div className="flex ">
           <div className="w-3/5 flex flex-col space-y-2 justify-start items-center">
             {riders?.length ? (
-              riders?.map((rider) => {
-                return (
-                  <>
-                    <div className="flex space-x-7">
-                      {rider.full_name && <span>{rider.full_name}</span>}
-                      <button
-                        type="primary"
-                        size="large"
-                        shape="round"
-                        onClick={() =>
-                          showModal({
-                            key: record.key,
-                            ...rider,
-                          })
-                        }
-                        className="rounded-full ml-2 px-3 py-2"
-                        style={{
-                          backgroundColor: rider?.full_name
-                            ? "#AA00FF"
-                            : "#DF4584",
-                          color: "#FFFFFF",
-                        }}
-                      >
-                        Change
-                      </button>
-                    </div>
-                  </>
-                );
-              })
+              riders?.map((rider) => (
+                <div key={rider.id} className="flex justify-between w-full">
+                  {rider.full_name && <span>{rider.full_name}</span>}
+                  <button
+                    type="primary"
+                    size="large"
+                    shape="round"
+                    onClick={() =>
+                      showModal({
+                        key: record.key,
+                        ...rider,
+                      })
+                    }
+                    className="rounded-full ml-2 px-3 py-2"
+                    style={{
+                      backgroundColor: rider?.full_name ? "#AA00FF" : "#DF4584",
+                      color: "#FFFFFF",
+                    }}
+                  >
+                    Change
+                  </button>
+                </div>
+              ))
             ) : (
               <button
                 type="primary"
                 size="large"
                 shape="round"
                 onClick={() => showModal(record)}
-                className="rounded-full px-3 py-2"
+                className="rounded-full px-3 py-2 self-start"
                 style={{
                   backgroundColor: "#DF4584",
                   color: "#FFFFFF",
@@ -210,7 +204,7 @@ const AreaMap = () => {
     area: item.area,
     city: item.city,
     postal_code: item.postal_code,
-    order_count: item.order,
+    order_count: item.order_count,
     sector: item.sector,
     riders: item?.rider || [],
   }));
@@ -231,7 +225,14 @@ const AreaMap = () => {
         onOk={handleOk}
         onCancel={handleCancel}
       >
-        <div style={{ display: "flex", flexDirection: "column" }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            maxHeight: "400px",
+            overflowY: "auto",
+          }}
+        >
           {mappingData.all_riders?.map((record) => (
             <Radio
               key={record.full_name}

@@ -11,7 +11,10 @@ function InfiniteScrollWrapper({
   if (!isInfiniteScrollOn) return <>{children}</>;
 
   return (
-    <div style={{ marginTop: "50px", marginBottom: "50px", height: "400px" }}>
+    <div
+      style={{ marginTop: "50px", marginBottom: "50px", height: "400px" }}
+      className="infinite-scroll"
+    >
       <InfiniteScroll
         dataLength={lengthData} //This is important field to render the next data
         next={() => functionNext(lengthData)}

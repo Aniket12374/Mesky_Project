@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Table, Modal, Radio } from "antd";
 
 import {
   assignAgent,
   mappingList,
 } from "../../services/areaMapping/MappingService";
+import InfiniteScrollWrapper from "../InfiniteScroll/Wrapper";
 
 const AreaMap = () => {
   const [visible, setVisible] = useState(false);
@@ -15,6 +16,8 @@ const AreaMap = () => {
   const [areaId, setAreaId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(null);
+  const [total, setTotal] = useState(0);
+  const [count, setCount] = useState(0);
 
   const [assignedRider, setAssignedRider] = useState(() => {
     try {
@@ -26,14 +29,24 @@ const AreaMap = () => {
     }
   });
 
-  useEffect(() => {
-    mappingList()
+  const fetchMoreData = useCallback((params) => {
+    mappingList(params)
       .then((item) => {
         const {
           data: { data },
         } = item;
-        setTableData(data); // table list data
+
+        const totalData = [...tableData, ...data];
+
+        const arrayUniqueByKey = [
+          ...new Map(totalData.map((item) => [item.id, item])).values(),
+        ];
+
+        setTableData(arrayUniqueByKey);
+        // table list data
         setMappingData(item?.data); //riders list
+        setTotal(item?.data?.totalCount);
+        setCount(params + 20);
       })
       .catch((error) => {
         setIsError(error);
@@ -41,6 +54,10 @@ const AreaMap = () => {
       .finally(() => {
         setIsLoading(false);
       });
+  });
+
+  useEffect(() => {
+    fetchMoreData(0);
   }, [areaId]);
 
   const showModal = (record) => {
@@ -62,6 +79,15 @@ const AreaMap = () => {
       setVisible(false);
       if (areaId && riderId) {
         // Check if both areaId and riderId are present
+
+        let modifiedData = [...tableData];
+
+        const riderData = mappingData.all_riders.find((x) => x.id == riderId);
+        const filteredData = modifiedData.find((x) => x.id === areaId);
+        filteredData["rider"] = [riderData];
+
+        setTableData(modifiedData);
+
         let res = await assignAgent({
           society_id: areaId,
           rider_id: riderId,
@@ -72,20 +98,20 @@ const AreaMap = () => {
         localStorage.setItem("assignedRider", JSON.stringify(assignedRider)); // Store assigned rider in localStorage
       }
 
-      mappingList()
-        .then((item) => {
-          const {
-            data: { data },
-          } = item;
-          setTableData(data); // table list data
-          setMappingData(item?.data); //riders list
-        })
-        .catch((error) => {
-          setIsError(error);
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
+      // mappingList()
+      //   .then((item) => {
+      //     const {
+      //       data: { data },
+      //     } = item;
+      //     setTableData(data); // table list data
+      //     setMappingData(item?.data); //riders list
+      //   })
+      //   .catch((error) => {
+      //     setIsError(error);
+      //   })
+      //   .finally(() => {
+      //     setIsLoading(false);
+      //   });
     } catch (err) {
       console.log("error message", err);
     }
@@ -218,7 +244,19 @@ const AreaMap = () => {
         }
       `}
       </style>
-      <Table columns={columns} dataSource={data} loading={isLoading} />
+      <InfiniteScrollWrapper
+        lengthData={count}
+        functionNext={fetchMoreData}
+        isInfiniteScrollOn={true}
+        totalLength={total}
+      >
+        <Table
+          columns={columns}
+          dataSource={data}
+          loading={isLoading}
+          pagination={false}
+        />
+      </InfiniteScrollWrapper>
       <Modal
         title="Select Agents"
         open={visible}

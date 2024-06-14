@@ -121,7 +121,6 @@ const ListingPage = () => {
     )
   );
 
-
   const uniqueStatuses = Array.from(
     new Set(historyData.map((listingData) => listingData?.status?.name))
   );
@@ -295,7 +294,7 @@ const ListingPage = () => {
       dataIndex: "agent_name",
       key: "agent_name",
       filters: uniqueAgentNames?.map((agentName) => ({
-        text: agentName === "" ? "" : agentName, 
+        text: agentName === "" ? "" : agentName,
         value: agentName,
       })),
       // width: 120,
@@ -418,14 +417,18 @@ const ListingPage = () => {
     Object.keys(filters).forEach((x) => {
       if (filters[x]?.length > 0) nonEmptyFilters[x] = filters[x];
     });
-  
+
     setSelectedFilters(nonEmptyFilters);
-  
+
     const filteredData = historyData?.filter((item) => {
       for (let key in nonEmptyFilters) {
         if (key === "agent_name") {
-          const agentNames = item[key] ? item[key].split(',').map(name => name.trim()) : [''];
-          if (!agentNames.some((agent) => nonEmptyFilters[key]?.includes(agent))) {
+          const agentNames = item[key]
+            ? item[key].split(",").map((name) => name.trim())
+            : [""];
+          if (
+            !agentNames.some((agent) => nonEmptyFilters[key]?.includes(agent))
+          ) {
             return false;
           }
         } else {
@@ -436,10 +439,9 @@ const ListingPage = () => {
       }
       return true;
     });
-  
+
     handleFilteredDataCount(filteredData);
   };
-  
 
   const handleQuantityOption = (option) => {
     setQuantityChange((prev) => ({

@@ -37,18 +37,20 @@ export const formatTime = (timeInSeconds) => {
   )}`;
 };
 
+export const customAlphNumericSort = (a, b) => {
+  if (!a || !b) {
+    return;
+  }
+  // Extract alphabetic and numeric parts from strings
+  const alphaA = a.replace(/[^a-zA-Z]/g, "");
+  const numA = parseInt(a.replace(/\D/g, ""), 10);
+  const alphaB = b.replace(/[^a-zA-Z]/g, "");
+  const numB = parseInt(b.replace(/\D/g, ""), 10);
 
-export const customAlphNumericSort = (a,b) => {
-    // Extract alphabetic and numeric parts from strings
-    const alphaA = a.replace(/[^a-zA-Z]/g, '');
-    const numA = parseInt(a.replace(/\D/g, ''), 10);
-    const alphaB = b.replace(/[^a-zA-Z]/g, '');
-    const numB = parseInt(b.replace(/\D/g, ''), 10);
+  // Compare alphabetic parts first
+  if (alphaA < alphaB) return -1;
+  if (alphaA > alphaB) return 1;
 
-    // Compare alphabetic parts first
-    if (alphaA < alphaB) return -1;
-    if (alphaA > alphaB) return 1;
-
-    // If alphabetic parts are equal, compare numeric parts
-    return numA - numB;
-}
+  // If alphabetic parts are equal, compare numeric parts
+  return numA - numB;
+};

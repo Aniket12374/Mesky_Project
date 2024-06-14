@@ -84,6 +84,7 @@ const ListingPage = () => {
         : "",
       status: delStatus,
       delImg: listingData?.status?.del_img,
+      not_del_reason: listingData?.status?.not_del_reason,
       del_time: listingData?.delivery_date
         ? listingData?.delivery_date?.split(" ")[1]
         : null,
@@ -336,7 +337,6 @@ const ListingPage = () => {
       filterSearch: true,
       render: (text, record) => {
         if (record.delImg) {
-          // If del_img is present, render the image
           return (
             <>
               <div onClick={() => openImagePopup(record.delImg)}>
@@ -351,11 +351,16 @@ const ListingPage = () => {
           );
         } else if (record.status) {
           return (
-            <span
-              style={{ color: record.status == "PENDING" ? "red" : "blue" }}
-            >
-              {record.status}
-            </span>
+            <div>
+              <span
+                style={{ color: record.status === "PENDING" ? "red" : "blue" }}
+              >
+                {record.status}
+              </span>
+              {record.status === "NOT DELIVERED" && record.not_del_reason && (
+                <div>{record.not_del_reason}</div>
+              )}
+            </div>
           );
         }
       },

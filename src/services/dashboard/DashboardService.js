@@ -13,3 +13,9 @@ export const dashboardStats = () => {
 export const dashboardTable = () => {
   return httpVendor.get("/api/delivery/portal/rider_order_stats");
 };
+
+export const presentOrders = () => {
+  return httpVendor.get(
+    `/api/delivery/portal/subscription/orders?_start=0&_end=${end}&is_tom_data=true`
+  );
+};

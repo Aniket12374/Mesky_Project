@@ -5,6 +5,7 @@ import { mappingList } from "../../services/areaMapping/MappingService";
 import {
   sectorDataStats,
   dashboardTable,
+  presentOrders,
 } from "../../services/dashboard/DashboardService";
 import { useQuery } from "react-query";
 
@@ -17,6 +18,13 @@ const DashboardDetail = () => {
   const { data, isLoading, isError } = useQuery(
     "dashboardTable",
     dashboardTable
+  );
+
+  const [deliveryStats, setDeliveryStats] = useState();
+
+  const { data: ordersData, isLoading: ordersLoading } = useQuery(
+    "presentOrders",
+    presentOrders
   );
 
   const colors = [
@@ -72,6 +80,30 @@ const DashboardDetail = () => {
     }
     fetchAllRiders();
   }, []);
+
+  useEffect(() => {
+    if (ordersData && Array.isArray(ordersData.data.data)) {
+      calculateDeliveryStats(ordersData.data.data);
+    }
+  }, [ordersData]);
+
+  const calculateDeliveryStats = (orders) => {
+    const totalDeliveries = orders.length;
+
+    const before7am = orders.filter(
+      (order) => new Date(order.delivery_date).getHours() < 2
+    ).length;
+    const after7am = totalDeliveries - before7am;
+    const percentageAfter7am =
+      ((after7am / totalDeliveries) * 100).toFixed(2) + "%";
+
+    setDeliveryStats({
+      total: totalDeliveries,
+      before7: before7am,
+      after7: after7am,
+      percentage: percentageAfter7am,
+    });
+  };
 
   const selectStyle = {
     width: "60%",
@@ -131,6 +163,34 @@ const DashboardDetail = () => {
       key: "escalatedOrders",
     },
   ];
+
+  const columns = [
+    {
+      title: "Total Deliveries",
+      dataIndex: "total",
+    },
+    {
+      title: "Delivery before 7am",
+      dataIndex: "before7",
+    },
+    {
+      title: "Delivery after 7am",
+      dataIndex: "after7",
+    },
+    {
+      title: "Percentage after 7am",
+      dataIndex: "percentage",
+    },
+  ];
+  // const dateDate = [
+  //   {
+  //     key: "1",
+  //     total: "50",
+  //     before7: 32,
+  //     after7: 12,
+  //     percentage: "3%",
+  //   },
+  // ];
 
   return (
     <div className="flex justify-between mt-12">
@@ -227,6 +287,15 @@ const DashboardDetail = () => {
                 No sectors assigned
               </p>
             )}
+
+        <div>
+          <Table
+            columns={columns}
+            dataSource={[deliveryStats]}
+            size="small"
+            pagination={false}
+          />
+        </div>
       </div>
     </div>
   );

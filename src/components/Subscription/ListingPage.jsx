@@ -217,7 +217,7 @@ const ListingPage = () => {
       })),
 
       filterSearch: true,
-      onFilter: (value, record) => record.customer_name.indexOf(value) === 0,
+      onFilter: (value, record) => record.customer_name?.indexOf(value) === 0,
     },
     {
       title: "SOCIETY NAME",
@@ -228,7 +228,7 @@ const ListingPage = () => {
         value: societyName,
       })),
       filterSearch: true,
-      onFilter: (value, record) => record.society_name.indexOf(value) == 0,
+      onFilter: (value, record) => record?.society_name?.indexOf(value) == 0,
     },
     // {
     //   title: "PINCODE",
@@ -255,7 +255,7 @@ const ListingPage = () => {
         value: phoneNumber,
       })),
       filterSearch: true,
-      onFilter: (value, record) => record.phone_number.indexOf(value) == 0,
+      onFilter: (value, record) => record.phone_number?.indexOf(value) == 0,
     },
 
     {

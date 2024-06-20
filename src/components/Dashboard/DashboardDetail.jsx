@@ -15,16 +15,15 @@ const DashboardDetail = () => {
   const [sectorData, setSectorData] = useState([]);
   const [selectedRider, setSelectedRider] = useState(null); // Track selected rider
   const [otherProducts, setOtherProducts] = useState([]); // State for other products data
-  const { data, isLoading, isError } = useQuery(
-    "dashboardTable",
-    dashboardTable
-  );
+  const [allData, setAllData] = useState();
+  const [isError, setIsError] = useState(null);
+  const { data, isLoading } = useQuery("dashboardTable", dashboardTable);
 
   const [deliveryStats, setDeliveryStats] = useState();
 
   const { data: ordersData, isLoading: ordersLoading } = useQuery(
-    "presentOrders",
-    presentOrders
+    ["presentOrders"],
+    () => presentOrders(477)
   );
 
   const colors = [
@@ -83,25 +82,40 @@ const DashboardDetail = () => {
 
   useEffect(() => {
     if (ordersData && Array.isArray(ordersData.data.data)) {
-      calculateDeliveryStats(ordersData.data.data);
+      const totalCount = ordersData.data.totalCount;
+      //api to get all data
+
+      presentOrders(totalCount)
+        .then((item) => {
+          const {
+            data: { data },
+          } = item;
+          setAllData(data); // Store all data in the allData state
+          calculateDeliveryStats(data, totalCount); //??
+        })
+        .catch(() => {
+          setIsError("error");
+        });
     }
   }, [ordersData]);
 
-  const calculateDeliveryStats = (orders) => {
-    const totalDeliveries = orders.length;
+  const calculateDeliveryStats = (orders, totalCount) => {
+    const totalDeliveries = totalCount;
 
-    const before7am = orders.filter(
-      (order) => new Date(order.delivery_date).getHours() < 2
+    const before1pm = orders.filter(
+      (order) => order.delivery_date?.split(" ")[1]?.split(":")[0] < 7
     ).length;
-    const after7am = totalDeliveries - before7am;
-    const percentageAfter7am =
-      ((after7am / totalDeliveries) * 100).toFixed(2) + "%";
+    const after1pm = orders.filter(
+      (order) => order.delivery_date?.split(" ")[1]?.split(":")[0] >= 7
+    ).length;
+    const percentageAfter1pm =
+      ((after1pm / totalDeliveries) * 100).toFixed(2) + "%";
 
     setDeliveryStats({
       total: totalDeliveries,
-      before7: before7am,
-      after7: after7am,
-      percentage: percentageAfter7am,
+      before7: before1pm,
+      after7: after1pm,
+      percentage: percentageAfter1pm,
     });
   };
 

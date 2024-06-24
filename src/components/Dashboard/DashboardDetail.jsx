@@ -17,14 +17,12 @@ const DashboardDetail = () => {
   const [otherProducts, setOtherProducts] = useState([]); // State for other products data
   const [allData, setAllData] = useState();
   const [isError, setIsError] = useState(null);
-  const { data, isLoading } = useQuery("dashboardTable", dashboardTable);
+  const { data, isLoading } = useQuery("dashboardTable", dashboardTable, {
+    refetchOnWindowFocus: false,
+  });
+  const [isFetching, setIsFetching] = useState(true);
 
   const [deliveryStats, setDeliveryStats] = useState();
-
-  const { data: ordersData, isLoading: ordersLoading } = useQuery(
-    ["presentOrders"],
-    () => presentOrders(477)
-  );
 
   const colors = [
     "#DF4584",
@@ -44,7 +42,7 @@ const DashboardDetail = () => {
       try {
         const response = await dashboardStats();
         setStats(response.data);
-        setOtherProducts(response.data.other_products); // Set other products data
+        setOtherProducts(response.data.other_products);
       } catch (error) {
         console.error("Error fetching dashboard stats:", error);
       }
@@ -68,7 +66,6 @@ const DashboardDetail = () => {
 
     fetchSectorData();
 
-    // Fetch all riders from mappingList API
     async function fetchAllRiders() {
       try {
         const response = await mappingList();
@@ -81,40 +78,42 @@ const DashboardDetail = () => {
   }, []);
 
   useEffect(() => {
-    if (ordersData && Array.isArray(ordersData.data.data)) {
-      const totalCount = ordersData.data.totalCount;
-      //api to get all data
+    if (stats?.total_orders) {
+      // const totalCount = ordersData.data.totalCount;
 
-      presentOrders(totalCount)
+      presentOrders(stats.total_orders)
         .then((item) => {
           const {
             data: { data },
           } = item;
-          setAllData(data); // Store all data in the allData state
-          calculateDeliveryStats(data, totalCount); //??
+
+          setAllData(data);
+          calculateDeliveryStats(data, stats.total_orders);
+          setIsFetching(false);
         })
         .catch(() => {
+          setIsFetching(false);
           setIsError("error");
         });
     }
-  }, [ordersData]);
+  }, [stats]);
 
   const calculateDeliveryStats = (orders, totalCount) => {
     const totalDeliveries = totalCount;
 
-    const before1pm = orders.filter(
+    const before7pm = orders.filter(
       (order) => order.delivery_date?.split(" ")[1]?.split(":")[0] < 7
     ).length;
-    const after1pm = orders.filter(
+    const after7pm = orders.filter(
       (order) => order.delivery_date?.split(" ")[1]?.split(":")[0] >= 7
     ).length;
     const percentageAfter1pm =
-      ((after1pm / totalDeliveries) * 100).toFixed(2) + "%";
+      ((after7pm / totalDeliveries) * 100).toFixed(2) + "%";
 
     setDeliveryStats({
       total: totalDeliveries,
-      before7: before1pm,
-      after7: after1pm,
+      before7: before7pm,
+      after7: after7pm,
       percentage: percentageAfter1pm,
     });
   };
@@ -196,15 +195,6 @@ const DashboardDetail = () => {
       dataIndex: "percentage",
     },
   ];
-  // const dateDate = [
-  //   {
-  //     key: "1",
-  //     total: "50",
-  //     before7: 32,
-  //     after7: 12,
-  //     percentage: "3%",
-  //   },
-  // ];
 
   return (
     <div className="flex justify-between mt-12">
@@ -259,8 +249,8 @@ const DashboardDetail = () => {
           <Table
             columns={HistoryHeaders}
             dataSource={historyData}
-            rowKey={(record) => record.rider_id} // Assuming rider_id is a unique identifier
-            pagination={false} // Optional: Configure pagination as needed
+            rowKey={(record) => record.rider_id}
+            pagination={false}
           />
         </div>
       </div>
@@ -307,6 +297,7 @@ const DashboardDetail = () => {
             columns={columns}
             dataSource={[deliveryStats]}
             size="small"
+            loading={isFetching}
             pagination={false}
           />
         </div>

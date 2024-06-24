@@ -5,6 +5,7 @@ import { mappingList } from "../../services/areaMapping/MappingService";
 import {
   sectorDataStats,
   dashboardTable,
+  presentOrders,
 } from "../../services/dashboard/DashboardService";
 import { useQuery } from "react-query";
 
@@ -14,10 +15,14 @@ const DashboardDetail = () => {
   const [sectorData, setSectorData] = useState([]);
   const [selectedRider, setSelectedRider] = useState(null); // Track selected rider
   const [otherProducts, setOtherProducts] = useState([]); // State for other products data
-  const { data, isLoading, isError } = useQuery(
-    "dashboardTable",
-    dashboardTable
-  );
+  // const [allData, setAllData] = useState();
+  // const [isError, setIsError] = useState(null);
+  const { data, isLoading } = useQuery("dashboardTable", dashboardTable, {
+    refetchOnWindowFocus: false,
+  });
+  const [isFetching, setIsFetching] = useState(true);
+
+  const [deliveryStats, setDeliveryStats] = useState();
 
   const colors = [
     "#DF4584",
@@ -37,7 +42,7 @@ const DashboardDetail = () => {
       try {
         const response = await dashboardStats();
         setStats(response.data);
-        setOtherProducts(response.data.other_products); // Set other products data
+        setOtherProducts(response.data.other_products);
       } catch (error) {
         console.error("Error fetching dashboard stats:", error);
       }
@@ -61,7 +66,6 @@ const DashboardDetail = () => {
 
     fetchSectorData();
 
-    // Fetch all riders from mappingList API
     async function fetchAllRiders() {
       try {
         const response = await mappingList();
@@ -72,6 +76,47 @@ const DashboardDetail = () => {
     }
     fetchAllRiders();
   }, []);
+
+  useEffect(() => {
+    if (stats?.total_orders) {
+      // const totalCount = ordersData.data.totalCount;
+
+      presentOrders(stats.total_orders)
+        .then((item) => {
+          const {
+            data: { data },
+          } = item;
+
+          // setAllData(data);
+          calculateDeliveryStats(data, stats.total_orders);
+          setIsFetching(false);
+        })
+        .catch(() => {
+          setIsFetching(false);
+          // setIsError("error");
+        });
+    }
+  }, [stats]);
+
+  const calculateDeliveryStats = (orders, totalCount) => {
+    const totalDeliveries = totalCount;
+
+    const before7pm = orders.filter(
+      (order) => order.delivery_date?.split(" ")[1]?.split(":")[0] < 7
+    ).length;
+    const after7pm = orders.filter(
+      (order) => order.delivery_date?.split(" ")[1]?.split(":")[0] >= 7
+    ).length;
+    const percentageAfter1pm =
+      ((after7pm / totalDeliveries) * 100).toFixed(2) + "%";
+
+    setDeliveryStats({
+      total: totalDeliveries,
+      before7: before7pm,
+      after7: after7pm,
+      percentage: percentageAfter1pm,
+    });
+  };
 
   const selectStyle = {
     width: "60%",
@@ -132,42 +177,48 @@ const DashboardDetail = () => {
     },
   ];
 
+  const columns = [
+    {
+      title: "Total Deliveries",
+      dataIndex: "total",
+    },
+    {
+      title: "Delivery before 7am",
+      dataIndex: "before7",
+    },
+    {
+      title: "Delivery after 7am",
+      dataIndex: "after7",
+    },
+    {
+      title: "Percentage after 7am",
+      dataIndex: "percentage",
+    },
+  ];
+
+  const statItems = [
+    { value: stats?.total_orders, label: "Orders", color: "#DF4584" },
+    { value: stats?.total_packets, label: "Packets", color: "#F9A603" },
+    { value: stats?.total_agaents, label: "Riders", color: "#65CBF3" },
+    { value: stats?.total_pincodes, label: "Pincodes", color: "#FC8172" },
+    { value: stats?.total_sectors, label: "Sectors", color: "#AA00FF" },
+  ];
+
   return (
     <div className="flex justify-between mt-12">
       <div className="w-[45%] space-y-7">
         <div className="grid grid-cols-5 gap-4">
-          {stats && (
-            <>
-              <div className="rounded-lg bg-[#DF4584] text-center text-white px-1 py-5">
-                <div className="text-3xl font-medium">{stats.total_orders}</div>
-                <div className="text-sm">Orders</div>
+          {stats &&
+            statItems.map((item, index) => (
+              <div
+                key={index}
+                className="rounded-lg text-center text-white px-1 py-5"
+                style={{ backgroundColor: item.color }}
+              >
+                <div className="text-3xl font-medium">{item.value}</div>
+                <div className="text-sm">{item.label}</div>
               </div>
-              <div className="rounded-lg bg-[#F9A603] text-center text-white px-1 py-5">
-                <div className="text-3xl font-medium">
-                  {stats.total_packets}
-                </div>
-                <div className="text-sm">Packets</div>
-              </div>
-              <div className="rounded-lg bg-[#65CBF3] text-center text-white px-1 py-5">
-                <div className="text-3xl font-medium">
-                  {stats.total_agaents}
-                </div>
-                <div className="text-sm">Riders</div>
-              </div>
-              <div className="rounded-lg bg-[#FC8172] text-center text-white px-1 py-5">
-                <div className="text-3xl font-medium">
-                  {stats.total_pincodes}
-                </div>
-                <div className="text-sm">Pincodes</div>
-              </div>
-              <div className="rounded-lg bg-[#AA00FF] text-center text-white px-1 py-5">
-                <div className="text-3xl font-medium">
-                  {stats.total_sectors}
-                </div>
-                <div className="text-sm">Sectors</div>
-              </div>
-            </>
-          )}
+            ))}
         </div>
         <div className="grid grid-cols-5 gap-4">
           {otherProducts?.map((product, index) => (
@@ -185,8 +236,9 @@ const DashboardDetail = () => {
           <Table
             columns={HistoryHeaders}
             dataSource={historyData}
-            rowKey={(record) => record.rider_id} // Assuming rider_id is a unique identifier
-            pagination={false} // Optional: Configure pagination as needed
+            rowKey={(record) => record.rider_id}
+            pagination={false}
+            loading={isLoading}
           />
         </div>
       </div>
@@ -227,6 +279,16 @@ const DashboardDetail = () => {
                 No sectors assigned
               </p>
             )}
+
+        <div>
+          <Table
+            columns={columns}
+            dataSource={[deliveryStats]}
+            size="small"
+            loading={isFetching}
+            pagination={false}
+          />
+        </div>
       </div>
     </div>
   );

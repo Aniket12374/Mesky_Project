@@ -13,3 +13,10 @@ export const dashboardStats = () => {
 export const dashboardTable = () => {
   return httpVendor.get("/api/delivery/portal/rider_order_stats");
 };
+
+export const presentOrders = (totalCount = 5) => {
+  console.log({ totalCount });
+  return httpVendor.get(
+    `/api/delivery/portal/subscription/orders?_start=0&_end=${totalCount}&is_tom_data=true`
+  );
+};

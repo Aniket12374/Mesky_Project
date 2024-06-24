@@ -64,6 +64,7 @@ const ListingPage = () => {
         return rider.full_name + comma;
       }),
       status: delStatus,
+      not_del_reason: listingData?.status?.not_del_reason,
       delImg: listingData?.status?.del_img,
       del_time: listingData?.delivery_date
         ? listingData?.delivery_date?.split(" ")[1]
@@ -232,11 +233,16 @@ const ListingPage = () => {
           );
         } else if (record.status) {
           return (
-            <span
-              style={{ color: record.status === "PENDING" ? "red" : "blue" }}
-            >
-              {record.status}
-            </span>
+            <div>
+              <span
+                style={{ color: record.status === "PENDING" ? "red" : "blue" }}
+              >
+                {record.status}
+              </span>
+              {record.status === "NOT DELIVERED" && record.not_del_reason && (
+                <div>{record.not_del_reason}</div>
+              )}
+            </div>
           );
         }
       },

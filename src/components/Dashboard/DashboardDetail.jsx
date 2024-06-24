@@ -15,8 +15,8 @@ const DashboardDetail = () => {
   const [sectorData, setSectorData] = useState([]);
   const [selectedRider, setSelectedRider] = useState(null); // Track selected rider
   const [otherProducts, setOtherProducts] = useState([]); // State for other products data
-  const [allData, setAllData] = useState();
-  const [isError, setIsError] = useState(null);
+  // const [allData, setAllData] = useState();
+  // const [isError, setIsError] = useState(null);
   const { data, isLoading } = useQuery("dashboardTable", dashboardTable, {
     refetchOnWindowFocus: false,
   });
@@ -87,13 +87,13 @@ const DashboardDetail = () => {
             data: { data },
           } = item;
 
-          setAllData(data);
+          // setAllData(data);
           calculateDeliveryStats(data, stats.total_orders);
           setIsFetching(false);
         })
         .catch(() => {
           setIsFetching(false);
-          setIsError("error");
+          // setIsError("error");
         });
     }
   }, [stats]);
@@ -196,42 +196,29 @@ const DashboardDetail = () => {
     },
   ];
 
+  const statItems = [
+    { value: stats?.total_orders, label: "Orders", color: "#DF4584" },
+    { value: stats?.total_packets, label: "Packets", color: "#F9A603" },
+    { value: stats?.total_agaents, label: "Riders", color: "#65CBF3" },
+    { value: stats?.total_pincodes, label: "Pincodes", color: "#FC8172" },
+    { value: stats?.total_sectors, label: "Sectors", color: "#AA00FF" },
+  ];
+
   return (
     <div className="flex justify-between mt-12">
       <div className="w-[45%] space-y-7">
         <div className="grid grid-cols-5 gap-4">
-          {stats && (
-            <>
-              <div className="rounded-lg bg-[#DF4584] text-center text-white px-1 py-5">
-                <div className="text-3xl font-medium">{stats.total_orders}</div>
-                <div className="text-sm">Orders</div>
+          {stats &&
+            statItems.map((item, index) => (
+              <div
+                key={index}
+                className="rounded-lg text-center text-white px-1 py-5"
+                style={{ backgroundColor: item.color }}
+              >
+                <div className="text-3xl font-medium">{item.value}</div>
+                <div className="text-sm">{item.label}</div>
               </div>
-              <div className="rounded-lg bg-[#F9A603] text-center text-white px-1 py-5">
-                <div className="text-3xl font-medium">
-                  {stats.total_packets}
-                </div>
-                <div className="text-sm">Packets</div>
-              </div>
-              <div className="rounded-lg bg-[#65CBF3] text-center text-white px-1 py-5">
-                <div className="text-3xl font-medium">
-                  {stats.total_agaents}
-                </div>
-                <div className="text-sm">Riders</div>
-              </div>
-              <div className="rounded-lg bg-[#FC8172] text-center text-white px-1 py-5">
-                <div className="text-3xl font-medium">
-                  {stats.total_pincodes}
-                </div>
-                <div className="text-sm">Pincodes</div>
-              </div>
-              <div className="rounded-lg bg-[#AA00FF] text-center text-white px-1 py-5">
-                <div className="text-3xl font-medium">
-                  {stats.total_sectors}
-                </div>
-                <div className="text-sm">Sectors</div>
-              </div>
-            </>
-          )}
+            ))}
         </div>
         <div className="grid grid-cols-5 gap-4">
           {otherProducts?.map((product, index) => (
@@ -251,6 +238,7 @@ const DashboardDetail = () => {
             dataSource={historyData}
             rowKey={(record) => record.rider_id}
             pagination={false}
+            loading={isLoading}
           />
         </div>
       </div>

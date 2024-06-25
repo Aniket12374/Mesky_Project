@@ -99,14 +99,20 @@ const DashboardDetail = () => {
   }, [stats]);
 
   const calculateDeliveryStats = (orders, totalCount) => {
-    const totalDeliveries = totalCount;
+    const deliveredOrders = orders.filter(
+      (order) => order.status.del_status === "DELIVERED"
+    );
 
-    const before7pm = orders.filter(
+    const totalDeliveries = deliveredOrders.length;
+
+    const before7pm = deliveredOrders.filter(
       (order) => order.delivery_date?.split(" ")[1]?.split(":")[0] < 7
     ).length;
-    const after7pm = orders.filter(
+
+    const after7pm = deliveredOrders.filter(
       (order) => order.delivery_date?.split(" ")[1]?.split(":")[0] >= 7
     ).length;
+
     const percentageAfter1pm =
       ((after7pm / totalDeliveries) * 100).toFixed(2) + "%";
 
@@ -196,6 +202,25 @@ const DashboardDetail = () => {
     },
   ];
 
+  const cities = [
+    {
+      title: "City",
+      dataIndex: "city_name",
+    },
+    {
+      title: "Total packages",
+      dataIndex: "total_package",
+    },
+    {
+      title: "Delivered",
+      dataIndex: "delivered_package",
+    },
+    {
+      title: "Not Delivered",
+      dataIndex: "not_delivered",
+    },
+  ];
+
   const statItems = [
     { value: stats?.total_orders, label: "Orders", color: "#DF4584" },
     { value: stats?.total_packets, label: "Packets", color: "#F9A603" },
@@ -243,7 +268,7 @@ const DashboardDetail = () => {
         </div>
       </div>
 
-      <div className="w-[45%]">
+      <div className="w-[45%] space-y-5">
         <div>
           <Select
             style={selectStyle}
@@ -283,6 +308,15 @@ const DashboardDetail = () => {
         <div>
           <Table
             columns={columns}
+            dataSource={[deliveryStats]}
+            size="small"
+            loading={isFetching}
+            pagination={false}
+          />
+        </div>
+        <div>
+          <Table
+            columns={cities}
             dataSource={[deliveryStats]}
             size="small"
             loading={isFetching}

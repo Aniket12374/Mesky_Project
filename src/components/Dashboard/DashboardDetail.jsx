@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
-import { dashboardStats } from "../../services/dashboard/DashboardService";
+import {
+  dashboardStats,
+  deliveryStats,
+} from "../../services/dashboard/DashboardService";
 import { Select, Table } from "antd";
 import { mappingList } from "../../services/areaMapping/MappingService";
 import {
   sectorDataStats,
   dashboardTable,
-  presentOrders,
 } from "../../services/dashboard/DashboardService";
 import { useQuery } from "react-query";
 
@@ -15,14 +17,10 @@ const DashboardDetail = () => {
   const [sectorData, setSectorData] = useState([]);
   const [selectedRider, setSelectedRider] = useState(null); // Track selected rider
   const [otherProducts, setOtherProducts] = useState([]); // State for other products data
-  // const [allData, setAllData] = useState();
-  // const [isError, setIsError] = useState(null);
   const { data, isLoading } = useQuery("dashboardTable", dashboardTable, {
     refetchOnWindowFocus: false,
   });
-  const [isFetching, setIsFetching] = useState(true);
-
-  const [deliveryStats, setDeliveryStats] = useState();
+  const [deliveryStatss, setDeliveryStats] = useState();
 
   const colors = [
     "#DF4584",
@@ -75,54 +73,24 @@ const DashboardDetail = () => {
       }
     }
     fetchAllRiders();
-  }, []);
 
-  useEffect(() => {
-    if (stats?.total_orders) {
-      // const totalCount = ordersData.data.totalCount;
-
-      presentOrders(stats.total_orders)
-        .then((item) => {
-          const {
-            data: { data },
-          } = item;
-
-          // setAllData(data);
-          calculateDeliveryStats(data, stats.total_orders);
-          setIsFetching(false);
-        })
-        .catch(() => {
-          setIsFetching(false);
-          // setIsError("error");
+    async function fetchDeliveryStats() {
+      try {
+        const response = await deliveryStats();
+        const dataStats = response.data;
+        setDeliveryStats({
+          total: dataStats.total_delieveries,
+          before7: dataStats.before_7,
+          after7: dataStats.after_7,
+          percentage: dataStats.percent_after_7,
         });
+      } catch (error) {
+        console.error("Error fetching delivery stats:", error);
+      }
     }
-  }, [stats]);
 
-  const calculateDeliveryStats = (orders) => {
-    const deliveredOrders = orders.filter(
-      (order) => order.status.del_status === "DELIVERED"
-    );
-
-    const totalDeliveries = deliveredOrders.length;
-
-    const before7pm = deliveredOrders.filter(
-      (order) => order.delivery_date?.split(" ")[1]?.split(":")[0] < 7
-    ).length;
-
-    const after7pm = deliveredOrders.filter(
-      (order) => order.delivery_date?.split(" ")[1]?.split(":")[0] >= 7
-    ).length;
-
-    const percentageAfter1pm =
-      ((after7pm / totalDeliveries) * 100).toFixed(2) + "%";
-
-    setDeliveryStats({
-      total: totalDeliveries,
-      before7: before7pm,
-      after7: after7pm,
-      percentage: percentageAfter1pm,
-    });
-  };
+    fetchDeliveryStats();
+  }, []);
 
   const selectStyle = {
     width: "60%",
@@ -289,9 +257,8 @@ const DashboardDetail = () => {
         <div>
           <Table
             columns={columns}
-            dataSource={[deliveryStats]}
+            dataSource={[deliveryStatss]}
             size="small"
-            loading={isFetching}
             pagination={false}
           />
         </div>

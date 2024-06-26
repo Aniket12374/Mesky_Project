@@ -55,8 +55,11 @@ const ListingPage = () => {
         ? listingData?.delivery_date.split(" ")[0]
         : null,
       customer_name: finalCustomerName,
+      phone_number: listingData?.order?.mobile_number,
       quantity: listingData?.quantity,
+      sectors: listingData?.society?.sector || "",
       product: listingData?.product_name,
+      unit_qty: listingData?.unit_quantity,
       society_name: listingData?.society?.name,
       delivery: listingData?.order?.line_1 + " " + listingData?.order?.line_2,
       agent_name: listingData?.rider?.map((rider, key) => {
@@ -86,6 +89,10 @@ const ListingPage = () => {
     new Set(historyData.map((listingData) => listingData?.society_name).sort())
   );
 
+  const uniquePhoneNumbers = Array.from(
+    new Set(historyData.map((x) => x.phone_number))
+  ).sort();
+
   const uniqueAgentNames = Array.from(
     new Set(
       historyData
@@ -106,6 +113,14 @@ const ListingPage = () => {
     new Set(
       historyData
         .map((listingData) => listingData?.product)
+        .sort(customAlphNumericSort)
+    )
+  );
+
+  const uniqueSectors = Array.from(
+    new Set(
+      historyData
+        .map((listingData) => listingData?.sectors)
         .sort(customAlphNumericSort)
     )
   );
@@ -151,10 +166,27 @@ const ListingPage = () => {
       onFilter: (value, record) => record.customer_name.indexOf(value) === 0,
     },
     {
+      title: "PHONE NUMBER",
+      dataIndex: "phone_number",
+      key: "phone_number",
+      filters: uniquePhoneNumbers.map((phoneNumber) => ({
+        text: phoneNumber,
+        value: phoneNumber,
+      })),
+      filterSearch: true,
+      onFilter: (value, record) => record.phone_number?.indexOf(value) == 0,
+    },
+
+    {
       title: "QTY",
       dataIndex: "quantity",
       key: "quantity",
       width: 60,
+    },
+    {
+      title: "UNIT QUANTITY",
+      dataIndex: "unit_qty",
+      key: "unit_qty",
     },
     {
       title: "PRODUCT",
@@ -178,6 +210,14 @@ const ListingPage = () => {
       })),
       filterSearch: true, // Enable search bar for this filter
       onFilter: (value, record) => record.society_name === value,
+    },
+    {
+      title: "SECTOR",
+      dataIndex: "sectors",
+      key: "sectors",
+      filters: uniqueSectors.map((sector) => ({ text: sector, value: sector })),
+      filterSearch: true,
+      onFilter: (value, record) => record.sectors === value,
     },
     {
       title: "DELIVERY ADDRESS",

@@ -55,7 +55,6 @@ const ListingPage = () => {
   let historyData = [];
   data?.data?.data.map((listingData) => {
     const ridersCount = listingData?.rider?.length;
-    const truncatedOrderId = listingData?.order?.uid.slice(-8);
     const customerName = listingData?.order?.full_name;
     let arr = customerName.split(" ");
     let name = arr.filter((x) => x !== "");
@@ -68,7 +67,7 @@ const ListingPage = () => {
         : "NOT DELIVERED";
     historyData.push({
       item_uid: listingData?.item_uid,
-      order_id: truncatedOrderId,
+      order_id: listingData?.order?.uid,
       customer_name: finalCustomerName,
       society_name: listingData?.society?.name,
       pincode: listingData?.order?.pincode,
@@ -207,6 +206,7 @@ const ListingPage = () => {
       dataIndex: "order_id",
       key: "order_id",
       width: 100,
+      render: (text) => text.substring(5), // Truncate the first 5 digits
     },
     {
       title: "CUSTOMER NAME",
@@ -273,7 +273,7 @@ const ListingPage = () => {
       key: "product",
       width: 100,
       filters: uniqueProducts.map((product) => ({
-        text: product.slice(0, 75) + ' . . .',
+        text: product.slice(0, 75) + " . . .",
         value: product,
       })),
       filterSearch: true,

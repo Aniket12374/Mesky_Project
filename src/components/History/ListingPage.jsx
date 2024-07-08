@@ -194,7 +194,7 @@ const ListingPage = () => {
       key: "product",
       width: 100,
       filters: uniqueProducts.map((product) => ({
-        text: product,
+        text: product.length > 60 ? product.slice(0, 60) + "..." : product,
         value: product,
       })),
       filterSearch: true,

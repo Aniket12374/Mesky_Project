@@ -23,15 +23,25 @@ export const subscriptionPause = (data) => {
 
 export const reAssignAgent = () => {
   return httpVendor
-    .get("/api/delivery/portal/reassign_agent")
+    .post("/api/delivery/portal/reassign_agent")
     .then((res) => {
-      toast.error("Re-assigned Agent Successfully!");
+      toast.success("Re-assigned Agent Successfully!");
     })
     .catch((err) => {
       toast.error("Not working properly!");
     });
 };
 
+export const downloadCsv = () => {
+  return httpVendor.post("/api/delivery/portal/export_tom_csv", {
+    ops_email: "",
+  });
+};
+
 export const subscriptionQtyChange = (data) => {
   return httpVendor.post("/api/delivery/portal/qty_update", data);
+};
+
+export const subscriptionSocietyChange = (data) => {
+  return httpVendor.post("/api/delivery/portal/update_soc_sec", data);
 };

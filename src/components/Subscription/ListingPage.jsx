@@ -23,11 +23,16 @@ const ListingPage = () => {
   const [selectedFilters, setSelectedFilters] = useState({});
   const [imagePopupVisible, setImagePopupVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [shouldFetch, setShouldFetch] = useState(true);
   // const [pausedItems, setPausedItems] = useState([]);
 
-  const { data, isLoading, isError, refetch } = useQuery(
+  const { data, isLoading, isError, refetch, isRefetching } = useQuery(
     ["presentOrders", currentPage, size],
-    () => presentOrders(currentPage, size)
+    () => presentOrders(currentPage, size),
+    {
+      enabled: shouldFetch, // Only fetch when shouldFetch is true
+      onSuccess: () => setShouldFetch(false), // Disable fetch after success
+    }
   );
   const [filteredDataCount, setFilteredDataCount] = useState(null);
   const [totalDataCount, setTotalDataCount] = useState(0);
@@ -43,6 +48,16 @@ const ListingPage = () => {
     modalData: {},
     society: "",
     sector: "",
+  });
+
+  const [change, setChange] = useState({
+    quantityModalOpen: false,
+    societyModalOpen: false,
+    modalData: {},
+    society: "",
+    sector: "",
+    for_future_order: false,
+    changedQty: 1,
   });
 
   useEffect(() => {
@@ -162,71 +177,59 @@ const ListingPage = () => {
     }
   };
 
-  //quantity change modal - open, close
-  const handleQuantityModal = (record) => {
-    setQuantityChange((prev) => ({
+  const handleModal = (record, key = "qty") => {
+    setChange((prev) => ({
       ...prev,
       modalData: record,
-      modalOpen: !quantityChange?.modalOpen,
-      changedQty: 1,
+      ...(key === "qty" && {
+        quantityModalOpen: !change?.quantityModalOpen,
+        changedQty: 1,
+      }),
+      ...(key !== "qty" && {
+        societyModalOpen: !change?.societyModalOpen,
+        society: "",
+        sector: "",
+      }),
     }));
   };
 
-  const handleSocietyModal = (record) => {
-    setSocietyChange((prev) => ({
-      ...prev,
-      modalData: record,
-      modalOpen: !societyChange?.modalOpen,
-      society: "",
-      sector: "",
-    }));
-  };
-
-  //handle ok in quantity change modal
-  const handleSubmitQuantityChange = () => {
-    const isFutureOrder = quantityChange?.for_future_order;
-    let payload = {
-      qty: quantityChange?.changedQty,
-      item_uid: quantityChange?.modalData?.item_uid,
+  const handleSubmitChange = (key = "qty") => {
+    const isFutureOrder = change?.for_future_order;
+    let quantityPayload = {
+      qty: change?.changedQty,
+      item_uid: change?.modalData?.item_uid,
       ...(isFutureOrder && {
-        for_future_order: quantityChange?.for_future_order,
+        for_future_order: change?.for_future_order,
       }),
     };
 
-    if (payload.qty <= 0) {
-      return toast.error("Updated quantity can't be less or equal to zero");
-    }
-
-    subscriptionQtyChange(payload)
-      .then((res) => {
-        toast.success("Quantity changed successfully!");
-        handleQuantityModal({});
-        refetch();
-      })
-      .catch((err) => {
-        toast.error("Something went wrong! please try again...");
-      });
-  };
-
-  const handleSubmitSocietyChange = () => {
-    let payload = {
-      item_uid: societyChange?.modalData?.item_uid,
-      sector: societyChange?.sector,
-      society: societyChange?.society,
+    let societyPayload = {
+      item_uid: change?.modalData?.item_uid,
+      sector: change?.sector,
+      society: change?.society,
     };
 
-    if (!payload.sector) {
+    if (key !== "qty" && !societyPayload.sector) {
       return toast.error("Sector should be updated!");
     }
 
-    if (!payload.society) {
+    if (key !== "qty" && !societyPayload.society) {
       return toast.error("Society should be updated!");
     }
 
-    subscriptionSocietyChange(payload)
+    if (key === "qty" && quantityPayload.qty <= 0) {
+      return toast.error("Updated quantity can't be less or equal to zero");
+    }
+
+    let apiFn =
+      key == "qty"
+        ? subscriptionQtyChange(quantityPayload)
+        : subscriptionSocietyChange(societyPayload);
+
+    apiFn
       .then((res) => {
-        toast.success("Updated successfully!");
-        handleSocietyModal({});
+        toast.success("Quantity changed successfully!");
+        handleModal({}, key);
         refetch();
       })
       .catch((err) => {
@@ -249,13 +252,14 @@ const ListingPage = () => {
       title: "ORDER ID",
       dataIndex: "order_id",
       key: "order_id",
-      width: 100,
+      // width: 100,
       render: (text) => text.substring(5), // Truncate the first 5 digits
     },
     {
       title: "CUSTOMER NAME",
       dataIndex: "customer_name",
       key: "customer_name",
+      width: 100,
       filters: totalCustomerNames.map((customerName) => ({
         text: customerName,
         value: customerName,
@@ -268,6 +272,7 @@ const ListingPage = () => {
       title: "SOCIETY NAME",
       dataIndex: "society_name",
       key: "society_name",
+      // width: 120,
       filters: uniqueSocietyNames.map((societyName) => ({
         text: societyName,
         value: societyName,
@@ -295,6 +300,7 @@ const ListingPage = () => {
       title: "PHONE NUMBER",
       dataIndex: "phone_number",
       key: "phone_number",
+
       filters: uniquePhoneNumbers.map((phoneNumber) => ({
         text: phoneNumber,
         value: phoneNumber,
@@ -356,7 +362,7 @@ const ListingPage = () => {
       dataIndex: "delivery",
       key: "delivery",
       // ellipsis: true,
-      width: 150,
+      width: 120,
     },
     {
       title: "STATUS",
@@ -434,7 +440,7 @@ const ListingPage = () => {
       render: (quantity_change, record) => (
         <button
           className="bg-[#DF4584] rounded-2xl text-white p-2"
-          onClick={() => handleQuantityModal(record)}
+          onClick={() => handleModal(record)}
         >
           Qty Change
         </button>
@@ -447,7 +453,7 @@ const ListingPage = () => {
       render: (sector_change, record) => (
         <button
           className="bg-[#DF4584] rounded-2xl text-white p-2"
-          onClick={() => handleSocietyModal(record)}
+          onClick={() => handleModal(record, "sector")}
         >
           Sector Change
         </button>
@@ -463,6 +469,7 @@ const ListingPage = () => {
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
+    setShouldFetch(true);
   };
 
   const pageSizeOptions = Array.from(
@@ -472,6 +479,7 @@ const ListingPage = () => {
 
   const handlePageSizeChange = (current, page) => {
     setSize(page);
+    setShouldFetch(true);
   };
 
   const handleChange = (pagination, filters, sorter) => {
@@ -506,14 +514,15 @@ const ListingPage = () => {
   };
 
   const handleQuantityOption = (option) => {
-    setQuantityChange((prev) => ({
+    setChange((prev) => ({
       ...prev,
       for_future_order: option,
     }));
   };
 
   const {
-    modalOpen,
+    quantityModalOpen,
+    societyModalOpen,
     for_future_order: futureOrder,
     changedQty,
     modalData: {
@@ -521,21 +530,12 @@ const ListingPage = () => {
       customer_name: custmerName,
       phone_number: phNumber,
       qty: customerQty,
-    },
-  } = quantityChange;
-
-  const {
-    modalOpen: SocietyModalOpen,
-    modalData: {
-      item_uid: societyItemUid,
-      customer_name: societyCustmerName,
-      phone_number: phNumberSociety,
       society_name: customerSocietyName,
       sectors: customerSector,
     },
-    society,
     sector,
-  } = societyChange;
+    society,
+  } = change;
 
   return (
     <div>
@@ -558,7 +558,7 @@ const ListingPage = () => {
       </button>
       <DataTable
         data={historyData}
-        loading={isLoading}
+        loading={isLoading || isRefetching}
         fileName="Subscription_Listing.csv"
         columns={HistoryHeaders}
         onChange={handleChange}
@@ -566,6 +566,7 @@ const ListingPage = () => {
         onFilteredDataChange={handleFilteredDataCount}
         scroll={{
           y: "calc(100vh - 350px)",
+          x: "calc(100vw - 200px)",
         }}
       />
       <div className="flex justify-end px-4 py-2">
@@ -601,12 +602,12 @@ const ListingPage = () => {
         }}
         title="Quantity Change Modal"
         titleColor="#9c29c1"
-        open={modalOpen}
-        onCancel={() => handleQuantityModal({})}
+        open={quantityModalOpen}
+        onCancel={() => handleModal({}, "qty")}
         width={700}
         // height={700}
         okText="Submit"
-        onOk={handleSubmitQuantityChange}
+        onOk={() => handleSubmitChange("qty")}
         centered
       >
         <div>
@@ -658,7 +659,7 @@ const ListingPage = () => {
                 value={changedQty}
                 min={1}
                 onChange={(e) =>
-                  setQuantityChange((prev) => ({
+                  setChange((prev) => ({
                     ...prev,
                     changedQty: e.target.value,
                   }))
@@ -672,27 +673,27 @@ const ListingPage = () => {
         style={{
           fontFamily: "Fredoka, sans-serif",
         }}
-        title="Quantity Change Modal"
+        title="Sector-Society Update Modal"
         titleColor="#9c29c1"
-        open={SocietyModalOpen}
-        onCancel={() => handleSocietyModal({})}
+        open={societyModalOpen}
+        onCancel={() => handleModal({}, "society")}
         width={700}
         // height={700}
         okText="Submit"
-        onOk={handleSubmitSocietyChange}
+        onOk={() => handleSubmitChange("society")}
         centered
       >
         <div>
           <span>Item uid:</span>
-          <span className="font-bold ml-2">{societyItemUid}</span>
+          <span className="font-bold ml-2">{itemUid}</span>
         </div>
         <div>
           <span>Customer Name:</span>
-          <span className="font-bold ml-2">{societyCustmerName}</span>
+          <span className="font-bold ml-2">{custmerName}</span>
         </div>
         <div>
           <span>Customer Phone Number:</span>
-          <span className="font-bold ml-2">{phNumberSociety}</span>
+          <span className="font-bold ml-2">{phNumber}</span>
         </div>
         <div className="font-bold text-lg mt-3 text-[#df4584]">
           Please update Sector and Society
@@ -711,7 +712,7 @@ const ListingPage = () => {
                 value={sector}
                 min={1}
                 onChange={(e) =>
-                  setSocietyChange((prev) => ({
+                  setChange((prev) => ({
                     ...prev,
                     sector: e.target.value,
                   }))
@@ -736,7 +737,7 @@ const ListingPage = () => {
                 value={society}
                 min={1}
                 onChange={(e) =>
-                  setSocietyChange((prev) => ({
+                  setChange((prev) => ({
                     ...prev,
                     society: e.target.value,
                   }))

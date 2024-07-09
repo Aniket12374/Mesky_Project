@@ -4,6 +4,7 @@ import { useQuery } from "react-query";
 import {
   presentOrders,
   reAssignAgent,
+  subscriptionSocietyChange,
 } from "../../services/subscriptionOrders/subscriptionService";
 import { useNavigate } from "react-router-dom";
 import { Button, Pagination } from "antd";
@@ -35,6 +36,13 @@ const ListingPage = () => {
     modalData: {},
     for_future_order: false,
     changedQty: 1,
+  });
+
+  const [societyChange, setSocietyChange] = useState({
+    modalOpen: false,
+    modalData: {},
+    society: "",
+    sector: "",
   });
 
   useEffect(() => {
@@ -164,6 +172,16 @@ const ListingPage = () => {
     }));
   };
 
+  const handleSocietyModal = (record) => {
+    setSocietyChange((prev) => ({
+      ...prev,
+      modalData: record,
+      modalOpen: !societyChange?.modalOpen,
+      society: "",
+      sector: "",
+    }));
+  };
+
   //handle ok in quantity change modal
   const handleSubmitQuantityChange = () => {
     const isFutureOrder = quantityChange?.for_future_order;
@@ -183,6 +201,32 @@ const ListingPage = () => {
       .then((res) => {
         toast.success("Quantity changed successfully!");
         handleQuantityModal({});
+        refetch();
+      })
+      .catch((err) => {
+        toast.error("Something went wrong! please try again...");
+      });
+  };
+
+  const handleSubmitSocietyChange = () => {
+    let payload = {
+      item_uid: societyChange?.modalData?.item_uid,
+      sector: societyChange?.sector,
+      society: societyChange?.society,
+    };
+
+    if (!payload.sector) {
+      return toast.error("Sector should be updated!");
+    }
+
+    if (!payload.society) {
+      return toast.error("Society should be updated!");
+    }
+
+    subscriptionSocietyChange(payload)
+      .then((res) => {
+        toast.success("Updated successfully!");
+        handleSocietyModal({});
         refetch();
       })
       .catch((err) => {
@@ -396,6 +440,19 @@ const ListingPage = () => {
         </button>
       ),
     },
+    {
+      title: "SECTOR CHANGE",
+      key: "sector_change",
+      dataIndex: "sector_change",
+      render: (sector_change, record) => (
+        <button
+          className="bg-[#DF4584] rounded-2xl text-white p-2"
+          onClick={() => handleSocietyModal(record)}
+        >
+          Sector Change
+        </button>
+      ),
+    },
     // {
     //   title: "WALLET",
     //   dataIndex: "wallet_amount",
@@ -466,6 +523,19 @@ const ListingPage = () => {
       qty: customerQty,
     },
   } = quantityChange;
+
+  const {
+    modalOpen: SocietyModalOpen,
+    modalData: {
+      item_uid: societyItemUid,
+      customer_name: societyCustmerName,
+      phone_number: phNumberSociety,
+      society_name: customerSocietyName,
+      sectors: customerSector,
+    },
+    society,
+    sector,
+  } = societyChange;
 
   return (
     <div>
@@ -591,6 +661,84 @@ const ListingPage = () => {
                   setQuantityChange((prev) => ({
                     ...prev,
                     changedQty: e.target.value,
+                  }))
+                }
+              />
+            </div>
+          </div>
+        </div>
+      </Modal>
+      <Modal
+        style={{
+          fontFamily: "Fredoka, sans-serif",
+        }}
+        title="Quantity Change Modal"
+        titleColor="#9c29c1"
+        open={SocietyModalOpen}
+        onCancel={() => handleSocietyModal({})}
+        width={700}
+        // height={700}
+        okText="Submit"
+        onOk={handleSubmitSocietyChange}
+        centered
+      >
+        <div>
+          <span>Item uid:</span>
+          <span className="font-bold ml-2">{societyItemUid}</span>
+        </div>
+        <div>
+          <span>Customer Name:</span>
+          <span className="font-bold ml-2">{societyCustmerName}</span>
+        </div>
+        <div>
+          <span>Customer Phone Number:</span>
+          <span className="font-bold ml-2">{phNumberSociety}</span>
+        </div>
+        <div className="font-bold text-lg mt-3 text-[#df4584]">
+          Please update Sector and Society
+        </div>
+        <div className="mt-3 flex space-x-5">
+          <div className="flex space-x-3">
+            <div>Current Sector:</div>
+            <div className="border-2 w-36 text-center">{customerSector}</div>
+          </div>
+          <div className="flex space-x-3">
+            <div>Updated Sector:</div>
+            <div className="border-2  text-center">
+              <input
+                type="text"
+                className="text-center"
+                value={sector}
+                min={1}
+                onChange={(e) =>
+                  setSocietyChange((prev) => ({
+                    ...prev,
+                    sector: e.target.value,
+                  }))
+                }
+              />
+            </div>
+          </div>
+        </div>
+        <div className="mt-3 flex space-x-5">
+          <div className="flex space-x-3">
+            <div>Current Society:</div>
+            <div className="border-2 w-36 text-center">
+              {customerSocietyName}
+            </div>
+          </div>
+          <div className="flex space-x-3">
+            <div>Updated Society:</div>
+            <div className="border-2  text-center">
+              <input
+                type="text"
+                className="text-center"
+                value={society}
+                min={1}
+                onChange={(e) =>
+                  setSocietyChange((prev) => ({
+                    ...prev,
+                    society: e.target.value,
                   }))
                 }
               />

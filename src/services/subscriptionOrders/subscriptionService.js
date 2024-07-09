@@ -35,3 +35,7 @@ export const reAssignAgent = () => {
 export const subscriptionQtyChange = (data) => {
   return httpVendor.post("/api/delivery/portal/qty_update", data);
 };
+
+export const subscriptionSocietyChange = (data) => {
+  return httpVendor.post("/api/delivery/portal/update_soc_sec", data);
+};

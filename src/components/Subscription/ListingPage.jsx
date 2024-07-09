@@ -1,20 +1,21 @@
 import { useEffect, useState } from "react";
-import DataTable from "../Common/DataTable/DataTable";
+import toast from "react-hot-toast";
+import { CSVLink } from "react-csv";
 import { useQuery } from "react-query";
+import { useNavigate } from "react-router-dom";
+import { Button, Pagination, Modal } from "antd";
 import {
+  downloadCsv,
   presentOrders,
   reAssignAgent,
   subscriptionSocietyChange,
 } from "../../services/subscriptionOrders/subscriptionService";
-import { useNavigate } from "react-router-dom";
-import { Button, Pagination } from "antd";
 import {
   subscriptionPause,
   subscriptionQtyChange,
 } from "../../services/subscriptionOrders/subscriptionService";
-import toast from "react-hot-toast";
+import DataTable from "../Common/DataTable/DataTable";
 import { customAlphNumericSort } from "../../utils";
-import { Modal } from "antd";
 
 const ListingPage = () => {
   const navigate = useNavigate();
@@ -24,7 +25,6 @@ const ListingPage = () => {
   const [imagePopupVisible, setImagePopupVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [shouldFetch, setShouldFetch] = useState(true);
-  // const [pausedItems, setPausedItems] = useState([]);
 
   const { data, isLoading, isError, refetch, isRefetching } = useQuery(
     ["presentOrders", currentPage, size],
@@ -41,13 +41,6 @@ const ListingPage = () => {
     modalData: {},
     for_future_order: false,
     changedQty: 1,
-  });
-
-  const [societyChange, setSocietyChange] = useState({
-    modalOpen: false,
-    modalData: {},
-    society: "",
-    sector: "",
   });
 
   const [change, setChange] = useState({
@@ -91,6 +84,10 @@ const ListingPage = () => {
     historyData.push({
       item_uid: listingData?.item_uid,
       order_id: listingData?.order?.uid,
+      "Product ID": listingData?.product_id,
+      "Order Value": listingData?.total_price,
+      "MRP Of Product": listingData?.item_price,
+      "Brand Name": listingData?.brand_name,
       customer_name: finalCustomerName,
       society_name: listingData?.society?.name,
       pincode: listingData?.order?.pincode,

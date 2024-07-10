@@ -10,6 +10,10 @@ export const dashboardStats = () => {
   return httpVendor.get("/api/delivery/portal/dashboard_stats");
 };
 
+export const deliveryStats = () => {
+  return httpVendor.get("/api/delivery/portal/delievery_stats");
+};
+
 export const dashboardTable = () => {
   return httpVendor.get("/api/delivery/portal/rider_order_stats");
 };

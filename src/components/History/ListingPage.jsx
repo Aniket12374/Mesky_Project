@@ -55,8 +55,11 @@ const ListingPage = () => {
         ? listingData?.delivery_date.split(" ")[0]
         : null,
       customer_name: finalCustomerName,
+      phone_number: listingData?.order?.mobile_number,
       quantity: listingData?.quantity,
+      sectors: listingData?.society?.sector || "",
       product: listingData?.product_name,
+      unit_qty: listingData?.unit_quantity,
       society_name: listingData?.society?.name,
       delivery: listingData?.order?.line_1 + " " + listingData?.order?.line_2,
       agent_name: listingData?.rider?.map((rider, key) => {
@@ -64,6 +67,7 @@ const ListingPage = () => {
         return rider.full_name + comma;
       }),
       status: delStatus,
+      not_del_reason: listingData?.status?.not_del_reason,
       delImg: listingData?.status?.del_img,
       del_time: listingData?.delivery_date
         ? listingData?.delivery_date?.split(" ")[1]
@@ -85,6 +89,10 @@ const ListingPage = () => {
     new Set(historyData.map((listingData) => listingData?.society_name).sort())
   );
 
+  const uniquePhoneNumbers = Array.from(
+    new Set(historyData.map((x) => x.phone_number))
+  ).sort();
+
   const uniqueAgentNames = Array.from(
     new Set(
       historyData
@@ -105,6 +113,14 @@ const ListingPage = () => {
     new Set(
       historyData
         .map((listingData) => listingData?.product)
+        .sort(customAlphNumericSort)
+    )
+  );
+
+  const uniqueSectors = Array.from(
+    new Set(
+      historyData
+        .map((listingData) => listingData?.sectors)
         .sort(customAlphNumericSort)
     )
   );
@@ -150,10 +166,27 @@ const ListingPage = () => {
       onFilter: (value, record) => record.customer_name.indexOf(value) === 0,
     },
     {
+      title: "PHONE NUMBER",
+      dataIndex: "phone_number",
+      key: "phone_number",
+      filters: uniquePhoneNumbers.map((phoneNumber) => ({
+        text: phoneNumber,
+        value: phoneNumber,
+      })),
+      filterSearch: true,
+      onFilter: (value, record) => record.phone_number?.indexOf(value) == 0,
+    },
+
+    {
       title: "QTY",
       dataIndex: "quantity",
       key: "quantity",
       width: 60,
+    },
+    {
+      title: "UNIT QUANTITY",
+      dataIndex: "unit_qty",
+      key: "unit_qty",
     },
     {
       title: "PRODUCT",
@@ -161,7 +194,7 @@ const ListingPage = () => {
       key: "product",
       width: 100,
       filters: uniqueProducts.map((product) => ({
-        text: product,
+        text: product.length > 60 ? product.slice(0, 60) + "..." : product,
         value: product,
       })),
       filterSearch: true,
@@ -177,6 +210,14 @@ const ListingPage = () => {
       })),
       filterSearch: true, // Enable search bar for this filter
       onFilter: (value, record) => record.society_name === value,
+    },
+    {
+      title: "SECTOR",
+      dataIndex: "sectors",
+      key: "sectors",
+      filters: uniqueSectors.map((sector) => ({ text: sector, value: sector })),
+      filterSearch: true,
+      onFilter: (value, record) => record.sectors === value,
     },
     {
       title: "DELIVERY ADDRESS",
@@ -232,11 +273,16 @@ const ListingPage = () => {
           );
         } else if (record.status) {
           return (
-            <span
-              style={{ color: record.status === "PENDING" ? "red" : "blue" }}
-            >
-              {record.status}
-            </span>
+            <div>
+              <span
+                style={{ color: record.status === "PENDING" ? "red" : "blue" }}
+              >
+                {record.status}
+              </span>
+              {record.status === "NOT DELIVERED" && record.not_del_reason && (
+                <div>{record.not_del_reason}</div>
+              )}
+            </div>
           );
         }
       },

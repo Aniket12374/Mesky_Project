@@ -45,3 +45,7 @@ export const subscriptionQtyChange = (data) => {
 export const subscriptionSocietyChange = (data) => {
   return httpVendor.post("/api/delivery/portal/update_soc_sec", data);
 };
+
+export const csvUpload = (data) => {
+  return httpVendor.post("/api/delivery/portal/bulk_upd_soc_sec", data);
+};

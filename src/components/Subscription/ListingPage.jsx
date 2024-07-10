@@ -25,6 +25,7 @@ const ListingPage = () => {
   const [imagePopupVisible, setImagePopupVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [shouldFetch, setShouldFetch] = useState(true);
+  const [csvLoader, setCsvLoader] = useState(false);
 
   const { data, isLoading, isError, refetch, isRefetching } = useQuery(
     ["presentOrders", currentPage, size],
@@ -517,6 +518,26 @@ const ListingPage = () => {
     }));
   };
 
+  const handleDownloadCsv = () => {
+    setCsvLoader(true);
+    downloadCsv()
+      .then((res) => {
+        setCsvLoader(false);
+        const pdfUrl = res?.data?.file_url;
+        const link = document.createElement("a");
+        link.href = pdfUrl;
+        link.download = "document.pdf"; // specify the filename
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        toast.success("Successfully downloaded!");
+      })
+      .catch((err) => {
+        setCsvLoader(false);
+        toast.error("Failed, Please try again after sometime!");
+      });
+  };
+
   const {
     quantityModalOpen,
     societyModalOpen,
@@ -552,6 +573,13 @@ const ListingPage = () => {
         onClick={() => reAssignAgent()}
       >
         Re-Assign Agents
+      </button>
+      <button
+        onClick={handleDownloadCsv}
+        disabled={csvLoader}
+        className="bg-[#ff0000] text-white p-2 mr-2 rounded-lg relative top-2"
+      >
+        {csvLoader ? "Downloading..." : "Download All Data"}
       </button>
       <DataTable
         data={historyData}

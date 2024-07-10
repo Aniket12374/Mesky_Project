@@ -552,10 +552,12 @@ const ListingPage = () => {
     formData.append("document", file[0]);
     csvUpload(formData)
       .then((res) => {
-        toast.success("File Uploaded Successfully!");
+        toast.success(res?.data?.message);
+        setCsvModalOpen(false);
       })
       .catch((err) => {
         toast.error("File upload failed!");
+        setCsvModalOpen(false);
       });
   };
 

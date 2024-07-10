@@ -4,6 +4,7 @@ import { useQuery } from "react-query";
 import {
   presentOrders,
   reAssignAgent,
+  SubscriptionSearch,
 } from "../../services/subscriptionOrders/subscriptionService";
 import { useNavigate } from "react-router-dom";
 import { Button, Pagination } from "antd";
@@ -30,6 +31,9 @@ const ListingPage = () => {
   );
   const [filteredDataCount, setFilteredDataCount] = useState(null);
   const [totalDataCount, setTotalDataCount] = useState(0);
+  const [search, setSearch] = useState("");
+  const [searchData, setSearchData] = useState([]);
+  console.log("searchData", searchData);
   const [quantityChange, setQuantityChange] = useState({
     modalOpen: false,
     modalData: {},
@@ -272,7 +276,7 @@ const ListingPage = () => {
       key: "product",
       width: 100,
       filters: uniqueProducts.map((product) => ({
-        text: product.slice(0, 75) + ' . . .',
+        text: product.slice(0, 75) + " . . .",
         value: product,
       })),
       filterSearch: true,
@@ -450,6 +454,15 @@ const ListingPage = () => {
     }));
   };
 
+  const handleSearch = async () => {
+    const searchValue = search;
+    console.log("searchValue", searchValue);
+    await SubscriptionSearch(searchValue).then((res) => {
+      setSearchData(res?.data?.data);
+    });
+    isLoading();
+  };
+
   const {
     modalOpen,
     for_future_order: futureOrder,
@@ -461,6 +474,7 @@ const ListingPage = () => {
       qty: customerQty,
     },
   } = quantityChange;
+  console.log("historyData", historyData);
 
   return (
     <div>
@@ -482,7 +496,7 @@ const ListingPage = () => {
         Re-Assign Agents
       </button>
       <DataTable
-        data={historyData}
+        data={searchData?.data ? searchData?.data : historyData}
         loading={isLoading}
         fileName="Subscription_Listing.csv"
         columns={HistoryHeaders}
@@ -492,6 +506,8 @@ const ListingPage = () => {
         scroll={{
           y: "calc(100vh - 350px)",
         }}
+        setSearch={setSearch}
+        handleSearch={handleSearch}
       />
       <div className="flex justify-end px-4 py-2">
         <Pagination

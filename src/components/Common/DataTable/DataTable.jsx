@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Table } from "antd";
 import PropTypes from "prop-types";
 import { CSVLink } from "react-csv";
@@ -18,9 +18,12 @@ export const DataTable = ({
   scroll,
   fileName = "Listing.csv",
   onChange = {},
+  setSearch,
+  handleSearch,
   ...OtherProps
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const selectionType = checkbox ? "checkbox" : radio ? "radio" : null;
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
@@ -42,6 +45,18 @@ export const DataTable = ({
       >
         Export to CSV
       </CSVLink>
+      <input
+        type="text"
+        placeholder="Enter your search..."
+        className="w-56 h-10 p-2 border border-[#65CBF3] border-2 relative left-4 top-2 rounded-md"
+        onChange={(e) => setSearch(e.target.value)}
+      />
+      <button
+        className="left-5 px-2 top-2 relative bg-[#DF4584] rounded-md text-white p-2"
+        onClick={handleSearch}
+      >
+        Submit
+      </button>
       <div className="antd-table mt-5 mr-5">
         <Table
           className=""

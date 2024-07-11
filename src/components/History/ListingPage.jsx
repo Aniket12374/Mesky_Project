@@ -34,7 +34,7 @@ const ListingPage = () => {
   if (isError) {
     return navigate("/login");
   }
-
+  
   let historyData = [];
   data?.data?.data.map((listingData) => {
     const ridersCount = listingData?.rider?.length;
@@ -57,6 +57,8 @@ const ListingPage = () => {
       customer_name: finalCustomerName,
       phone_number: listingData?.order?.mobile_number,
       quantity: listingData?.quantity,
+      "MRP of Product": listingData?.item_price,
+      "order Value": listingData?.total_price,
       sectors: listingData?.society?.sector || "",
       product: listingData?.product_name,
       unit_qty: listingData?.unit_quantity,

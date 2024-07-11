@@ -5,6 +5,7 @@ import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { Button, Pagination, Modal } from "antd";
 import {
+  csvUpload,
   downloadCsv,
   presentOrders,
   reAssignAgent,
@@ -41,7 +42,7 @@ const ListingPage = () => {
   
   const [search, setSearch] = useState("");
   const [searchData, setSearchData] = useState([]);
-  console.log("searchData", searchData);
+ 
   const [quantityChange, setQuantityChange] = useState({
     modalOpen: false,
     modalData: {},
@@ -49,6 +50,7 @@ const ListingPage = () => {
     changedQty: 1,
   });
 
+  const [csvModalOpen, setCsvModalOpen] = useState(false);
   const [change, setChange] = useState({
     quantityModalOpen: false,
     societyModalOpen: false,
@@ -58,6 +60,11 @@ const ListingPage = () => {
     for_future_order: false,
     changedQty: 1,
   });
+  const [file, setFile] = useState();
+
+  const handleCsvUpload = (event) => {
+    setFile(event.target.files);
+  };
 
   let tableData =
     searchData?.data?.length > 0 ? searchData : null || data?.data;
@@ -444,27 +451,29 @@ const ListingPage = () => {
       title: "QTY CHANGE",
       key: "quantity_change",
       dataIndex: "quantity_change",
-      render: (quantity_change, record) => (
-        <button
-          className="bg-[#DF4584] rounded-2xl text-white p-2"
-          onClick={() => handleModal(record)}
-        >
-          Qty Change
-        </button>
-      ),
+      render: (quantity_change, record) =>
+        !record.del_time && (
+          <button
+            className="bg-[#DF4584] rounded-2xl text-white p-2"
+            onClick={() => handleModal(record)}
+          >
+            Qty Change
+          </button>
+        ),
     },
     {
       title: "SECTOR CHANGE",
       key: "sector_change",
       dataIndex: "sector_change",
-      render: (sector_change, record) => (
-        <button
-          className="bg-[#DF4584] rounded-2xl text-white p-2"
-          onClick={() => handleModal(record, "sector")}
-        >
-          Sector Change
-        </button>
-      ),
+      render: (sector_change, record) =>
+        !record.del_time && (
+          <button
+            className="bg-[#DF4584] rounded-2xl text-white p-2"
+            onClick={() => handleModal(record, "sector")}
+          >
+            Sector Change
+          </button>
+        ),
     },
     // {
     //   title: "WALLET",
@@ -556,6 +565,27 @@ const ListingPage = () => {
       });
   };
 
+  const handleCsvSubmit = (e) => {
+    e.preventDefault();
+
+    if (!file) {
+      toast.error("Please select a file first.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("document", file[0]);
+    csvUpload(formData)
+      .then((res) => {
+        toast.success(res?.data?.message);
+        setCsvModalOpen(false);
+      })
+      .catch((err) => {
+        toast.error("File upload failed!");
+        setCsvModalOpen(false);
+      });
+  };
+
   const {
     quantityModalOpen,
     societyModalOpen,
@@ -601,6 +631,14 @@ const ListingPage = () => {
       >
         {csvLoader ? "Downloading..." : "Download All Data"}
       </button>
+      <button
+        className="bg-[#ff0000] text-white p-2 mr-2 rounded-lg relative top-2"
+        onClick={() => {
+          setCsvModalOpen(true);
+        }}
+      >
+        CSV UPLOAD
+      </button>
       <DataTable
         data={historyData}
         loading={isLoading || isRefetching}
@@ -631,6 +669,25 @@ const ListingPage = () => {
           onShowSizeChange={handlePageSizeChange}
         />
       </div>
+      <Modal
+        open={csvModalOpen}
+        onCancel={() => setCsvModalOpen(false)}
+        footer={null}
+        title="Upload Csv"
+        centered
+      >
+        <form>
+          <div className="flex flex-col">
+            <input type="file" onChange={handleCsvUpload} />
+            <button
+              onClick={handleCsvSubmit}
+              className="bg-[#ff0000] text-white p-2 mr-2 rounded-lg relative top-2"
+            >
+              Upload
+            </button>
+          </div>
+        </form>
+      </Modal>
       <Modal
         open={imagePopupVisible}
         onCancel={closeImagePopup}

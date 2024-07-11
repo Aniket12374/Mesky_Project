@@ -38,6 +38,7 @@ const ListingPage = () => {
   );
   const [filteredDataCount, setFilteredDataCount] = useState(null);
   const [totalDataCount, setTotalDataCount] = useState(0);
+  
   const [search, setSearch] = useState("");
   const [searchData, setSearchData] = useState([]);
   console.log("searchData", searchData);
@@ -58,23 +59,27 @@ const ListingPage = () => {
     changedQty: 1,
   });
 
+  let tableData =
+    searchData?.data?.length > 0 ? searchData : null || data?.data;
+ 
+
   useEffect(() => {
-    if (data && data.data && data.data.data) {
-      setTotalDataCount(data.data.totalCount);
+    if (tableData) {
+      setTotalDataCount(tableData?.totalCount);
       Object.keys(selectedFilters).length == 0 &&
-        setFilteredDataCount(data.data.data.length);
+        setFilteredDataCount(tableData?.data.length);
 
       Object.keys(selectedFilters).length > 0 &&
         handleChange(currentPage, selectedFilters, null);
     }
-  }, [data]);
+  }, [data , searchData]);
 
   if (isError) {
     return navigate("/login");
   }
 
   let historyData = [];
-  data?.data?.data.map((listingData) => {
+  tableData?.data?.map((listingData) => {
     const ridersCount = listingData?.rider?.length;
     const customerName = listingData?.order?.full_name;
     let arr = customerName.split(" ");
@@ -525,12 +530,13 @@ const ListingPage = () => {
   const handleSearch = async () => {
     const searchValue = search;
     console.log("searchValue", searchValue);
-    await SubscriptionSearch(searchValue).then((res) => {
-      setSearchData(res?.data?.data);
+    await SubscriptionSearch(currentPage, size, searchValue).then((res) => {
+      
+      setSearchData(res?.data);
     });
-  }
+  };
 
-    const handleDownloadCsv = () => {
+  const handleDownloadCsv = () => {
     setCsvLoader(true);
     downloadCsv()
       .then((res) => {
@@ -566,6 +572,8 @@ const ListingPage = () => {
     sector,
     society,
   } = change;
+
+ 
 
   return (
     <div>
@@ -606,6 +614,8 @@ const ListingPage = () => {
           x: "calc(100vw - 200px)",
         }}
         setSearch={setSearch}
+        search={search}
+        setSearchData={setSearchData}
         handleSearch={handleSearch}
       />
       <div className="flex justify-end px-4 py-2">

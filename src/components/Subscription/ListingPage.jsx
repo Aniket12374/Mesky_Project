@@ -39,10 +39,10 @@ const ListingPage = () => {
   );
   const [filteredDataCount, setFilteredDataCount] = useState(null);
   const [totalDataCount, setTotalDataCount] = useState(0);
-  
+
   const [search, setSearch] = useState("");
   const [searchData, setSearchData] = useState([]);
- 
+
   const [quantityChange, setQuantityChange] = useState({
     modalOpen: false,
     modalData: {},
@@ -68,7 +68,6 @@ const ListingPage = () => {
 
   let tableData =
     searchData?.data?.length > 0 ? searchData : null || data?.data;
- 
 
   useEffect(() => {
     if (tableData) {
@@ -79,7 +78,7 @@ const ListingPage = () => {
       Object.keys(selectedFilters).length > 0 &&
         handleChange(currentPage, selectedFilters, null);
     }
-  }, [data , searchData]);
+  }, [data, searchData]);
 
   if (isError) {
     return navigate("/login");
@@ -538,9 +537,7 @@ const ListingPage = () => {
 
   const handleSearch = async () => {
     const searchValue = search;
-    console.log("searchValue", searchValue);
     await SubscriptionSearch(currentPage, size, searchValue).then((res) => {
-      
       setSearchData(res?.data);
     });
   };
@@ -602,8 +599,6 @@ const ListingPage = () => {
     sector,
     society,
   } = change;
-
- 
 
   return (
     <div>

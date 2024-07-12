@@ -28,6 +28,7 @@ const ListingPage = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [shouldFetch, setShouldFetch] = useState(true);
   const [csvLoader, setCsvLoader] = useState(false);
+  const [showSearchData, setShowSearchData] = useState(false);
 
   const { data, isLoading, isError, refetch, isRefetching } = useQuery(
     ["presentOrders", currentPage, size],
@@ -66,8 +67,7 @@ const ListingPage = () => {
     setFile(event.target.files);
   };
 
-  let tableData =
-    searchData?.data?.length > 0 ? searchData : null || data?.data;
+  let tableData = search && showSearchData ? searchData : data?.data;
 
   useEffect(() => {
     if (tableData) {
@@ -539,6 +539,7 @@ const ListingPage = () => {
     const searchValue = search;
     await SubscriptionSearch(currentPage, size, searchValue).then((res) => {
       setSearchData(res?.data);
+      setShowSearchData(true);
     });
   };
 
@@ -600,7 +601,6 @@ const ListingPage = () => {
   //   society,
   // } = change;
 
-
   return (
     <div>
       <style>
@@ -649,6 +649,7 @@ const ListingPage = () => {
         setSearch={setSearch}
         search={search}
         setSearchData={setSearchData}
+        setShowSearchData={setShowSearchData}
         handleSearch={handleSearch}
       />
       <div className="flex justify-end px-4 py-2">

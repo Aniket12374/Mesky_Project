@@ -22,6 +22,7 @@ export const DataTable = ({
   search,
   handleSearch,
   setSearchData,
+  setShowSearchData,
   ...OtherProps
 }) => {
   const navigate = useNavigate();
@@ -70,6 +71,7 @@ export const DataTable = ({
               onClick={() => {
                 setSearch("");
                 setSearchData("");
+                setShowSearchData(false);
               }}
             >
               X

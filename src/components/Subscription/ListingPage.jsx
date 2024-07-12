@@ -9,6 +9,7 @@ import {
   downloadCsv,
   presentOrders,
   reAssignAgent,
+  SubscriptionSearch,
   subscriptionSocietyChange,
 } from "../../services/subscriptionOrders/subscriptionService";
 import {
@@ -38,6 +39,17 @@ const ListingPage = () => {
   );
   const [filteredDataCount, setFilteredDataCount] = useState(null);
   const [totalDataCount, setTotalDataCount] = useState(0);
+
+  const [search, setSearch] = useState("");
+  const [searchData, setSearchData] = useState([]);
+
+  const [quantityChange, setQuantityChange] = useState({
+    modalOpen: false,
+    modalData: {},
+    for_future_order: false,
+    changedQty: 1,
+  });
+
   const [csvModalOpen, setCsvModalOpen] = useState(false);
   const [change, setChange] = useState({
     quantityModalOpen: false,
@@ -54,23 +66,26 @@ const ListingPage = () => {
     setFile(event.target.files);
   };
 
+  let tableData =
+    searchData?.data?.length > 0 ? searchData : null || data?.data;
+
   useEffect(() => {
-    if (data && data.data && data.data.data) {
-      setTotalDataCount(data.data.totalCount);
+    if (tableData) {
+      setTotalDataCount(tableData?.totalCount);
       Object.keys(selectedFilters).length == 0 &&
-        setFilteredDataCount(data.data.data.length);
+        setFilteredDataCount(tableData?.data.length);
 
       Object.keys(selectedFilters).length > 0 &&
         handleChange(currentPage, selectedFilters, null);
     }
-  }, [data]);
+  }, [data, searchData]);
 
   if (isError) {
     return navigate("/login");
   }
 
   let historyData = [];
-  data?.data?.data.map((listingData) => {
+  tableData?.data?.map((listingData) => {
     const ridersCount = listingData?.rider?.length;
     const customerName = listingData?.order?.full_name;
     let arr = customerName.split(" ");
@@ -520,6 +535,13 @@ const ListingPage = () => {
     }));
   };
 
+  const handleSearch = async () => {
+    const searchValue = search;
+    await SubscriptionSearch(currentPage, size, searchValue).then((res) => {
+      setSearchData(res?.data);
+    });
+  };
+
   const handleDownloadCsv = () => {
     setCsvLoader(true);
     downloadCsv()
@@ -624,6 +646,10 @@ const ListingPage = () => {
           y: "calc(100vh - 350px)",
           x: "calc(100vw - 200px)",
         }}
+        setSearch={setSearch}
+        search={search}
+        setSearchData={setSearchData}
+        handleSearch={handleSearch}
       />
       <div className="flex justify-end px-4 py-2">
         <Pagination

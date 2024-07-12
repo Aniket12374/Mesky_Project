@@ -32,6 +32,13 @@ export const reAssignAgent = () => {
     });
 };
 
+export const SubscriptionSearch = (page = 1, size = 10, param) => {
+  const start = (page - 1) * size;
+  const end = start + size;
+  return httpVendor.get(
+    `/api/delivery/portal/subscription/orders?_start=${start}&_end=${end}&is_tom_data=true&q=${param}`
+  );
+};
 export const downloadCsv = () => {
   return httpVendor.post("/api/delivery/portal/export_tom_csv", {
     ops_email: "",

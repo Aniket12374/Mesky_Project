@@ -39,15 +39,15 @@ const ListingPage = () => {
   const [filteredDataCount, setFilteredDataCount] = useState(null);
   const [totalDataCount, setTotalDataCount] = useState(0);
   const [csvModalOpen, setCsvModalOpen] = useState(false);
-  // const [change, setChange] = useState({
-  //   quantityModalOpen: false,
-  //   societyModalOpen: false,
-  //   modalData: {},
-  //   society: "",
-  //   sector: "",
-  //   for_future_order: false,
-  //   changedQty: 1,
-  // });
+  const [change, setChange] = useState({
+    quantityModalOpen: false,
+    societyModalOpen: false,
+    modalData: {},
+    society: "",
+    sector: "",
+    for_future_order: false,
+    changedQty: 1,
+  });
   const [file, setFile] = useState();
 
   const handleCsvUpload = (event) => {
@@ -161,79 +161,79 @@ const ListingPage = () => {
     setFilteredDataCount(filteredData.length);
   };
 
-  // const handlePause = async (item_uid) => {
-  //   try {
-  //     const data = { item_uid };
-  //     const response = await subscriptionPause(data);
+  const handlePause = async (item_uid) => {
+    try {
+      const data = { item_uid };
+      const response = await subscriptionPause(data);
 
-  //     toast.success(response?.data.message);
-  //     // setPausedItems([...pausedItems, item_uid]);
-  //     // Update local state (optimistic update)
-  //     refetch();
-  //   } catch (error) {
-  //     toast.error(error?.response.data.message);
-  //   }
-  // };
+      toast.success(response?.data.message);
+      // setPausedItems([...pausedItems, item_uid]);
+      // Update local state (optimistic update)
+      refetch();
+    } catch (error) {
+      toast.error(error?.response.data.message);
+    }
+  };
 
-  // const handleModal = (record, key = "qty") => {
-  //   setChange((prev) => ({
-  //     ...prev,
-  //     modalData: record,
-  //     ...(key === "qty" && {
-  //       quantityModalOpen: !change?.quantityModalOpen,
-  //       changedQty: 1,
-  //     }),
-  //     ...(key !== "qty" && {
-  //       societyModalOpen: !change?.societyModalOpen,
-  //       society: "",
-  //       sector: "",
-  //     }),
-  //   }));
-  // };
+  const handleModal = (record, key = "qty") => {
+    setChange((prev) => ({
+      ...prev,
+      modalData: record,
+      ...(key === "qty" && {
+        quantityModalOpen: !change?.quantityModalOpen,
+        changedQty: 1,
+      }),
+      ...(key !== "qty" && {
+        societyModalOpen: !change?.societyModalOpen,
+        society: "",
+        sector: "",
+      }),
+    }));
+  };
 
-  // const handleSubmitChange = (key = "qty") => {
-  //   const isFutureOrder = change?.for_future_order;
-  //   let quantityPayload = {
-  //     qty: change?.changedQty,
-  //     item_uid: change?.modalData?.item_uid,
-  //     ...(isFutureOrder && {
-  //       for_future_order: change?.for_future_order,
-  //     }),
-  //   };
+  const handleSubmitChange = (key = "qty") => {
+    const isFutureOrder = change?.for_future_order;
+    let quantityPayload = {
+      qty: change?.changedQty,
+      item_uid: change?.modalData?.item_uid,
+      ...(isFutureOrder && {
+        for_future_order: change?.for_future_order,
+      }),
+    };
 
-  //   let societyPayload = {
-  //     item_uid: change?.modalData?.item_uid,
-  //     sector: change?.sector,
-  //     society: change?.society,
-  //   };
+    let societyPayload = {
+      item_uid: change?.modalData?.item_uid,
+      sector: change?.sector,
+      society: change?.society,
+    };
 
-  //   if (key !== "qty" && !societyPayload.sector) {
-  //     return toast.error("Sector should be updated!");
-  //   }
+    if (key !== "qty" && !societyPayload.sector) {
+      return toast.error("Sector should be updated!");
+    }
 
-  //   if (key !== "qty" && !societyPayload.society) {
-  //     return toast.error("Society should be updated!");
-  //   }
+    if (key !== "qty" && !societyPayload.society) {
+      return toast.error("Society should be updated!");
+    }
 
-  //   if (key === "qty" && quantityPayload.qty <= 0) {
-  //     return toast.error("Updated quantity can't be less or equal to zero");
-  //   }
+    if (key === "qty" && quantityPayload.qty <= 0) {
+      return toast.error("Updated quantity can't be less or equal to zero");
+    }
 
-  //   let apiFn =
-  //     key == "qty"
-  //       ? subscriptionQtyChange(quantityPayload)
-  //       : subscriptionSocietyChange(societyPayload);
+    let apiFn =
+      key == "qty"
+        ? subscriptionQtyChange(quantityPayload)
+        : subscriptionSocietyChange(societyPayload);
 
-  //   apiFn
-  //     .then((res) => {
-  //       toast.success("Quantity changed successfully!");
-  //       handleModal({}, key);
-  //       refetch();
-  //     })
-  //     .catch((err) => {
-  //       toast.error("Something went wrong! please try again...");
-  //     });
-  // };
+    apiFn
+      .then((res) => {
+        toast.success("Quantity changed successfully!");
+        handleModal({}, key);
+        refetch();
+      })
+      .catch((err) => {
+        toast.error("Something went wrong! please try again...");
+      });
+  };
 
   const openImagePopup = (imageUrl) => {
     setSelectedImage(imageUrl);
@@ -414,37 +414,37 @@ const ListingPage = () => {
       },
     },
 
-    // {
-    //   title: "PAUSE ITEM",
-    //   key: "item_uid",
-    //   dataIndex: "item_uid",
-    //   // width: 60,
-    //   render: (item_uid, record) =>
-    //     !record.del_time && (
-    //       <button
-    //         className="bg-[#DF4584] rounded-2xl text-white p-2"
-    //         onClick={() => handlePause(item_uid)}
-    //         // disabled={pausedItems.includes(item_uid)} // Disable button for paused items
-    //       >
-    //         Pause
-    //       </button>
-    //     ),
-    // },
+    {
+      title: "PAUSE ITEM",
+      key: "item_uid",
+      dataIndex: "item_uid",
+      // width: 60,
+      render: (item_uid, record) =>
+        !record.del_time && (
+          <button
+            className="bg-[#DF4584] rounded-2xl text-white p-2"
+            onClick={() => handlePause(item_uid)}
+            // disabled={pausedItems.includes(item_uid)} // Disable button for paused items
+          >
+            Pause
+          </button>
+        ),
+    },
 
-    // {
-    //   title: "QTY CHANGE",
-    //   key: "quantity_change",
-    //   dataIndex: "quantity_change",
-    //   render: (quantity_change, record) =>
-    //     !record.del_time && (
-    //       <button
-    //         className="bg-[#DF4584] rounded-2xl text-white p-2"
-    //         onClick={() => handleModal(record)}
-    //       >
-    //         Qty Change
-    //       </button>
-    //     ),
-    // },
+    {
+      title: "QTY CHANGE",
+      key: "quantity_change",
+      dataIndex: "quantity_change",
+      render: (quantity_change, record) =>
+        !record.del_time && (
+          <button
+            className="bg-[#DF4584] rounded-2xl text-white p-2"
+            onClick={() => handleModal(record)}
+          >
+            Qty Change
+          </button>
+        ),
+    },
     // {
     //   title: "SECTOR CHANGE",
     //   key: "sector_change",
@@ -513,12 +513,12 @@ const ListingPage = () => {
     handleFilteredDataCount(filteredData);
   };
 
-  // const handleQuantityOption = (option) => {
-  //   setChange((prev) => ({
-  //     ...prev,
-  //     for_future_order: option,
-  //   }));
-  // };
+  const handleQuantityOption = (option) => {
+    setChange((prev) => ({
+      ...prev,
+      for_future_order: option,
+    }));
+  };
 
   const handleDownloadCsv = () => {
     setCsvLoader(true);
@@ -561,22 +561,22 @@ const ListingPage = () => {
       });
   };
 
-  // const {
-  //   quantityModalOpen,
-  //   societyModalOpen,
-  //   for_future_order: futureOrder,
-  //   changedQty,
-  //   modalData: {
-  //     item_uid: itemUid,
-  //     customer_name: custmerName,
-  //     phone_number: phNumber,
-  //     qty: customerQty,
-  //     society_name: customerSocietyName,
-  //     sectors: customerSector,
-  //   },
-  //   sector,
-  //   society,
-  // } = change;
+  const {
+    quantityModalOpen,
+    societyModalOpen,
+    for_future_order: futureOrder,
+    changedQty,
+    modalData: {
+      item_uid: itemUid,
+      customer_name: custmerName,
+      phone_number: phNumber,
+      qty: customerQty,
+      society_name: customerSocietyName,
+      sectors: customerSector,
+    },
+    sector,
+    society,
+  } = change;
 
   return (
     <div>
@@ -670,7 +670,7 @@ const ListingPage = () => {
           />
         )}
       </Modal>
-      {/* <Modal
+      <Modal
         style={{
           fontFamily: "Fredoka, sans-serif",
         }}
@@ -743,7 +743,7 @@ const ListingPage = () => {
           </div>
         </div>
       </Modal>
-      <Modal
+      {/* <Modal
         style={{
           fontFamily: "Fredoka, sans-serif",
         }}

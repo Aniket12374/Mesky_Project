@@ -600,6 +600,7 @@ const ListingPage = () => {
     society,
   } = change;
 
+
   return (
     <div>
       <style>

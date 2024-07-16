@@ -95,6 +95,11 @@ const AgentCreation = ({ setShowAgentCreation }) => {
       const errorMessage = "Please fill all the required fields.";
       return toast.error(errorMessage);
     }
+    
+    if (agent?.mobile_number.length !== 10) {
+      toast.error("Please enter valid 10Digit phone number");
+      return;
+    }
 
     // Save agent information
     addRider(agent)

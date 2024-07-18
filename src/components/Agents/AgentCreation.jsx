@@ -96,6 +96,17 @@ const AgentCreation = ({ setShowAgentCreation }) => {
       return toast.error(errorMessage);
     }
 
+    const mobile_number = agent.mobile_number;
+
+    if (/\s/.test(mobile_number)) {
+      toast.error("Phone number should not contain spaces.");
+      return;
+    }
+
+    if (!/^\d{10}$/.test(mobile_number)) {
+      toast.error("Please enter a valid 10-digit phone number");
+      return;
+    }
     // Save agent information
     addRider(agent)
       .then((res) => {
@@ -172,7 +183,7 @@ const AgentCreation = ({ setShowAgentCreation }) => {
             />
           </div>
           <div className="">
-            <label>Phone Number</label>
+            <label>Phone Number (example : 8130067178)</label>
             <input
               type="text"
               className="w-full h-12 rounded-lg  border-select__control  p-2"

@@ -183,7 +183,7 @@ const AgentCreation = ({ setShowAgentCreation }) => {
             />
           </div>
           <div className="">
-            <label>Phone Number</label>
+            <label>Phone Number (example : 8130067178)</label>
             <input
               type="text"
               className="w-full h-12 rounded-lg  border-select__control  p-2"

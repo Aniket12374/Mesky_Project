@@ -326,7 +326,7 @@ const ListingPage = () => {
   };
 
   const pageSizeOptions = Array.from(
-    { length: Math.ceil(searchTotalCount / 50) },
+    { length: Math.ceil(searchTotalCount || tableData?.totalCount / 50) },
     (_, index) => `${(index + 1) * 50}`
   );
 
@@ -409,7 +409,7 @@ const ListingPage = () => {
           total={tableData?.totalCount || searchTotalCount} // Use searchTotalCount if searching
           showTotal={(total, range) =>
             `${range[0]}-${range[1]} of ${
-              tableData?.totalCount || searchTotalCount
+              searchTotalCount || tableData?.totalCount
             } items`
           }
           onChange={handlePageChange}

@@ -29,6 +29,11 @@ const ListingPage = () => {
   const [shouldFetch, setShouldFetch] = useState(true);
   const [csvLoader, setCsvLoader] = useState(false);
   const [showSearchData, setShowSearchData] = useState(false);
+  const [search, setSearch] = useState("");
+  const [searchData, setSearchData] = useState([]);
+  const [searchPage, setSearchPage] = useState(1);
+  const [searchSize, setSearchSize] = useState(10);
+  const [param, setParam] = useState("");
 
   const { data, isLoading, isError, refetch, isRefetching } = useQuery(
     ["presentOrders", currentPage, size],
@@ -38,11 +43,19 @@ const ListingPage = () => {
       onSuccess: () => setShouldFetch(false), // Disable fetch after success
     }
   );
+
+  const {
+    data: searchResult,
+    isLoading: isSearchLoading,
+    isError: isSearchError,
+  } = useQuery(
+    ["SubscriptionSearch", searchPage, searchSize, param], // Use search parameters in query key
+    () => SubscriptionSearch(searchPage, searchSize, param) // Remove unnecessary arguments
+  );
+
   const [filteredDataCount, setFilteredDataCount] = useState(null);
   const [totalDataCount, setTotalDataCount] = useState(0);
-
-  const [search, setSearch] = useState("");
-  const [searchData, setSearchData] = useState([]);
+  const [searchTotalCount, setSearchTotalCount] = useState(0);
 
   const [quantityChange, setQuantityChange] = useState({
     modalOpen: false,
@@ -67,7 +80,8 @@ const ListingPage = () => {
     setFile(event.target.files);
   };
 
-  let tableData = search && showSearchData ? searchData : data?.data;
+  let tableData =
+    search && showSearchData ? searchResult?.data || searchData : data?.data;
 
   useEffect(() => {
     if (tableData) {
@@ -483,18 +497,26 @@ const ListingPage = () => {
   ];
 
   const handlePageChange = (page) => {
-    setCurrentPage(page);
-    setShouldFetch(true);
+    if (showSearchData) {
+      setSearchPage(page);
+    } else {
+      setCurrentPage(page);
+      setShouldFetch(true);
+    }
   };
 
   const pageSizeOptions = Array.from(
-    { length: Math.ceil(totalDataCount / 50) },
+    { length: Math.ceil(searchTotalCount || tableData?.totalCount / 50) },
     (_, index) => `${(index + 1) * 50}`
   );
 
   const handlePageSizeChange = (current, page) => {
-    setSize(page);
-    setShouldFetch(true);
+    if (showSearchData) {
+      setSearchSize(page);
+    } else {
+      setSize(page);
+      setShouldFetch(true);
+    }
   };
 
   const handleChange = (pagination, filters, sorter) => {
@@ -539,7 +561,9 @@ const ListingPage = () => {
     const searchValue = search;
     await SubscriptionSearch(currentPage, size, searchValue).then((res) => {
       setSearchData(res?.data);
+      setSearchTotalCount(res?.totalCount || 0);
       setShowSearchData(true);
+      setParam(search);
     });
   };
 
@@ -637,7 +661,7 @@ const ListingPage = () => {
       </button>
       <DataTable
         data={historyData}
-        loading={isLoading || isRefetching}
+        loading={isSearchLoading || isLoading}
         fileName="Subscription_Listing.csv"
         columns={HistoryHeaders}
         onChange={handleChange}
@@ -654,15 +678,18 @@ const ListingPage = () => {
       />
       <div className="flex justify-end px-4 py-2">
         <Pagination
-          current={currentPage}
-          total={totalDataCount}
+          current={showSearchData ? searchPage : currentPage}
+          total={tableData?.totalCount || searchTotalCount}
           showTotal={(total, range) =>
-            `${range[0]}-${range[1]} of ${totalDataCount} items`
+            `${range[0]}-${range[1]} of ${
+              searchTotalCount || tableData?.totalCount
+            } items`
           }
           onChange={handlePageChange}
           showSizeChanger={true}
           pageSizeOptions={pageSizeOptions}
           onShowSizeChange={handlePageSizeChange}
+          disabled={isLoading || isSearchLoading}
         />
       </div>
       <Modal

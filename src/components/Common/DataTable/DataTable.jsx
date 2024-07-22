@@ -28,6 +28,9 @@ export const DataTable = ({
   const navigate = useNavigate();
   const location = useLocation();
 
+  const paths = ["/subscription", "/history"];
+  const pathIncludes = paths.some((path) => location?.pathname.includes(path));
+
   const selectionType = checkbox ? "checkbox" : radio ? "radio" : null;
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
@@ -49,7 +52,7 @@ export const DataTable = ({
       >
         Export to CSV
       </CSVLink>
-      {location?.pathname.includes("/subscription") && (
+      {pathIncludes && (
         <>
           <input
             type="text"

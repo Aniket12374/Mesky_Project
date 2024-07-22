@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useQuery } from "react-query";
 import DataTable from "../Common/DataTable/DataTable";
-import { previousOrders } from "../../services/subscriptionOrders/subscriptionService";
+import {
+  HistorySearch,
+  previousOrders,
+} from "../../services/subscriptionOrders/subscriptionService";
 import { useNavigate } from "react-router-dom";
 import { Modal, Pagination } from "antd";
 import { customAlphNumericSort } from "../../utils";
@@ -10,9 +13,25 @@ const ListingPage = () => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [size, setSize] = useState(10);
+
+  const [searchPage, setSearchPage] = useState(1);
+  const [searchSize, setSearchSize] = useState(10);
+  const [search, setSearch] = useState("");
+  const [param, setParam] = useState("");
+  const [searchData, setSearchData] = useState([]);
+
   const { data, isLoading, isError } = useQuery(
     ["previousOrders", currentPage, size],
     () => previousOrders(currentPage, size)
+  );
+
+  const {
+    data: searchResult,
+    isLoading: isSearchLoading,
+    isError: isSearchError,
+  } = useQuery(
+    ["HistorySearch", searchPage, searchSize, param], // Use search parameters in query key
+    () => HistorySearch(searchPage, searchSize, param) // Remove unnecessary arguments
   );
 
   const [filteredDataCount, setFilteredDataCount] = useState(null);
@@ -20,23 +39,30 @@ const ListingPage = () => {
   const [selectedFilters, setSelectedFilters] = useState({});
   const [imagePopupVisible, setImagePopupVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [showSearchData, setShowSearchData] = useState(false);
+
+  const [searchTotalCount, setSearchTotalCount] = useState(0);
+
+  let tableData =
+    search && showSearchData ? searchResult?.data || searchData : data?.data;
 
   useEffect(() => {
-    if (data && data.data && data.data.data) {
-      setTotalDataCount(data.data.totalCount);
-      Object.keys(selectedFilters).length == 0 &&
-        setFilteredDataCount(data.data.data.length);
-      Object.keys(selectedFilters).length > 0 &&
+    if (tableData) {
+      setTotalDataCount(tableData?.totalCount);
+      if (Object.keys(selectedFilters).length === 0) {
+        setFilteredDataCount(tableData?.data.length);
+      } else {
         handleChange(currentPage, selectedFilters, null);
+      }
     }
-  }, [data]);
+  }, [data, searchData]);
 
   if (isError) {
     return navigate("/login");
   }
-  
+
   let historyData = [];
-  data?.data?.data.map((listingData) => {
+  tableData?.data.map((listingData) => {
     const ridersCount = listingData?.rider?.length;
     const truncatedOrderId = listingData?.order?.uid.slice(-8); // Truncate to last 8 characters
     const customerName = listingData?.order?.full_name;
@@ -51,8 +77,8 @@ const ListingPage = () => {
         : "NOT DELIVERED";
     historyData.push({
       order_id: truncatedOrderId,
-      date: listingData?.delivery_date
-        ? listingData?.delivery_date.split(" ")[0]
+      date: listingData?.accept_date
+        ? listingData?.accept_date.split(" ")[0]
         : null,
       customer_name: finalCustomerName,
       phone_number: listingData?.order?.mobile_number,
@@ -292,16 +318,24 @@ const ListingPage = () => {
   ];
 
   const handlePageChange = (page) => {
-    setCurrentPage(page);
+    if (showSearchData) {
+      setSearchPage(page);
+    } else {
+      setCurrentPage(page);
+    }
   };
 
   const pageSizeOptions = Array.from(
-    { length: Math.ceil(totalDataCount / 50) },
+    { length: Math.ceil(searchTotalCount / 50) },
     (_, index) => `${(index + 1) * 50}`
   );
 
   const handlePageSizeChange = (current, page) => {
-    setSize(page);
+    if (showSearchData) {
+      setSearchSize(page);
+    } else {
+      setSize(page);
+    }
   };
 
   const handleChange = (pagination, filters, sorter) => {
@@ -330,6 +364,16 @@ const ListingPage = () => {
     handleFilteredDataCount(filteredData);
   };
 
+  const handleSearch = async () => {
+    const searchValue = search;
+    await HistorySearch(searchPage, searchSize, searchValue).then((res) => {
+      setSearchData(res?.data);
+      setSearchTotalCount(res?.totalCount || 0);
+      setShowSearchData(true);
+      setParam(search);
+    });
+  };
+
   return (
     <div>
       <style>
@@ -346,25 +390,33 @@ const ListingPage = () => {
         data={historyData}
         columns={HistoryHeaders}
         // pagination={paginationConfig}
-        loading={isLoading}
+        loading={isSearchLoading || isLoading}
         onFilteredDataChange={handleFilteredDataCount}
         onChange={handleChange}
         fileName="History_Listing.csv"
         scroll={{
           y: "calc(100vh - 333px)",
         }}
+        setSearch={setSearch}
+        search={search}
+        setSearchData={setSearchData}
+        setShowSearchData={setShowSearchData}
+        handleSearch={handleSearch}
       />
       <div className="flex justify-end px-4 py-2">
         <Pagination
-          current={currentPage}
-          total={totalDataCount}
+          current={showSearchData ? searchPage : currentPage} // Use the correct current page
+          total={tableData?.totalCount || searchTotalCount} // Use searchTotalCount if searching
           showTotal={(total, range) =>
-            `${range[0]}-${range[1]} of ${totalDataCount} items`
+            `${range[0]}-${range[1]} of ${
+              tableData?.totalCount || searchTotalCount
+            } items`
           }
           onChange={handlePageChange}
           showSizeChanger={true}
-          pageSizeOptions={pageSizeOptions}
+          pageSizeOptions={showSearchData ? pageSizeOptions : undefined} // Use pageSizeOptions only for search results
           onShowSizeChange={handlePageSizeChange}
+          disabled={isLoading || isSearchLoading}
         />
       </div>
       <Modal

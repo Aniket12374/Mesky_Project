@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useQuery } from "react-query";
 import DataTable from "../Common/DataTable/DataTable";
 import {
+  downloadCsv,
   HistorySearch,
   previousOrders,
 } from "../../services/subscriptionOrders/subscriptionService";
@@ -19,10 +20,19 @@ const ListingPage = () => {
   const [search, setSearch] = useState("");
   const [param, setParam] = useState("");
   const [searchData, setSearchData] = useState([]);
+  const [shouldFetch, setShouldFetch] = useState(true);
+  const [isQueryEnabled, setIsQueryEnabled] = useState(false);
+  const [showSearchData, setShowSearchData] = useState(false);
+  const [csvLoader, setCsvLoader] = useState(false);
 
-  const { data, isLoading, isError } = useQuery(
+
+  const { data, isLoading, isError, refetch } = useQuery(
     ["previousOrders", currentPage, size],
-    () => previousOrders(currentPage, size)
+    () => previousOrders(currentPage, size),
+    {
+      enabled: shouldFetch, // Only fetch when shouldFetch is true
+      onSuccess: () => setShouldFetch(false), // Disable fetch after success
+    }
   );
 
   const {
@@ -31,7 +41,11 @@ const ListingPage = () => {
     isError: isSearchError,
   } = useQuery(
     ["HistorySearch", searchPage, searchSize, param], // Use search parameters in query key
-    () => HistorySearch(searchPage, searchSize, param) // Remove unnecessary arguments
+    () => HistorySearch(searchPage, searchSize, param), // Remove unnecessary arguments
+    {
+      enabled: isQueryEnabled,
+      onSuccess: () => setIsQueryEnabled(false),
+    }
   );
 
   const [filteredDataCount, setFilteredDataCount] = useState(null);
@@ -39,7 +53,6 @@ const ListingPage = () => {
   const [selectedFilters, setSelectedFilters] = useState({});
   const [imagePopupVisible, setImagePopupVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [showSearchData, setShowSearchData] = useState(false);
 
   const [searchTotalCount, setSearchTotalCount] = useState(0);
 
@@ -262,7 +275,7 @@ const ListingPage = () => {
       })),
       filterSearch: true, // Enable search bar for this filter
       onFilter: (value, record) => record.agent_name.includes(value),
-      width: 200,
+      width: 130,
     },
     {
       title: "STATUS",
@@ -320,8 +333,10 @@ const ListingPage = () => {
   const handlePageChange = (page) => {
     if (showSearchData) {
       setSearchPage(page);
+      setIsQueryEnabled(true);
     } else {
       setCurrentPage(page);
+      setShouldFetch(true);
     }
   };
 
@@ -374,6 +389,26 @@ const ListingPage = () => {
     });
   };
 
+  // const handleDownloadCsv = () => {
+  //   setCsvLoader(true);
+  //   downloadCsv()
+  //     .then((res) => {
+  //       setCsvLoader(false);
+  //       const pdfUrl = res?.data?.file_url;
+  //       const link = document.createElement("a");
+  //       link.href = pdfUrl;
+  //       link.download = "document.pdf"; // specify the filename
+  //       document.body.appendChild(link);
+  //       link.click();
+  //       document.body.removeChild(link);
+  //       toast.success("Successfully downloaded!");
+  //     })
+  //     .catch((err) => {
+  //       setCsvLoader(false);
+  //       toast.error("Failed, Please try again after sometime!");
+  //     });
+  // };
+
   return (
     <div>
       <style>
@@ -383,6 +418,13 @@ const ListingPage = () => {
         }
       `}
       </style>
+      {/* <button
+        onClick={handleDownloadCsv}
+        disabled={csvLoader}
+        className="bg-[#ff0000] text-white p-2 mr-2 rounded-lg relative top-2"
+      >
+        {csvLoader ? "Downloading..." : "Download All Data"}
+      </button> */}
       <div className="float-right font-medium">
         Showing Results: {filteredDataCount}/{totalDataCount}
       </div>

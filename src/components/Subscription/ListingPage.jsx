@@ -27,6 +27,7 @@ const ListingPage = () => {
   const [imagePopupVisible, setImagePopupVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [shouldFetch, setShouldFetch] = useState(true);
+  const [isQueryEnabled, setIsQueryEnabled] = useState(false);
   const [csvLoader, setCsvLoader] = useState(false);
   const [showSearchData, setShowSearchData] = useState(false);
   const [search, setSearch] = useState("");
@@ -49,8 +50,12 @@ const ListingPage = () => {
     isLoading: isSearchLoading,
     isError: isSearchError,
   } = useQuery(
-    ["SubscriptionSearch", searchPage, searchSize, param], // Use search parameters in query key
-    () => SubscriptionSearch(searchPage, searchSize, param) // Remove unnecessary arguments
+    ["SubscriptionSearch", searchPage, searchSize, param],
+    () => SubscriptionSearch(searchPage, searchSize, param),
+    {
+      enabled: isQueryEnabled,
+      onSuccess: () => setIsQueryEnabled(false),
+    }
   );
 
   const [filteredDataCount, setFilteredDataCount] = useState(null);
@@ -499,6 +504,7 @@ const ListingPage = () => {
   const handlePageChange = (page) => {
     if (showSearchData) {
       setSearchPage(page);
+      setIsQueryEnabled(true);
     } else {
       setCurrentPage(page);
       setShouldFetch(true);
@@ -513,6 +519,7 @@ const ListingPage = () => {
   const handlePageSizeChange = (current, page) => {
     if (showSearchData) {
       setSearchSize(page);
+      setIsQueryEnabled(true);
     } else {
       setSize(page);
       setShouldFetch(true);

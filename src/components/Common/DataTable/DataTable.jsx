@@ -65,6 +65,7 @@ export const DataTable = ({
           <button
             className="left-5 px-2 top-2 relative bg-[#DF4584] rounded-md text-white p-2"
             onClick={handleSearch}
+            disabled={!search}
           >
             Submit
           </button>

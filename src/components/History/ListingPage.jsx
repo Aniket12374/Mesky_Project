@@ -25,7 +25,6 @@ const ListingPage = () => {
   const [showSearchData, setShowSearchData] = useState(false);
   const [csvLoader, setCsvLoader] = useState(false);
 
-
   const { data, isLoading, isError, refetch } = useQuery(
     ["previousOrders", currentPage, size],
     () => previousOrders(currentPage, size),
@@ -89,6 +88,7 @@ const ListingPage = () => {
         ? "DELIVERED"
         : "NOT DELIVERED";
     historyData.push({
+      item_uid: listingData?.item_uid,
       order_id: truncatedOrderId,
       date: listingData?.accept_date
         ? listingData?.accept_date.split(" ")[0]
@@ -339,10 +339,9 @@ const ListingPage = () => {
       setShouldFetch(true);
     }
   };
-
   const pageSizeOptions = Array.from(
-    { length: Math.ceil(searchTotalCount || tableData?.totalCount / 50) },
-    (_, index) => `${(index + 1) * 50}`
+    { length: Math.ceil(searchTotalCount || tableData?.totalCount / 250) },
+    (_, index) => `${(index + 1) * 250}`
   );
 
   const handlePageSizeChange = (current, page) => {
@@ -381,12 +380,15 @@ const ListingPage = () => {
 
   const handleSearch = async () => {
     const searchValue = search;
-    await HistorySearch(searchPage, searchSize, searchValue).then((res) => {
-      setSearchData(res?.data);
-      setSearchTotalCount(res?.totalCount || 0);
-      setShowSearchData(true);
-      setParam(search);
-    });
+    await HistorySearch(searchPage, searchSize || size, searchValue).then(
+      (res) => {
+        setSearchData(res?.data);
+        setSearchTotalCount(res?.totalCount || 0);
+        setShowSearchData(true);
+        setParam(search);
+        setSize(10);
+      }
+    );
   };
 
   // const handleDownloadCsv = () => {
@@ -447,8 +449,8 @@ const ListingPage = () => {
       />
       <div className="flex justify-end px-4 py-2">
         <Pagination
-          current={showSearchData ? searchPage : currentPage} // Use the correct current page
-          total={tableData?.totalCount || searchTotalCount} // Use searchTotalCount if searching
+          current={showSearchData ? searchPage : currentPage}
+          total={tableData?.totalCount || searchTotalCount}
           showTotal={(total, range) =>
             `${range[0]}-${range[1]} of ${
               searchTotalCount || tableData?.totalCount
@@ -456,7 +458,7 @@ const ListingPage = () => {
           }
           onChange={handlePageChange}
           showSizeChanger={true}
-          pageSizeOptions={showSearchData ? pageSizeOptions : undefined} // Use pageSizeOptions only for search results
+          pageSizeOptions={pageSizeOptions} // Use pageSizeOptions only for search results
           onShowSizeChange={handlePageSizeChange}
           disabled={isLoading || isSearchLoading}
         />

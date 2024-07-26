@@ -102,7 +102,6 @@ const ListingPage = () => {
   if (isError) {
     return navigate("/login");
   }
-
   let historyData = [];
   tableData?.data?.map((listingData) => {
     const ridersCount = listingData?.rider?.length;
@@ -515,6 +514,7 @@ const ListingPage = () => {
     { length: Math.ceil(searchTotalCount || tableData?.totalCount / 50) },
     (_, index) => `${(index + 1) * 50}`
   );
+
 
   const handlePageSizeChange = (current, page) => {
     if (showSearchData) {

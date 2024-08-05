@@ -88,31 +88,36 @@ const ListingPage = () => {
         ? "DELIVERED"
         : "NOT DELIVERED";
     historyData.push({
-      item_uid: listingData?.item_uid,
-      order_id: truncatedOrderId,
       date: listingData?.accept_date
         ? listingData?.accept_date.split(" ")[0]
         : null,
+      item_uid: listingData?.item_uid,
+      order_id: truncatedOrderId,
       customer_name: finalCustomerName,
-      phone_number: listingData?.order?.mobile_number,
-      quantity: listingData?.quantity,
-      "MRP of Product": listingData?.item_price,
-      "Order Value": listingData?.total_price,
-      sectors: listingData?.society?.sector || "",
-      product: listingData?.product_name,
-      unit_qty: listingData?.unit_quantity,
       society_name: listingData?.society?.name,
+      "Pin code": listingData?.order?.pincode,
+      phone_number: listingData?.order?.mobile_number,
+      unit_qty: listingData?.unit_quantity,
+      Walletamount: listingData?.wallet_amount,
+      quantity: listingData?.quantity,
+      product: listingData?.product_name,
+      sectors: listingData?.society?.sector || "",
       delivery: listingData?.order?.line_1 + " " + listingData?.order?.line_2,
       agent_name: listingData?.rider?.map((rider, key) => {
         let comma = ridersCount - 1 !== key ? ", " : "";
         return rider.full_name + comma;
       }),
+      city: listingData?.order?.city,
+      state: listingData?.order?.state,
       status: delStatus,
-      not_del_reason: listingData?.status?.not_del_reason,
       delImg: listingData?.status?.del_img,
+      not_del_reason: listingData?.status?.not_del_reason,
       del_time: listingData?.delivery_date
         ? listingData?.delivery_date?.split(" ")[1]
         : null,
+      "Brand name": listingData?.brand_name,
+      "MRP of Product": listingData?.item_price,
+      "Order Value": listingData?.total_price,
     });
   });
 

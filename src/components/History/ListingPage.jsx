@@ -88,12 +88,11 @@ const ListingPage = () => {
         ? "DELIVERED"
         : "NOT DELIVERED";
     historyData.push({
-      date: listingData?.accept_date || null,
+      date: listingData?.accept_date
+        ? listingData?.accept_date.split(" ")[0]
+        : null,
       item_uid: listingData?.item_uid,
       order_id: truncatedOrderId,
-      // date: listingData?.accept_date
-      //   ? listingData?.accept_date.split(" ")[0]
-      //   : null,
       customer_name: finalCustomerName,
       society_name: listingData?.society?.name,
       "Pin code": listingData?.order?.pincode,

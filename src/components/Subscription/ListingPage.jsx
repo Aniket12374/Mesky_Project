@@ -135,6 +135,8 @@ const ListingPage = () => {
       agent_name: listingData?.rider
         ? listingData?.rider.map((rider) => rider?.full_name).join(", ")
         : "",
+      City: listingData?.order?.city,
+      State: listingData?.order?.state,
       status: delStatus,
       delImg: listingData?.status?.del_img,
       not_del_reason: listingData?.status?.not_del_reason,
@@ -514,7 +516,6 @@ const ListingPage = () => {
     { length: Math.ceil(searchTotalCount || tableData?.totalCount / 50) },
     (_, index) => `${(index + 1) * 50}`
   );
-
 
   const handlePageSizeChange = (current, page) => {
     if (showSearchData) {

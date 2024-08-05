@@ -107,6 +107,8 @@ const ListingPage = () => {
         let comma = ridersCount - 1 !== key ? ", " : "";
         return rider.full_name + comma;
       }),
+      city: listingData?.order?.city,
+      state: listingData?.order?.state,
       status: delStatus,
       delImg: listingData?.status?.del_img,
       not_del_reason: listingData?.status?.not_del_reason,

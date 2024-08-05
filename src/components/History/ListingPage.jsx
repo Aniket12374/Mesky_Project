@@ -57,7 +57,6 @@ const ListingPage = () => {
 
   let tableData =
     search && showSearchData ? searchResult?.data || searchData : data?.data;
-  console.log(tableData);
 
   useEffect(() => {
     if (tableData) {

@@ -115,9 +115,9 @@ const ListingPage = () => {
       del_time: listingData?.delivery_date
         ? listingData?.delivery_date?.split(" ")[1]
         : null,
+      "Brand name": listingData?.brand_name,
       "MRP of Product": listingData?.item_price,
       "Order Value": listingData?.total_price,
-      "Brand name": listingData?.brand_name,
     });
   });
 

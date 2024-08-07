@@ -21,6 +21,30 @@ const DashboardDetail = () => {
     refetchOnWindowFocus: false,
   });
   const [deliveryStatss, setDeliveryStats] = useState();
+  const [cityWise, setCityWise] = useState();
+
+  const [tableDataCitywise, setTableDataCitywise] = useState([]);
+
+  useEffect(() => {
+    const after7 = cityWise?.city_wise_count_after_7 || {};
+    const before7 = cityWise?.city_wise_count_before_7 || {};
+
+    const combinedKeys = new Set([
+      ...Object.keys(before7),
+      ...Object.keys(after7),
+    ]);
+
+    const parsedData = Array.from(combinedKeys).map((key) => {
+      const [city, state] = key.split(", ");
+      return {
+        "City, State": `${city}, ${state}`,
+        before7: before7[key] || 0,
+        after7: after7[key] || 0,
+      };
+    });
+
+    setTableDataCitywise(parsedData);
+  }, [cityWise]);
 
   const colors = [
     "#DF4584",
@@ -78,6 +102,8 @@ const DashboardDetail = () => {
       try {
         const response = await deliveryStats();
         const dataStats = response.data;
+        setCityWise(dataStats);
+
         setDeliveryStats({
           total: dataStats.total_delieveries,
           before7: dataStats.before_7,
@@ -170,6 +196,24 @@ const DashboardDetail = () => {
     },
   ];
 
+  const cityWiseColumns = [
+    {
+      title: "City, State",
+      dataIndex: "City, State",
+      key: "City, State",
+    },
+    {
+      title: " Before 7",
+      dataIndex: "before7",
+      key: "before7",
+    },
+    {
+      title: " After 7",
+      dataIndex: "after7",
+      key: "after7",
+    },
+  ];
+
   const statItems = [
     { value: stats?.total_orders, label: "Orders", color: "#DF4584" },
     { value: stats?.total_packets, label: "Packets", color: "#F9A603" },
@@ -258,6 +302,14 @@ const DashboardDetail = () => {
           <Table
             columns={columns}
             dataSource={[deliveryStatss]}
+            size="small"
+            pagination={false}
+          />
+        </div>
+        <div>
+          <Table
+            columns={cityWiseColumns}
+            dataSource={tableDataCitywise}
             size="small"
             pagination={false}
           />

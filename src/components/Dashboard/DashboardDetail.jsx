@@ -22,7 +22,6 @@ const DashboardDetail = () => {
   });
   const [deliveryStatss, setDeliveryStats] = useState();
   const [cityWise, setCityWise] = useState();
- 
 
   const [tableDataCitywise, setTableDataCitywise] = useState([]);
 
@@ -38,7 +37,7 @@ const DashboardDetail = () => {
     const parsedData = Array.from(combinedKeys).map((key) => {
       const [city, state] = key.split(", ");
       return {
-        "city / State": `${city}, ${state}`,
+        "City, State": `${city}, ${state}`,
         before7: before7[key] || 0,
         after7: after7[key] || 0,
       };
@@ -199,9 +198,9 @@ const DashboardDetail = () => {
 
   const cityWiseColumns = [
     {
-      title: "city / State",
-      dataIndex: "city / State",
-      key: "city / State",
+      title: "City, State",
+      dataIndex: "City, State",
+      key: "City, State",
     },
     {
       title: " Before 7",

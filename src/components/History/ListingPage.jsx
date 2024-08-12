@@ -76,7 +76,6 @@ const ListingPage = () => {
   let historyData = [];
   tableData?.data.map((listingData) => {
     const ridersCount = listingData?.rider?.length;
-    const truncatedOrderId = listingData?.order?.uid.slice(-8); // Truncate to last 8 characters
     const customerName = listingData?.order?.full_name;
     let arr = customerName.split(" ");
     let name = arr.filter((x) => x !== "");
@@ -92,7 +91,7 @@ const ListingPage = () => {
         ? listingData?.accept_date.split(" ")[0]
         : null,
       item_uid: listingData?.item_uid,
-      order_id: truncatedOrderId,
+      order_id: listingData?.order?.uid,
       customer_name: finalCustomerName,
       society_name: listingData?.society?.name,
       "Pin code": listingData?.order?.pincode,

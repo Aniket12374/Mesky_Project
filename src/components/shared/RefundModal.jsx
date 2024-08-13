@@ -1,14 +1,15 @@
 import { Modal } from "antd";
-import React from "react";
+import React, { useEffect } from "react";
 import { refundProcess } from "../../services/subscriptionOrders/subscriptionService";
 import toast from "react-hot-toast";
+import { set } from "react-hook-form";
 
 function RefundModal({ change, setChange, handleModalRef }) {
   const {
     refAmount,
     refundModalOpen,
     reason,
-    modalData: { item_uid, customer_name, phone_number , OrderValue },
+    modalData: { item_uid, customer_name, phone_number, OrderValue },
   } = change;
 
   const refundReasons = [
@@ -23,6 +24,10 @@ function RefundModal({ change, setChange, handleModalRef }) {
     "Spoilt",
     "Expired Received",
   ];
+
+  useEffect(() => {
+    setChange({ ...change, reason: refundReasons[0] });
+  }, []);
 
   const handleSubmitChangeRef = () => {
     const refundPayload = {

@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { CSVLink } from "react-csv";
 import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
-import { Button, Pagination, Modal } from "antd";
+import {  Pagination, Modal } from "antd";
 import {
   csvUpload,
   downloadCsv,
@@ -18,6 +17,7 @@ import {
 } from "../../services/subscriptionOrders/subscriptionService";
 import DataTable from "../Common/DataTable/DataTable";
 import { customAlphNumericSort } from "../../utils";
+import RefundModal from "../shared/RefundModal";
 
 const ListingPage = () => {
   const navigate = useNavigate();
@@ -44,7 +44,6 @@ const ListingPage = () => {
       onSuccess: () => setShouldFetch(false), // Disable fetch after success
     }
   );
-
   const {
     data: searchResult,
     isLoading: isSearchLoading,
@@ -61,24 +60,20 @@ const ListingPage = () => {
   const [filteredDataCount, setFilteredDataCount] = useState(null);
   const [totalDataCount, setTotalDataCount] = useState(0);
   const [searchTotalCount, setSearchTotalCount] = useState(0);
-
-  const [quantityChange, setQuantityChange] = useState({
-    modalOpen: false,
-    modalData: {},
-    for_future_order: false,
-    changedQty: 1,
-  });
-
   const [csvModalOpen, setCsvModalOpen] = useState(false);
   const [change, setChange] = useState({
     quantityModalOpen: false,
+    refundModalOpen: false,
     societyModalOpen: false,
     modalData: {},
     society: "",
     sector: "",
     for_future_order: false,
     changedQty: 1,
+    refAmount: "",
+    reason: "",
   });
+
   const [file, setFile] = useState();
 
   const handleCsvUpload = (event) => {
@@ -109,6 +104,7 @@ const ListingPage = () => {
     let arr = customerName.split(" ");
     let name = arr.filter((x) => x !== "");
     let finalCustomerName = name.reduce((x, acc) => x + " " + acc);
+    let OrderPrice = listingData?.item_price;
     let delStatus =
       Object.keys(listingData?.status).length === 0
         ? "PENDING"
@@ -119,8 +115,8 @@ const ListingPage = () => {
       item_uid: listingData?.item_uid,
       order_id: listingData?.order?.uid,
       "Product ID": listingData?.product_id,
-      "Order Value": listingData?.total_price,
-      "MRP Of Product": listingData?.item_price,
+      "OrderValue": listingData?.total_price,
+      MRP_Of_Product: listingData?.item_price,
       "Brand Name": listingData?.brand_name,
       customer_name: finalCustomerName,
       society_name: listingData?.society?.name,
@@ -145,7 +141,6 @@ const ListingPage = () => {
         : null,
     });
   });
-
   const uniqueSocietyNames = Array.from(
     new Set(historyData?.map((listingData) => listingData?.society_name).sort())
   );
@@ -223,6 +218,14 @@ const ListingPage = () => {
         society: "",
         sector: "",
       }),
+    }));
+  };
+
+  const handleModalRef = (record) => {
+    setChange((prev) => ({
+      ...prev,
+      modalData: record,
+      refundModalOpen: !change?.refundModalOpen,
     }));
   };
 
@@ -480,6 +483,20 @@ const ListingPage = () => {
           </button>
         ),
     },
+    {
+      title: "Refund",
+      key: "refund",
+      dataIndex: "refund",
+      render: (refund, record) =>
+        record.status == "DELIVERED" && (
+          <button
+            className="bg-[#DF4584] rounded-2xl text-white p-2"
+            onClick={() => handleModalRef(record)}
+          >
+            Refund
+          </button>
+        ),
+    },
     // {
     //   title: "SECTOR CHANGE",
     //   key: "sector_change",
@@ -618,7 +635,6 @@ const ListingPage = () => {
 
   const {
     quantityModalOpen,
-    societyModalOpen,
     for_future_order: futureOrder,
     changedQty,
     modalData: {
@@ -626,11 +642,7 @@ const ListingPage = () => {
       customer_name: custmerName,
       phone_number: phNumber,
       qty: customerQty,
-      society_name: customerSocietyName,
-      sectors: customerSector,
     },
-    sector,
-    society,
   } = change;
 
   return (
@@ -806,6 +818,11 @@ const ListingPage = () => {
           </div>
         </div>
       </Modal>
+      <RefundModal
+        change={change}
+        setChange={setChange}
+        handleModalRef={handleModalRef}
+      />
       {/* <Modal
         style={{
           fontFamily: "Fredoka, sans-serif",

@@ -40,7 +40,7 @@ export const SubscriptionSearch = (page = 1, size = 10, param) => {
   );
 };
 
-export const HistorySearch = (page = 1, size = 10, param) => {
+export const historySearch = (page = 1, size = 10, param) => {
   const start = (page - 1) * size;
   const end = start + size;
   return httpVendor.get(
@@ -56,6 +56,10 @@ export const downloadCsv = () => {
 
 export const subscriptionQtyChange = (data) => {
   return httpVendor.post("/api/delivery/portal/qty_update", data);
+};
+
+export const refundProcess = (data) => {
+  return httpVendor.post("api/delivery/portal/refund", data);
 };
 
 export const subscriptionSocietyChange = (data) => {

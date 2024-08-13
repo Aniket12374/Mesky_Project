@@ -26,8 +26,13 @@ function RefundModal({ change, setChange, handleModalRef }) {
   ];
 
   useEffect(() => {
-    setChange({ ...change, reason: refundReasons[0] });
-  }, []);
+    if (refundModalOpen) {
+      setChange((prevChange) => ({
+        ...prevChange,
+        reason: refundReasons[0],
+      }));
+    }
+  }, [refundModalOpen]);
 
   const handleSubmitChangeRef = () => {
     const refundPayload = {
@@ -110,6 +115,7 @@ function RefundModal({ change, setChange, handleModalRef }) {
           <select
             className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm border-blue-400 bg-white text-gray-700"
             onChange={(e) => setChange({ ...change, reason: e.target.value })}
+            value={reason}
           >
             {refundReasons.map((item, index) => (
               <option key={index} value={item}>

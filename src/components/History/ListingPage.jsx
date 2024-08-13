@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 import { useQuery } from "react-query";
 import DataTable from "../Common/DataTable/DataTable";
 import {
-  downloadCsv,
-  HistorySearch,
+  historySearch,
   previousOrders,
 } from "../../services/subscriptionOrders/subscriptionService";
 import { useNavigate } from "react-router-dom";
 import { Modal, Pagination } from "antd";
 import { customAlphNumericSort } from "../../utils";
+import RefundModal from "../shared/RefundModal";
 
 const ListingPage = () => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [size, setSize] = useState(10);
-
   const [searchPage, setSearchPage] = useState(1);
   const [searchSize, setSearchSize] = useState(10);
   const [search, setSearch] = useState("");
@@ -23,7 +23,20 @@ const ListingPage = () => {
   const [shouldFetch, setShouldFetch] = useState(true);
   const [isQueryEnabled, setIsQueryEnabled] = useState(false);
   const [showSearchData, setShowSearchData] = useState(false);
-  const [csvLoader, setCsvLoader] = useState(false);
+  // const [csvLoader, setCsvLoader] = useState(false);
+  const [filteredDataCount, setFilteredDataCount] = useState(null);
+  const [totalDataCount, setTotalDataCount] = useState(0);
+  const [selectedFilters, setSelectedFilters] = useState({});
+  const [imagePopupVisible, setImagePopupVisible] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [searchTotalCount, setSearchTotalCount] = useState(0);
+  const [change, setChange] = useState({
+    refundModalOpen: false,
+    // societyModalOpen: false,
+    modalData: {},
+    refAmount: "",
+    reason: "",
+  });
 
   const { data, isLoading, isError, refetch } = useQuery(
     ["previousOrders", currentPage, size],
@@ -39,21 +52,13 @@ const ListingPage = () => {
     isLoading: isSearchLoading,
     isError: isSearchError,
   } = useQuery(
-    ["HistorySearch", searchPage, searchSize, param], // Use search parameters in query key
-    () => HistorySearch(searchPage, searchSize, param), // Remove unnecessary arguments
+    ["historySearch", searchPage, searchSize, param], // Use search parameters in query key
+    () => historySearch(searchPage, searchSize, param), // Remove unnecessary arguments
     {
       enabled: isQueryEnabled,
       onSuccess: () => setIsQueryEnabled(false),
     }
   );
-
-  const [filteredDataCount, setFilteredDataCount] = useState(null);
-  const [totalDataCount, setTotalDataCount] = useState(0);
-  const [selectedFilters, setSelectedFilters] = useState({});
-  const [imagePopupVisible, setImagePopupVisible] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
-
-  const [searchTotalCount, setSearchTotalCount] = useState(0);
 
   let tableData =
     search && showSearchData ? searchResult?.data || searchData : data?.data;
@@ -115,8 +120,8 @@ const ListingPage = () => {
         ? listingData?.delivery_date?.split(" ")[1]
         : null,
       "Brand name": listingData?.brand_name,
-      "MRP of Product": listingData?.item_price,
-      "Order Value": listingData?.total_price,
+      MRP_of_Product: listingData?.item_price,
+      "OrderValue": listingData?.total_price,
     });
   });
 
@@ -332,6 +337,23 @@ const ListingPage = () => {
         }
       },
     },
+    {
+      title: "Refund",
+      key: "refund",
+      dataIndex: "refund",
+      render: (refund, record) =>
+        record.del_time &&
+        record.status == "DELIVERED" && (
+          <div className="px-2">
+            <button
+              className="bg-[#DF4584] rounded-2xl text-white p-2"
+              onClick={() => handleModalRef(record)}
+            >
+              Refund
+            </button>
+          </div>
+        ),
+    },
   ];
 
   const handlePageChange = (page) => {
@@ -384,7 +406,7 @@ const ListingPage = () => {
 
   const handleSearch = async () => {
     const searchValue = search;
-    await HistorySearch(searchPage, searchSize || size, searchValue).then(
+    await historySearch(searchPage, searchSize || size, searchValue).then(
       (res) => {
         setSearchData(res?.data);
         setSearchTotalCount(res?.totalCount || 0);
@@ -395,6 +417,13 @@ const ListingPage = () => {
     );
   };
 
+  const handleModalRef = (record) => {
+    setChange((prev) => ({
+      ...prev,
+      modalData: record,
+      refundModalOpen: !change?.refundModalOpen,
+    }));
+  };
   // const handleDownloadCsv = () => {
   //   setCsvLoader(true);
   //   downloadCsv()
@@ -481,6 +510,11 @@ const ListingPage = () => {
           />
         )}
       </Modal>
+      <RefundModal
+        change={change}
+        setChange={setChange}
+        handleModalRef={handleModalRef}
+      />
     </div>
   );
 };

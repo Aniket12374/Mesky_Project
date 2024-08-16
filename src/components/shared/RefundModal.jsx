@@ -13,6 +13,7 @@ function RefundModal({ change, setChange, handleModalRef }) {
   } = change;
 
   const refundReasons = [
+    "Select Reason",
     "Qty Change Error on App",
     "Delivery Rider Error",
     "Item Delivered in Bad Condition (Dairy)",
@@ -46,7 +47,7 @@ function RefundModal({ change, setChange, handleModalRef }) {
       return;
     }
 
-    if (reason.length < 3 || reason === "") {
+    if (reason.length < 3 || reason === "" || reason == "Select Reason") {
       toast.error("Please add a proper reason.");
       return;
     }
@@ -118,7 +119,7 @@ function RefundModal({ change, setChange, handleModalRef }) {
             value={reason}
           >
             {refundReasons.map((item, index) => (
-              <option key={index} value={item}>
+              <option key={index} value={item} hidden={index == 0}>
                 {item}
               </option>
             ))}

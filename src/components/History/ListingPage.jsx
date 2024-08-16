@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useQuery } from "react-query";
+import Cookies from "js-cookie";
 import DataTable from "../Common/DataTable/DataTable";
 import {
   historySearch,
@@ -46,6 +47,8 @@ const ListingPage = () => {
       onSuccess: () => setShouldFetch(false), // Disable fetch after success
     }
   );
+
+  const isRefundUser = Cookies.get("refundUser");
 
   const {
     data: searchResult,
@@ -121,7 +124,7 @@ const ListingPage = () => {
         : null,
       "Brand name": listingData?.brand_name,
       MRP_of_Product: listingData?.item_price,
-      "OrderValue": listingData?.total_price,
+      OrderValue: listingData?.total_price,
     });
   });
 
@@ -337,7 +340,10 @@ const ListingPage = () => {
         }
       },
     },
-    {
+  ];
+
+  if (isRefundUser == true) {
+    HistoryHeaders.push({
       title: "Refund",
       key: "refund",
       dataIndex: "refund",
@@ -353,8 +359,8 @@ const ListingPage = () => {
             </button>
           </div>
         ),
-    },
-  ];
+    });
+  }
 
   const handlePageChange = (page) => {
     if (showSearchData) {

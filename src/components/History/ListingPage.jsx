@@ -342,7 +342,7 @@ const ListingPage = () => {
     },
   ];
 
-  if (isRefundUser == true) {
+  if (isRefundUser == 'true') {
     HistoryHeaders.push({
       title: "Refund",
       key: "refund",

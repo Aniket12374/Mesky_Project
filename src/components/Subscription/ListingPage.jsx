@@ -57,7 +57,7 @@ const ListingPage = () => {
       onSuccess: () => setIsQueryEnabled(false),
     }
   );
-  
+
   const isRefundUser = Cookies.get("refundUser");
 
   const [filteredDataCount, setFilteredDataCount] = useState(null);
@@ -508,7 +508,7 @@ const ListingPage = () => {
     // },
   ];
 
-  if (isRefundUser == true) {
+  if (isRefundUser == "true") {
     HistoryHeaders.push({
       title: "Refund",
       key: "refund",

@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useQuery } from "react-query";
+import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
-import {  Pagination, Modal } from "antd";
+import { Pagination, Modal } from "antd";
 import {
   csvUpload,
   downloadCsv,
@@ -56,6 +57,8 @@ const ListingPage = () => {
       onSuccess: () => setIsQueryEnabled(false),
     }
   );
+  
+  const isRefundUser = Cookies.get("refundUser");
 
   const [filteredDataCount, setFilteredDataCount] = useState(null);
   const [totalDataCount, setTotalDataCount] = useState(0);
@@ -115,7 +118,7 @@ const ListingPage = () => {
       item_uid: listingData?.item_uid,
       order_id: listingData?.order?.uid,
       "Product ID": listingData?.product_id,
-      "OrderValue": listingData?.total_price,
+      OrderValue: listingData?.total_price,
       MRP_Of_Product: listingData?.item_price,
       "Brand Name": listingData?.brand_name,
       customer_name: finalCustomerName,
@@ -483,20 +486,6 @@ const ListingPage = () => {
           </button>
         ),
     },
-    {
-      title: "Refund",
-      key: "refund",
-      dataIndex: "refund",
-      render: (refund, record) =>
-        record.status == "DELIVERED" && (
-          <button
-            className="bg-[#DF4584] rounded-2xl text-white p-2"
-            onClick={() => handleModalRef(record)}
-          >
-            Refund
-          </button>
-        ),
-    },
     // {
     //   title: "SECTOR CHANGE",
     //   key: "sector_change",
@@ -518,6 +507,26 @@ const ListingPage = () => {
     //   width: 60,
     // },
   ];
+
+  if (isRefundUser == true) {
+    HistoryHeaders.push({
+      title: "Refund",
+      key: "refund",
+      dataIndex: "refund",
+      render: (refund, record) =>
+        record.del_time &&
+        record.status == "DELIVERED" && (
+          <div className="px-2">
+            <button
+              className="bg-[#DF4584] rounded-2xl text-white p-2"
+              onClick={() => handleModalRef(record)}
+            >
+              Refund
+            </button>
+          </div>
+        ),
+    });
+  }
 
   const handlePageChange = (page) => {
     if (showSearchData) {

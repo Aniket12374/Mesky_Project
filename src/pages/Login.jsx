@@ -5,6 +5,7 @@ import { toast } from "react-hot-toast";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import { setCookie } from "../services/cookiesFunc";
 
 const Login = () => {
   const { register } = useForm();
@@ -13,6 +14,14 @@ const Login = () => {
   const [otp, setOtp] = useState("");
   const [otpReq, setOtpReq] = useState(false);
   const [message, setMessage] = useState("");
+  const [refundUser, setRefundUser] = useState(false);
+
+  const refundUsers = [
+    "9958945515",
+    "8799712505",
+    "9654787711",
+    "9862532722",
+  ];
 
   const handleInputChange = (e) => {
     otpReq ? setOtp(e.target.value) : setUserInput(e.target.value);
@@ -22,6 +31,11 @@ const Login = () => {
   const handleLogin = async () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const phoneRegex = /^\d{10}$/;
+
+    if (userInput) {
+      let check = refundUsers.some((x) => x == userInput);
+      setRefundUser(check);
+    }
 
     if (!emailRegex.test(userInput) && !phoneRegex.test(userInput)) {
       setMessage("Please enter a valid email or phone number.");
@@ -40,6 +54,7 @@ const Login = () => {
         setOtpReq(true);
       } else {
         await validateOtp({ otp, signin_type: userInput });
+        setCookie("refundUser", refundUser);
         navigate("/subscription");
       }
     } catch {

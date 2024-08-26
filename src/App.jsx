@@ -7,11 +7,14 @@ import { Toaster } from "react-hot-toast";
 import Login from "./pages/Login";
 import History from "./pages/History";
 import Agents from "./pages/Agent/Agents";
+import OrderListing from "./pages/CustomerDashboard/OrderListing";
 import Subscription from "./pages/Subscription";
 import PrivateRoute from "./components/Auth/PrivateRoute";
 import AreaMapping from "./pages/AreaMapping";
 import Routing from "./pages/Routing";
 import Dashboard from "./pages/Dashboard";
+import Layout from "./components/Layout/Layout";
+import CustomerProfile from "./pages/CustomerDashboard/Profile";
 
 const queryClient = new QueryClient();
 
@@ -75,6 +78,8 @@ function App() {
             }
           />
           <Route path="/login" element={<Login />} />
+          <Route path='/customer/order-listing' element={<OrderListing />} />
+          <Route path='/customer/profile' element={<CustomerProfile />} />
         </Routes>
         <ReactQueryDevtools initialIsOpen={false} />
         <Toaster />

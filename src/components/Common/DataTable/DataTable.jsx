@@ -16,6 +16,7 @@ export const DataTable = ({
   tableSize = "middle",
   loading = false,
   scroll,
+  showHeader = true,
   fileName = "Listing.csv",
   onChange = {},
   setSearch,
@@ -23,6 +24,7 @@ export const DataTable = ({
   handleSearch,
   setSearchData,
   setShowSearchData,
+  showExport = true,
   ...OtherProps
 }) => {
   const navigate = useNavigate();
@@ -45,25 +47,27 @@ export const DataTable = ({
 
   return (
     <>
-      <CSVLink
-        filename={fileName}
-        data={data}
-        className="bg-[#ff0000] text-white rounded-lg px-2 py-[10px] relative top-2"
-      >
-        Export to CSV
-      </CSVLink>
+      {showExport && (
+        <CSVLink
+          filename={fileName}
+          data={data}
+          className='bg-[#ff0000] text-white rounded-lg px-2 py-[10px] relative top-2'
+        >
+          Export to CSV
+        </CSVLink>
+      )}
       {pathIncludes && (
         <>
           <input
-            type="text"
-            placeholder="Enter your search..."
-            className="w-56 h-10 p-2 border border-[#65CBF3] border-2 relative left-4 top-2 rounded-md"
+            type='text'
+            placeholder='Enter your search...'
+            className='w-56 h-10 p-2 border border-[#65CBF3] border-2 relative left-4 top-2 rounded-md'
             onChange={(e) => setSearch(e.target.value)}
             value={search}
           />
 
           <button
-            className="left-5 px-2 top-2 relative bg-[#DF4584] rounded-md text-white p-2"
+            className='left-5 px-2 top-2 relative bg-[#DF4584] rounded-md text-white p-2'
             onClick={handleSearch}
             disabled={!search}
           >
@@ -71,7 +75,7 @@ export const DataTable = ({
           </button>
           {search && (
             <button
-              className="bg-gray-300 text-black w-8 relative right-[88px] rounded-lg top-2"
+              className='bg-gray-300 text-black w-8 relative right-[88px] rounded-lg top-2'
               onClick={() => {
                 setSearch("");
                 setSearchData("");
@@ -83,9 +87,9 @@ export const DataTable = ({
           )}
         </>
       )}
-      <div className="antd-table mt-5 mr-5">
+      <div className='antd-table mt-5 mr-5'>
         <Table
-          className=""
+          className=''
           onRow={(i) => ({
             onClick: (e) => {
               if (
@@ -111,6 +115,7 @@ export const DataTable = ({
               type: selectionType,
             }
           }
+          showHeader={showHeader}
           loading={loading}
           scroll={scroll ? scroll : ""}
           onChange={onChange}

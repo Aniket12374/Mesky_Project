@@ -4,7 +4,7 @@ import { Spin } from "antd";
 
 export const Header = ({ text, className = "" }) => (
   <div className={`flex justify-between items-center ${className}`}>
-    <div className="text-3xl font-semibold ">{text}</div>
+    <div className='text-3xl font-semibold '>{text}</div>
   </div>
 );
 
@@ -53,4 +53,25 @@ export const customAlphNumericSort = (a, b) => {
 
   // If alphabetic parts are equal, compare numeric parts
   return numA - numB;
+};
+
+export const IconGreen = ({ icon }) => (
+  <div className='w-8 h-8 flex items-center justify-center rounded-full bg-gray-200'>
+    <div className='w-4 h-4 flex items-center justify-center rounded-full bg-[#27AE60]'>
+      <div className='p-3 text-white'>{icon}</div>
+    </div>
+  </div>
+);
+
+export const transactionName = (record) => {
+  if (!record) return "";
+  const type = record?.type;
+  const isCreditTransaction = type === "CREDIT" || type === "REFUND";
+  const isCreditType = type === "CREDIT";
+
+  return !isCreditTransaction
+    ? `Paid for Order ID: ${record?.order_id}`
+    : isCreditType
+    ? `Recharged wallet with ${record?.transaction_amount}`
+    : `Refund for Order ID:  ${record?.order_id}`;
 };

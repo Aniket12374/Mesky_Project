@@ -174,3 +174,11 @@ body {
   box-shadow: 2px 2px 8px 2px rgba(215, 73, 132, 0.25) inset;
   padding: 5px;
 }
+
+.orange-bg {
+  background-color:#fc8172;
+}
+
+.orange-btn {
+  @apply orange-bg w-32 text-white p-2 rounded-lg;
+}

@@ -6,6 +6,7 @@ import { Header } from "../utils";
 import Cookies from "js-cookie";
 import DashboardDetail from "../components/Dashboard/DashboardDetail";
 import dayjs from "dayjs";
+import CustomerDashboard from "../components/Customer/CustomerDashboard";
 
 const Dashboard = () => {
   const user = useMainStore((state) => state.user);
@@ -32,7 +33,8 @@ const Dashboard = () => {
   return (
     <Layout>
       <Header text={`Dashboard - ${formattedDate}`} />
-      <DashboardDetail />
+      {/* <DashboardDetail /> */}
+      <CustomerDashboard />
     </Layout>
   );
 };

@@ -7,14 +7,14 @@ import { Toaster } from "react-hot-toast";
 import Login from "./pages/Login";
 import History from "./pages/History";
 import Agents from "./pages/Agent/Agents";
-import OrderListing from "./pages/CustomerDashboard/OrderListing";
+import CustomerOrderListing from "./pages/CustomerDashboard/CustomerOrderListing";
 import Subscription from "./pages/Subscription";
 import PrivateRoute from "./components/Auth/PrivateRoute";
 import AreaMapping from "./pages/AreaMapping";
 import Routing from "./pages/Routing";
 import Dashboard from "./pages/Dashboard";
-import Layout from "./components/Layout/Layout";
 import CustomerProfile from "./pages/CustomerDashboard/Profile";
+import CustomerTransactions from "./pages/CustomerDashboard/CustomerTransactions";
 
 const queryClient = new QueryClient();
 
@@ -23,10 +23,10 @@ function App() {
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <Routes>
-          <Route index path="/" element={<Navigate to="/login" />} />
+          <Route index path='/' element={<Navigate to='/login' />} />
 
           <Route
-            path="/dashboard"
+            path='/dashboard'
             element={
               <PrivateRoute>
                 <Dashboard />
@@ -35,7 +35,7 @@ function App() {
           />
 
           <Route
-            path="/subscription"
+            path='/subscription'
             element={
               <PrivateRoute>
                 <Subscription />
@@ -44,7 +44,7 @@ function App() {
           />
 
           <Route
-            path="/routing"
+            path='/routing'
             element={
               <PrivateRoute>
                 <Routing />
@@ -53,7 +53,7 @@ function App() {
           />
 
           <Route
-            path="/history"
+            path='/history'
             element={
               <PrivateRoute>
                 <History />
@@ -61,7 +61,7 @@ function App() {
             }
           />
           <Route
-            path="/agents"
+            path='/agents'
             element={
               <PrivateRoute>
                 <Agents />
@@ -70,15 +70,22 @@ function App() {
           />
 
           <Route
-            path="/AreaMapping"
+            path='/AreaMapping'
             element={
               <PrivateRoute>
                 <AreaMapping />
               </PrivateRoute>
             }
           />
-          <Route path="/login" element={<Login />} />
-          <Route path='/customer/order-listing' element={<OrderListing />} />
+          <Route path='/login' element={<Login />} />
+          <Route
+            path='/customer/order-listing'
+            element={<CustomerOrderListing />}
+          />
+          <Route
+            path='/customer/transactions'
+            element={<CustomerTransactions />}
+          />
           <Route path='/customer/profile' element={<CustomerProfile />} />
         </Routes>
         <ReactQueryDevtools initialIsOpen={false} />

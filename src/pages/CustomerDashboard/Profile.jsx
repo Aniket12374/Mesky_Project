@@ -1,15 +1,13 @@
-import React from 'react'
-import { Info } from '../../components/Customer/Info'
-import Layout from '../../components/Layout/Layout'
+import React from "react";
+// import { Info } from "../../components/Customer/CustomerInformation";
+import Layout from "../../components/Layout/Layout";
 
 function CustomerProfile() {
   return (
     <Layout>
-        <div>
-            <Info />
-        </div>
+      <div>{/* <Info /> */}</div>
     </Layout>
-  )
+  );
 }
 
-export default CustomerProfile
+export default CustomerProfile;

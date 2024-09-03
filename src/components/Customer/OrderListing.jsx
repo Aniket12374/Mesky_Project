@@ -13,12 +13,19 @@ const OrderTile = ({
   price,
   unitQuantity,
   orderId,
+  status,
 }) => {
+  const textColor =
+    status === "Order Delivered"
+      ? "text-[#27AE60]"
+      : status !== "Paused"
+      ? "text-orange"
+      : "tex-red-400";
   return (
     <div className='card shadow-lg m-2'>
       <div className='card flex justify-between  rounded-lg m-2'>
         <div className='flex justify-between'>
-          <div className='border-b-2 border-gray-200 text-[#27AE60]'>
+          <div className={`border-b-2 border-gray-200 ${textColor}`}>
             {date}
           </div>
           <div className='text-[#DF4584] font-bold text-lg'>₹ {price}</div>
@@ -52,7 +59,7 @@ const OrderListing = () => {
   return (
     <div className='w-1/3 border-2 border-gray-200'>
       <div className='flex'>
-        <Header text='Order History' />
+        <Header text='Order History' className='m-2' />
         <input
           type='text'
           onClick={() => setModalOpen(true)}

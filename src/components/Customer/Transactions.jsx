@@ -29,6 +29,7 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
       title: "Icon",
       dataIndex: "icon",
       key: "icon",
+      width: 50,
       render: (_, record) => {
         const type = record?.type;
         const isCreditTransaction = type === "CREDIT" || type === "REFUND";
@@ -52,6 +53,7 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
       title: "Transaction Amount",
       dataIndex: "amount",
       key: "amount",
+      width: 100,
       render: (_, record) => `₹ ${record?.transaction_amount}`,
     },
   ];
@@ -59,7 +61,7 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
   return (
     <div className={!showBorder ? "" : "w-1/3 border-2 border-gray-200"}>
       <div className='flex'>
-        <Header text='Transactions' />
+        <Header text='Transactions' className='m-2' />
         {showSearch && (
           <>
             {" "}

@@ -20,3 +20,9 @@ export const getTransactionDetail = (transactionId) => {
     `api/support_dash/view-transaction?transaction_id=${transactionId}`
   );
 };
+
+export const getOrders = (_start = 0, _end = 5) => {
+  return httpVendor.get(
+    `api/order/subscription/delivery/history?_start=${_start}&_end=${_end}`
+  );
+};

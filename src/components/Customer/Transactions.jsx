@@ -57,7 +57,7 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
   ];
 
   return (
-    <div className={!showBorder ? "" : "border-2 border-gray-200"}>
+    <div className={!showBorder ? "" : "w-1/3 border-2 border-gray-200"}>
       <div className='flex'>
         <Header text='Transactions' />
         {showSearch && (

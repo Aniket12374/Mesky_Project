@@ -8,7 +8,7 @@ function CustomerDashboard() {
     <div>
       <div>CustomerDashboard</div>
       <CustomerInformation />
-      <div className='flex space-x-5 mt-5'>
+      <div className='flex space-x-2 mt-5'>
         <Transactions />
         <OrderListing />
       </div>

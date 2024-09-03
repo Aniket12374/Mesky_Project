@@ -28,7 +28,7 @@ export const DataTable = ({
   const navigate = useNavigate();
   const location = useLocation();
 
-  const paths = ["/subscription", "/history"];
+  const paths = ["/subscription", "/history", "/customer"];
   const pathIncludes = paths.some((path) => location?.pathname.includes(path));
 
   const selectionType = checkbox ? "checkbox" : radio ? "radio" : null;

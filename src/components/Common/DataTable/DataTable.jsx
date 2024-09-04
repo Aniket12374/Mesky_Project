@@ -30,6 +30,7 @@ export const DataTable = ({
 
   const paths = ["/subscription", "/history", "/customer"];
   const pathIncludes = paths.some((path) => location?.pathname.includes(path));
+  const iscustomerPage = location?.pathname.includes("/customer");
 
   const selectionType = checkbox ? "checkbox" : radio ? "radio" : null;
   const rowSelection = {
@@ -45,13 +46,15 @@ export const DataTable = ({
 
   return (
     <>
-      <CSVLink
-        filename={fileName}
-        data={data}
-        className="bg-[#ff0000] text-white rounded-lg px-2 py-[10px] relative top-2"
-      >
-        Export to CSV
-      </CSVLink>
+      {!iscustomerPage && (
+        <CSVLink
+          filename={fileName}
+          data={data}
+          className="bg-[#ff0000] text-white rounded-lg px-2 py-[10px] relative top-2"
+        >
+          Export to CSV
+        </CSVLink>
+      )}
       {pathIncludes && (
         <>
           <input

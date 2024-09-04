@@ -15,13 +15,24 @@ const Login = () => {
   const [otpReq, setOtpReq] = useState(false);
   const [message, setMessage] = useState("");
   const [refundUser, setRefundUser] = useState(false);
+  const [creditUser, setCreditUser] = useState(false);
 
   const refundUsers = [
     "9958945515",
     "8799712505",
     "9654787711",
     "9862532722",
-    "7426031798"
+    "7426031798",
+  ];
+
+  const creditUsers = [
+    "9029434159",
+    "7426031798",
+    "8130067178",
+    "9654831507",
+    "9335842464",
+    "8318179623",
+    "9315429184",
   ];
 
   const handleInputChange = (e) => {
@@ -36,6 +47,11 @@ const Login = () => {
     if (userInput) {
       let check = refundUsers.some((x) => x == userInput);
       setRefundUser(check);
+    }
+
+    if (userInput) {
+      let check = creditUsers.some((x) => x == userInput);
+      setCreditUser(check);
     }
 
     if (!emailRegex.test(userInput) && !phoneRegex.test(userInput)) {
@@ -56,6 +72,7 @@ const Login = () => {
       } else {
         await validateOtp({ otp, signin_type: userInput });
         setCookie("refundUser", refundUser);
+        setCookie("creditUser", creditUser);
         navigate("/subscription");
       }
     } catch {

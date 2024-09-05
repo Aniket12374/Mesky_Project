@@ -12,7 +12,7 @@ const Layout = ({ children }) => {
         className={`absolute p-4`}
         style={{
           left: !close ? "120px" : "250px",
-          width: !close ? "calc(100vw - 150px)" : "calc(100vw - 300px)",
+          width: !close ? "calc(100vw - 150px)" : "calc(100vw - 260px)",
           top: "90px",
         }}
       >

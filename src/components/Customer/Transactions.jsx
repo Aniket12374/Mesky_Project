@@ -6,9 +6,10 @@ import {
   getTransactions,
 } from "../../services/customerOrders/CustomerOrderService";
 import DataTable from "../Common/DataTable/DataTable";
-import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import { OrderDetails } from "./OrderDetails";
+import { useQuery } from "react-query";
+import { Pagination } from "antd";
 
 function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
   const [modalOpen, setModalOpen] = useState(false);
@@ -17,14 +18,31 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
   const [transactionId, setTransactionId] = useState(null);
   const [finalFilters, setFinalFilters] = useState(filters);
   const [selectedRecord, setSelectedRecord] = useState({});
+  const [currentPage, setCurrentPage] = useState(1);
+  const [size, setSize] = useState(10);
+  const [totalCount, setTotalCount] = useState(0);
 
-  useEffect(() => {
-    getTransactions(0, 10, finalFilters)
-      .then((res) => {
-        setTransactions(res?.data?.transactions);
-      })
-      .catch((err) => console.log({ err }));
-  }, [finalFilters]);
+  // Fetch transactions whenever page or size changes
+  const { isLoading: isSearchLoading } = useQuery(
+    ["getTransactions", currentPage, size, finalFilters],
+    () => getTransactions(currentPage, size, finalFilters),
+    {
+      keepPreviousData: true, // This keeps the old data until the new one arrives
+      onSuccess: (data) => {
+        setTransactions(data?.data?.transactions);
+        setTotalCount(data?.data?.total_count);
+      },
+    }
+  );
+
+  // useEffect(() => {
+  //   getTransactions(0, 10, finalFilters)
+  //     .then((res) => {
+  //       setTransactions(res?.data?.transactions);
+  //       setTotalCount(res?.data?.total_count);
+  //     })
+  //     .catch((err) => console.log({ err }));
+  // }, [finalFilters]);
 
   const transactionHeaders = [
     {
@@ -35,7 +53,6 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
       render: (_, record) => {
         const type = record?.type;
         const isCreditTransaction = type === "CREDIT" || type === "REFUND";
-
         return !isCreditTransaction ? (
           <IconGreen icon='-' />
         ) : (
@@ -60,13 +77,28 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
     },
   ];
 
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const pageSizeOptions = ["10", "20", "50", "100", "250", "500"];
+
+  // const pageSizeOptions = Array.from(
+  //   { length: Math.ceil(totalCount / 50) },
+  //   (_, index) => `${(index + 1) * 50}`
+  // );
+
+  const handlePageSizeChange = (current, page) => {
+    setSize(page);
+    setCurrentPage(1);
+  };
+
   return (
     <div className={!showBorder ? "" : "w-1/3 border-2 border-gray-200"}>
       <div className='flex'>
         <Header text='Transactions' className='m-2' />
         {showSearch && (
           <>
-            {" "}
             <input
               type='text'
               onClick={() => setModalOpen(true)}
@@ -81,36 +113,46 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
         )}
       </div>
       {transactionId === null ? (
-        <DataTable
-          columns={transactionHeaders}
-          data={transactions}
-          // onClick={() => }
-          onRow={(record, rowIndex) => {
-            return {
-              onClick: (event) => {
-                console.log({ record });
-                setSelectedRecord(record);
-                setTransactionId(record?.id);
-              },
-            };
-          }}
-          loading={false}
-          scroll={{
-            ...(!showSearch && { y: 450 }),
-          }}
-          showExport={false}
-          showHeader={false}
-        />
-      ) : selectedRecord?.type == "DEBIT" ? (
-        <OrderDetails
-          data={selectedRecord}
-          setTransactionId={setTransactionId}
-        />
+        <>
+          <div className='h-[80vh] overflow-auto'>
+            <DataTable
+              columns={transactionHeaders}
+              data={transactions}
+              onRow={(record, rowIndex) => {
+                return { onClick: () => setTransactionId(record?.id) };
+              }}
+              loading={isSearchLoading}
+              scroll={{
+                ...(!showSearch && { y: 450 }),
+              }}
+              showExport={false}
+              showHeader={false}
+            />
+          </div>
+          <div className='flex justify-end px-4 py-2 transaction-pagination'>
+            <Pagination
+              current={currentPage}
+              total={totalCount}
+              showTotal={(total, range) => (
+                <div>
+                  {range[0]} - {range[1]} of {totalCount} items
+                </div>
+              )}
+              onChange={handlePageChange}
+              showSizeChanger={true}
+              pageSizeOptions={pageSizeOptions}
+              onShowSizeChange={handlePageSizeChange}
+              disabled={isSearchLoading}
+            />
+          </div>
+        </>
       ) : (
-        <TransactionDetailTile
-          transactionId={transactionId}
-          setTransactionId={setTransactionId}
-        />
+        <>
+          <TransactionDetailTile
+            transactionId={transactionId}
+            setTransactionId={setTransactionId}
+          />
+        </>
       )}
 
       <CustomerPopup
@@ -129,13 +171,12 @@ const TransactionDetailTile = ({ transactionId, setTransactionId }) => {
   useEffect(() => {
     getTransactionDetail(transactionId)
       .then((res) => {
-        console.log({ res });
         setData(res?.data);
       })
       .catch((err) => {
         console.log({ err });
       });
-  }, []);
+  }, [transactionId]);
 
   const details = {
     "Added/Deducted/Refund Amount": data?.transaction_amount,
@@ -152,7 +193,7 @@ const TransactionDetailTile = ({ transactionId, setTransactionId }) => {
           onClick={() => setTransactionId(null)}
         >
           <i
-            class='fa fa-long-arrow-left text-sm rounded-full'
+            className='fa fa-long-arrow-left text-sm rounded-full'
             aria-hidden='true'
           ></i>
         </button>
@@ -164,7 +205,7 @@ const TransactionDetailTile = ({ transactionId, setTransactionId }) => {
 
       <div className='border-2 border-gray-200 m-3 p-3 rounded-lg'>
         {Object.keys(details).map((detail) => (
-          <div className='flex justify-between'>
+          <div className='flex justify-between' key={detail}>
             <div>{detail}</div>
             <div>{details[detail]}</div>
           </div>

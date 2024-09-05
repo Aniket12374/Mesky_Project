@@ -110,7 +110,7 @@ const SideNavBar = () => {
       className='absolute top-0 left-0 z-40  h-screen pt-20 transition-transform -translate-x-full bg-white sm:translate-x-0'
       aria-label='Sidebar'
       style={{
-        width: !close ? "100px" : "250px",
+        width: !close ? "100px" : "230px",
       }}
     >
       <div className='h-full px-3 pb-4 w-max'>

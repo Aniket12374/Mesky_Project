@@ -187,3 +187,33 @@ body {
 .orange-btn {
   @apply orange-bg w-32 text-white p-2 rounded-lg;
 }
+
+.transaction-pagination li.ant-pagination-total-text {
+  display: block;
+  margin-bottom: 10px;
+  background-color: antiquewhite;
+  text-align: center;
+}
+
+.order-listing li.ant-pagination-total-text {
+  display: block;
+  margin-bottom: 10px;
+  background-color: antiquewhite;
+  text-align: center;
+}
+
+.transaction-pagination li.ant-pagination-options {
+  margin-top: 15px;
+}
+
+.order-listing li.ant-pagination-options {
+  margin-top: 15px;
+}
+
+/* .order-listing .ant-select-selector .ant-select-selection-item {
+  background-color: #edc0a4;
+} */
+
+/* .order-listing .ant-select.ant-pagination-options-size-changer {
+  background-color: #edc0a4;
+} */

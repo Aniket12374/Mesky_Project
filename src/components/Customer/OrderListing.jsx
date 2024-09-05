@@ -43,7 +43,7 @@ const OrderListing = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [size, setSize] = useState(10);
-  const [totalCount, setTotalCount] = useState(100);
+  const [totalCount, setTotalCount] = useState(2000);
   const [isQueryEnabled, setIsQueryEnabled] = useState(false);
 
   const closeModal = () => setModalOpen((prev) => !prev);
@@ -55,6 +55,7 @@ const OrderListing = () => {
       keepPreviousData: true, // This keeps the old data until the new one arrives
       onSuccess: (res) => {
         setOrders(res?.data?.order_details);
+        // setTotalCount(res?.data?.total_count)
       },
     }
   );
@@ -70,10 +71,12 @@ const OrderListing = () => {
     setCurrentPage(page);
   };
 
-  const pageSizeOptions = Array.from(
-    { length: Math.ceil(totalCount / 50) },
-    (_, index) => `${(index + 1) * 50}`
-  );
+  // const pageSizeOptions = Array.from(
+  //   { length: Math.ceil(totalCount / 50) },
+  //   (_, index) => `${(index + 1) * 50}`
+  // );
+
+  const pageSizeOptions = ["10", "20", "50", "100", "250", "500"];
 
   const handlePageSizeChange = (current, page) => {
     setSize(page);
@@ -81,8 +84,8 @@ const OrderListing = () => {
   };
 
   return (
-    <div className="w-1/3 border-2 border-gray-200">
-      <div className="flex">
+    <div className="w-1/3 border-2 border-gray-200 rounded-md">
+      <div className="flex px-2">
         <Header text="Order History" />
         <input
           type="text"
@@ -93,19 +96,22 @@ const OrderListing = () => {
         />
       </div>
       <CustomerPopup open={modalOpen} closeModal={closeModal} modal={"order"} />
-      <div className="">
-        {orders.map((order) => (
-          <OrderTile
-            productName={order?.orderitem_info?.product_sn}
-            quantity={order?.orderitem_info?.quantity}
-            date={order?.date}
-            price={order?.total_price}
-            unitQuantity={order?.orderitem_info?.dprod_unit_qty}
-            orderId={order?.order_id}
-            status={order?.status}
-          />
-        ))}
+      <div className="h-[83vh] overflow-auto">
+        <div className="">
+          {orders.map((order) => (
+            <OrderTile
+              productName={order?.orderitem_info?.product_sn}
+              quantity={order?.orderitem_info?.quantity}
+              date={order?.date}
+              price={order?.total_price}
+              unitQuantity={order?.orderitem_info?.dprod_unit_qty}
+              orderId={order?.order_id}
+              status={order?.status}
+            />
+          ))}
+        </div>
       </div>
+
       <div className="flex justify-end px-4 py-2">
         <Pagination
           current={currentPage}

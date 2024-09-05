@@ -77,10 +77,13 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
     setCurrentPage(page);
   };
 
-  const pageSizeOptions = Array.from(
-    { length: Math.ceil(totalCount / 50) },
-    (_, index) => `${(index + 1) * 50}`
-  );
+  const pageSizeOptions = ["10", "20", "50", "100", "250", "500"];
+
+
+  // const pageSizeOptions = Array.from(
+  //   { length: Math.ceil(totalCount / 50) },
+  //   (_, index) => `${(index + 1) * 50}`
+  // );
 
   const handlePageSizeChange = (current, page) => {
     setSize(page);
@@ -88,8 +91,8 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
   };
 
   return (
-    <div className={!showBorder ? "" : "w-1/3 border-2 border-gray-200"}>
-      <div className="flex">
+    <div className={!showBorder ? "" : "w-1/3 border-2 border-gray-200 rounded-md"}>
+      <div className="flex px-2 py-2">
         <Header text="Transactions" />
         {showSearch && (
           <>
@@ -108,19 +111,21 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
       </div>
       {transactionId === null ? (
         <>
-          <DataTable
-            columns={transactionHeaders}
-            data={transactions}
-            onRow={(record, rowIndex) => {
-              return { onClick: () => setTransactionId(record?.id) };
-            }}
-            loading={isSearchLoading}
-            scroll={{
-              ...(!showSearch && { y: 450 }),
-            }}
-            showExport={false}
-            showHeader={false}
-          />
+          <div className="h-[80vh] overflow-auto">
+            <DataTable
+              columns={transactionHeaders}
+              data={transactions}
+              onRow={(record, rowIndex) => {
+                return { onClick: () => setTransactionId(record?.id) };
+              }}
+              loading={isSearchLoading}
+              scroll={{
+                ...(!showSearch && { y: 450 }),
+              }}
+              showExport={false}
+              showHeader={false}
+            />
+          </div>
           <div className="flex justify-end px-4 py-2">
             <Pagination
               current={currentPage}

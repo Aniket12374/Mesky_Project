@@ -8,9 +8,11 @@ export const previousOrdersListing = (page = 1, size = 10) => {
   );
 };
 
-export const getTransactions = (_start = 0, _end = 10, payload = {}) => {
+export const getTransactions = (page = 1, size = 10, payload = {}) => {
+  const start = (page - 1) * size;
+  const end = start + size;
   return httpVendor.post(
-    `api/support_dash/transactions?_start=${_start}&_end=${_end}`,
+    `api/support_dash/transactions?_start=${start}&_end=${end}`,
     payload
   );
 };
@@ -21,8 +23,10 @@ export const getTransactionDetail = (transactionId) => {
   );
 };
 
-export const getOrders = (_start = 0, _end = 5) => {
+export const getOrders = (page = 1, size = 5) => {
+  const start = (page - 1) * size;
+  const end = start + size;
   return httpVendor.get(
-    `api/order/subscription/delivery/history?_start=${_start}&_end=${_end}`
+    `api/order/subscription/delivery/history?_start=${start}&_end=${end}`
   );
 };

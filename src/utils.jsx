@@ -75,3 +75,40 @@ export const transactionName = (record) => {
     ? `Recharged wallet with ${record?.transaction_amount}`
     : `Refund for Order ID:  ${record?.order_id}`;
 };
+
+export const ProductCard = ({ product, quantity, children }) => (
+  <div>
+    <div className='flex justify-between space-x-2 p-2 shadow-md'>
+      <div className='m-1 p-2 border-2 border-gray-200'>
+        <img
+          src={
+            product?.default_image
+              ? product?.default_image
+              : product?.images_list.length > 0
+              ? product?.images_list[0]
+              : null
+          }
+          width={50}
+          height={50}
+          className='rounded-lg'
+          alt='sub_img'
+        />
+      </div>
+      <div className='flex-1'>
+        <div>{product?.product_sn}</div>
+        <div className='flex justify-between mt-2'>
+          <span>
+            {product?.dprod_unit_qty} x {quantity}
+          </span>
+          <span className='ml-10'>
+            <span>₹ {product?.total_price}</span>
+            {/* <span className='line-through ml-3'>
+              ₹ {product?.selling_price * product?.quantity}
+            </span> */}
+          </span>
+        </div>
+      </div>
+      {children}
+    </div>
+  </div>
+);

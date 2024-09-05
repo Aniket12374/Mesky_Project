@@ -54,13 +54,16 @@ const CustomerDetails = ({ info, address }) => {
     <div className='w-1/3 border-2 border-gray-200'>
       <div className='flex justify-between space-x-10 border-b-2 border-gray-200 p-2'>
         <div className='font-semibold text-lg'>Account Info</div>
-        <div>Edit</div>
+        <div>
+          <i class='fas fa-pencil-alt'></i>
+        </div>
       </div>
       <div className='customer-name flex space-x-3 m-5 items-center'>
-        <div className='rounded-full bg-[#FB8171] p-3 text-white text-lg font-semibold'>
+        <div className='w-12 h-12 rounded-full bg-[#FB8171] p-3 text-white text-lg font-semibold flex items-center justify-center'>
           {first_name[0].toUpperCase()}
           {last_name[0].toUpperCase()}
         </div>
+
         <div>
           <div>
             {first_name.toUpperCase()} {last_name.toUpperCase()}

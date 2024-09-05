@@ -15,6 +15,7 @@ import Routing from "./pages/Routing";
 import Dashboard from "./pages/Dashboard";
 import CustomerProfile from "./pages/CustomerDashboard/Profile";
 import CustomerTransactions from "./pages/CustomerDashboard/CustomerTransactions";
+import { useEffect } from "react";
 
 const queryClient = new QueryClient();
 
@@ -22,72 +23,74 @@ function App() {
   return (
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
-        <Routes>
-          <Route index path='/' element={<Navigate to='/login' />} />
+        <div className='relative'>
+          <Routes>
+            <Route index path='/' element={<Navigate to='/login' />} />
 
-          <Route
-            path='/dashboard'
-            element={
-              <PrivateRoute>
-                <Dashboard />
-              </PrivateRoute>
-            }
-          />
+            <Route
+              path='/dashboard'
+              element={
+                <PrivateRoute>
+                  <Dashboard />
+                </PrivateRoute>
+              }
+            />
 
-          <Route
-            path='/subscription'
-            element={
-              <PrivateRoute>
-                <Subscription />
-              </PrivateRoute>
-            }
-          />
+            <Route
+              path='/subscription'
+              element={
+                <PrivateRoute>
+                  <Subscription />
+                </PrivateRoute>
+              }
+            />
 
-          <Route
-            path='/routing'
-            element={
-              <PrivateRoute>
-                <Routing />
-              </PrivateRoute>
-            }
-          />
+            <Route
+              path='/routing'
+              element={
+                <PrivateRoute>
+                  <Routing />
+                </PrivateRoute>
+              }
+            />
 
-          <Route
-            path='/history'
-            element={
-              <PrivateRoute>
-                <History />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path='/agents'
-            element={
-              <PrivateRoute>
-                <Agents />
-              </PrivateRoute>
-            }
-          />
+            <Route
+              path='/history'
+              element={
+                <PrivateRoute>
+                  <History />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path='/agents'
+              element={
+                <PrivateRoute>
+                  <Agents />
+                </PrivateRoute>
+              }
+            />
 
-          <Route
-            path='/AreaMapping'
-            element={
-              <PrivateRoute>
-                <AreaMapping />
-              </PrivateRoute>
-            }
-          />
-          <Route path='/login' element={<Login />} />
-          <Route
-            path='/customer/order-listing'
-            element={<CustomerOrderListing />}
-          />
-          <Route
-            path='/customer/transactions'
-            element={<CustomerTransactions />}
-          />
-          <Route path='/customer/profile' element={<CustomerProfile />} />
-        </Routes>
+            <Route
+              path='/AreaMapping'
+              element={
+                <PrivateRoute>
+                  <AreaMapping />
+                </PrivateRoute>
+              }
+            />
+            <Route path='/login' element={<Login />} />
+            <Route
+              path='/customer/order-listing'
+              element={<CustomerOrderListing />}
+            />
+            <Route
+              path='/customer/transactions'
+              element={<CustomerTransactions />}
+            />
+            <Route path='/customer/profile' element={<CustomerProfile />} />
+          </Routes>
+        </div>
         <ReactQueryDevtools initialIsOpen={false} />
         <Toaster />
       </QueryClientProvider>

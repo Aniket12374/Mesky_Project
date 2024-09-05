@@ -176,7 +176,12 @@ body {
 }
 
 .orange-bg {
-  background-color:#fc8172;
+  background-color: #fc8172;
+}
+#mapdiv {
+  height: 500px;
+  width: 700px;
+  position: absolute;
 }
 
 .orange-btn {

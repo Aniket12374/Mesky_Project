@@ -5,6 +5,8 @@ import {
 } from "../../services/customerOrders/CustomerOrderService";
 import { Header } from "../../utils";
 import CustomerPopup from "../../components/Common/CustomerPopup";
+import { OrderDetails } from "./OrderDetails";
+import { Modal } from "antd";
 
 const OrderTile = ({
   productName,
@@ -14,6 +16,8 @@ const OrderTile = ({
   unitQuantity,
   orderId,
   status,
+  record,
+  setOrderModal,
 }) => {
   const textColor =
     status === "Order Delivered"
@@ -21,8 +25,15 @@ const OrderTile = ({
       : status !== "Paused"
       ? "text-orange"
       : "tex-red-400";
+
+  const setOrderData = () =>
+    setOrderModal((prev) => ({
+      ...prev,
+      open: true,
+      data: record,
+    }));
   return (
-    <div className='card shadow-lg m-2'>
+    <div className='card shadow-lg m-2' onClick={setOrderData}>
       <div className='card flex justify-between  rounded-lg m-2'>
         <div className='flex justify-between'>
           <div className={`border-b-2 border-gray-200 ${textColor}`}>
@@ -45,9 +56,18 @@ const OrderTile = ({
 
 const OrderListing = () => {
   const [orders, setOrders] = useState([]);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
+  const [orderModal, setOrderModal] = useState({
+    open: false,
+    data: {},
+  });
 
-  const closeModal = () => setModalOpen((prev) => !prev);
+  const closeModal = () => setFilterModalOpen((prev) => !prev);
+  const closeOrderModal = () =>
+    setOrderModal((prev) => ({
+      ...prev,
+      open: !prev?.open,
+    }));
 
   useEffect(() => {
     getOrders().then((res) => {
@@ -62,13 +82,17 @@ const OrderListing = () => {
         <Header text='Order History' className='m-2' />
         <input
           type='text'
-          onClick={() => setModalOpen(true)}
+          onClick={() => setFilterModalOpen(true)}
           onChange={closeModal}
           className='border-b-2 border-gray-300 w-32 ml-10 focus:outline-none'
           placeholder='Search'
         />
       </div>
-      <CustomerPopup open={modalOpen} closeModal={closeModal} modal={"order"} />
+      <CustomerPopup
+        open={filterModalOpen}
+        closeModal={closeModal}
+        modal={"order"}
+      />
       <div className=''>
         {orders.map((order) => (
           <OrderTile
@@ -79,9 +103,19 @@ const OrderListing = () => {
             unitQuantity={order?.orderitem_info?.dprod_unit_qty}
             orderId={order?.order_id}
             status={order?.status}
+            record={order}
+            setOrderModal={setOrderModal}
           />
         ))}
       </div>
+      <Modal
+        style={{ fontFamily: "Fredoka, sans-serif" }}
+        open={orderModal?.open}
+        onOk={closeOrderModal}
+        onCancel={closeOrderModal}
+      >
+        <OrderDetails data={orderModal?.data} setTransactionId={null} />
+      </Modal>
     </div>
   );
 };

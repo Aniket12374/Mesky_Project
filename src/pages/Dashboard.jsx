@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../components/Layout/Layout";
 import { useMainStore } from "../store/store";
@@ -7,9 +7,12 @@ import Cookies from "js-cookie";
 import DashboardDetail from "../components/Dashboard/DashboardDetail";
 import dayjs from "dayjs";
 import CustomerDashboard from "../components/Customer/CustomerDashboard";
+import { Button } from "antd";
+import Address from "../components/Customer/Address";
 
 const Dashboard = () => {
   const user = useMainStore((state) => state.user);
+  const [show, setShow] = useState(false);
   const navigate = useNavigate();
 
   // check this useffect after token added
@@ -35,6 +38,14 @@ const Dashboard = () => {
       <Header text={`Dashboard - ${formattedDate}`} />
       {/* <DashboardDetail /> */}
       <CustomerDashboard />
+      <Button onClick={() => setShow(!show)}>Maps</Button>
+      {show && (
+        <Address
+          url={
+            "https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&callback=initMap&libraries=places&v=weekly"
+          }
+        />
+      )}
     </Layout>
   );
 };

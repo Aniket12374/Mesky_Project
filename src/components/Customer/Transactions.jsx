@@ -8,6 +8,7 @@ import {
 import DataTable from "../Common/DataTable/DataTable";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
+import { OrderDetails } from "./OrderDetails";
 
 function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
   const [modalOpen, setModalOpen] = useState(false);
@@ -15,6 +16,7 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
   const [transactions, setTransactions] = useState([]);
   const [transactionId, setTransactionId] = useState(null);
   const [finalFilters, setFinalFilters] = useState(filters);
+  const [selectedRecord, setSelectedRecord] = useState({});
 
   useEffect(() => {
     getTransactions(0, 10, finalFilters)
@@ -84,7 +86,13 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
           data={transactions}
           // onClick={() => }
           onRow={(record, rowIndex) => {
-            return { onClick: (event) => setTransactionId(record?.id) };
+            return {
+              onClick: (event) => {
+                console.log({ record });
+                setSelectedRecord(record);
+                setTransactionId(record?.id);
+              },
+            };
           }}
           loading={false}
           scroll={{
@@ -92,6 +100,11 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
           }}
           showExport={false}
           showHeader={false}
+        />
+      ) : selectedRecord?.type == "DEBIT" ? (
+        <OrderDetails
+          data={selectedRecord}
+          setTransactionId={setTransactionId}
         />
       ) : (
         <TransactionDetailTile

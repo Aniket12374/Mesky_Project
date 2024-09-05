@@ -7,7 +7,6 @@ import SubscriptionTabs from "./SubscriptionTabs";
 function CustomerDashboard() {
   return (
     <div>
-      <div>CustomerDashboard</div>
       <CustomerInformation />
       <div className='flex space-x-2 mt-5'>
         <Transactions />

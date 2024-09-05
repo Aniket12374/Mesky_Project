@@ -1,18 +1,11 @@
 import React from "react";
 import { ProductCard } from "../../utils";
 
-export const OrderDetails = ({ data }) => {
+export const OrderDetails = ({ data, closeOrderModal }) => {
   const { order_id, date, orderitem_info, delivery_images } = data;
 
   const billDetails = {
-    "Sub Total": (
-      <span className='flex'>
-        {orderitem_info?.total_price}
-        {/* <span className='ml-2 line-through'>
-          {orderitem_info?.selling_price * orderitem_info?.quantity}
-        </span> */}
-      </span>
-    ),
+    "Sub Total": <span className='flex'>{orderitem_info?.total_price}</span>,
     MRP: orderitem_info?.total_price,
     "Product Discount": 0,
     "Returned Items": 0,
@@ -21,7 +14,16 @@ export const OrderDetails = ({ data }) => {
   };
 
   return (
-    <div className='mt-10'>
+    <div className='mt-3 p-2'>
+      <button
+        onClick={closeOrderModal}
+        className='mb-3 rounded-full border-2 border-gray-400 w-8 h-8'
+      >
+        <i
+          className='fa fa-long-arrow-left text-sm rounded-full'
+          aria-hidden='true'
+        ></i>
+      </button>
       <div className='order-id-delivery-address flex justify-between'>
         <div className='flex-1'>
           <div>

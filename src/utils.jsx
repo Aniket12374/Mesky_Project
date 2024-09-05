@@ -64,6 +64,7 @@ export const IconGreen = ({ icon }) => (
 );
 
 export const transactionName = (record) => {
+  console.log({ record });
   if (!record) return "";
   const type = record?.type;
   const isCreditTransaction = type === "CREDIT" || type === "REFUND";

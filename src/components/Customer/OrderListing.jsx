@@ -76,6 +76,8 @@ const OrderListing = () => {
       open: !prev?.open,
     }));
 
+  console.log({ orderModal });
+
   const { isLoading: isSearchLoading } = useQuery(
     ["getTransactions", currentPage, size],
     () => getOrders(currentPage, size),
@@ -129,20 +131,36 @@ const OrderListing = () => {
         modal={"order"}
       />
       <div>
-        <div className='h-[80vh] overflow-y-auto'>
-          {orders.map((order) => (
-            <OrderTile
-              productName={order?.orderitem_info?.product_sn}
-              quantity={order?.orderitem_info?.quantity}
-              date={order?.date}
-              price={order?.total_price}
-              unitQuantity={order?.orderitem_info?.dprod_unit_qty}
-              orderId={order?.order_id}
-              status={order?.status}
-              record={order}
-              setOrderModal={setOrderModal}
+        <div
+          className={
+            orderModal?.open
+              ? "h-[95vh] overflow-y-auto"
+              : "h-[80vh] overflow-y-auto"
+          }
+        >
+          {orderModal?.open ? (
+            <OrderDetails
+              data={orderModal?.data}
+              closeOrderModal={closeOrderModal}
             />
-          ))}
+          ) : (
+            orders.map((order) => (
+              <OrderTile
+                productName={order?.orderitem_info?.product_sn}
+                quantity={order?.orderitem_info?.quantity}
+                date={order?.date}
+                price={order?.total_price}
+                unitQuantity={order?.orderitem_info?.dprod_unit_qty}
+                orderId={order?.orderitem_info?.uid.slice(
+                  0,
+                  order?.orderitem_info?.uid.length - 3
+                )}
+                status={order?.status}
+                record={order}
+                setOrderModal={setOrderModal}
+              />
+            ))
+          )}
         </div>
         <CustomerPopup
           open={modalOpen}
@@ -150,28 +168,22 @@ const OrderListing = () => {
           modal={"order"}
         />
 
-        <div className='flex justify-end px-4 py-2 order-listing'>
-          <Pagination
-            current={currentPage}
-            total={totalCount}
-            showTotal={(total, range) =>
-              `${range[0]}-${range[1]} of ${totalCount} items`
-            }
-            onChange={handlePageChange}
-            showSizeChanger={true}
-            pageSizeOptions={pageSizeOptions}
-            onShowSizeChange={handlePageSizeChange}
-            disabled={isSearchLoading}
-          />
-        </div>
-        <Modal
-          style={{ fontFamily: "Fredoka, sans-serif" }}
-          open={orderModal?.open}
-          onOk={closeOrderModal}
-          onCancel={closeOrderModal}
-        >
-          <OrderDetails data={orderModal?.data} setTransactionId={null} />
-        </Modal>
+        {!orderModal?.open ? (
+          <div className='flex justify-end px-4 py-2 order-listing'>
+            <Pagination
+              current={currentPage}
+              total={totalCount}
+              showTotal={(total, range) =>
+                `${range[0]}-${range[1]} of ${totalCount} items`
+              }
+              onChange={handlePageChange}
+              showSizeChanger={true}
+              pageSizeOptions={pageSizeOptions}
+              onShowSizeChange={handlePageSizeChange}
+              disabled={isSearchLoading}
+            />
+          </div>
+        ) : null}
       </div>
     </div>
   );

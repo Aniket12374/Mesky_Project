@@ -217,3 +217,13 @@ body {
 /* .order-listing .ant-select.ant-pagination-options-size-changer {
   background-color: #edc0a4;
 } */
+
+.transaction-list .ant-table-wrapper .ant-table-tbody > tr > td {
+  font-size: 16px;
+  border-bottom: 2px solid #e5e7eb;
+  font-family: Roboto, sans-serif !important;
+}
+
+.search-btn {
+  @apply bg-orange-400 p-2 rounded-lg text-white;
+}

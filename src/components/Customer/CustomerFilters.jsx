@@ -30,19 +30,9 @@ function CustomerFilters({
   finalFilters,
 }) {
   const normalFilters =
-    Object.keys(finalFilters).length > 0
-      ? finalFilters
-      : {
-          q: "",
-          start_date: "",
-          end_date: "",
-          transaction_type: "",
-          amount: "",
-        };
-  const isTransactionalModal = modal == "transaction";
-  const dropDownSelection = isTransactionalModal
-    ? TransactionsOptions
-    : OrderOptions;
+    Object.keys(finalFilters).length > 0 ? finalFilters : {};
+  const isTnlModal = modal == "transaction";
+  const dropDownSelection = isTnlModal ? TransactionsOptions : OrderOptions;
   const dropDownOptions = Object.keys(dropDownSelection).map((option) => ({
     label: option,
     value: dropDownSelection[option],
@@ -56,24 +46,24 @@ function CustomerFilters({
     setOptionSelected(option);
     setFilters((prev) => ({
       ...prev,
-      transaction_type: value,
+      ...(isTnlModal && { transaction_type: value }),
+      ...(!isTnlModal && { search_type: value }),
     }));
   };
 
   const onChangeHandler = (e, key) => {
     let value = e.target.value;
-    if (key !== "amount") {
+    if (key == "search_value") {
+      value = value;
+    } else if (key !== "amount") {
       value = moment(value, "YYYY-MM-DD").format("DD-MM-YYYY");
-    } else {
-      value = Number(value);
-    }
+    } else value = !isTnlModal ? value : Number(value);
+
     setFilters((prev) => ({
       ...prev,
       [key]: value,
     }));
   };
-
-  console.log({ filters });
 
   return (
     <div className='filters-common m-3 p-2 bg-orange-300'>
@@ -90,7 +80,7 @@ function CustomerFilters({
       )}
       <div className='flex items-center space-x-2 my-5'>
         <div className='flex-1'>
-          {isTransactionalModal ? "Date Between" : "Delivery Date"}
+          {isTnlModal ? "Date Between" : "Delivery Date"}
         </div>
         <Input
           type='date'
@@ -123,13 +113,25 @@ function CustomerFilters({
             }
           }
         />
-        <Input
-          type='number'
-          className='border-b-2 border-gray-300 flex-1'
-          placeholder='Amount'
-          value={filters?.amount}
-          onChange={(e) => onChangeHandler(e, "amount")}
-        />
+        {isTnlModal && (
+          <Input
+            type='number'
+            className='border-b-2 border-gray-300 flex-1'
+            placeholder='Amount'
+            value={filters?.amount}
+            onChange={(e) => onChangeHandler(e, "amount")}
+          />
+        )}
+        {!isTnlModal && (
+          <input
+            type='text'
+            className='border-b-2 border-gray-300 flex-1'
+            placeholder='Search'
+            name='search_value'
+            // value={filters?.search_value}
+            onChange={(e) => onChangeHandler(e, "search_value")}
+          />
+        )}
       </div>
       <div className='filters-footer flex justify-end space-x-2 mt-3'>
         <button

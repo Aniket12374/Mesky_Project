@@ -1,209 +1,269 @@
-import { Checkbox, Modal, Radio, Select, Space } from "antd";
+import { Checkbox, Modal, Radio, Select, Space, DatePicker } from "antd";
 import React, { useEffect, useState } from "react";
 import trashBin from "../../assets/delt-bin.png";
-import { DatePicker } from "antd";
 import moment from "moment";
+import { updateSubscriptionDeatils } from "../../services/customerInfo/CustomerInfoService";
+
+const { RangePicker } = DatePicker;
+const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const dateFormat = "DD-MM-YYYY";
+const quantityOptions = Array.from({ length: 10 }, (_, i) => i + 1);
+const deliverySchedule = [
+  "Daily",
+  "Alternate days",
+  "No Delivery on Weekends",
+  "Weekly",
+];
 
 function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
-  console.log("modalData", modalData);
+  const { data = {}, open } = modalData;
+  const {
+    product = {},
+    subscription_type = {},
+    quantity: initialQty,
+    dates_range = [],
+    start_date,
+    id,
+    product_id,
+  } = data;
+
+  const capitalizeFirstLetter = (str) => {
+    if (!str) return "";
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  };
+
   const [editData, setEditData] = useState({
-    quantity: null,
-    subscription_type: null,
+    quantity: initialQty || null,
+    type: capitalizeFirstLetter(subscription_type?.type) || deliverySchedule[0],
+    weekdays: subscription_type?.day || [],
+    datesRange: dates_range || [],
+    startDate: start_date || null,
+    dateRangePicker: false,
+    subscriptionId: id || null,
+    productId: product_id || null,
   });
   console.log("editData", editData);
+
   useEffect(() => {
     setEditData({
-      quantity: modalData?.data?.quantity,
-      subscription_type: modalData?.data?.subscription_type,
+      quantity: initialQty || null,
+      type:
+        capitalizeFirstLetter(subscription_type?.type) || deliverySchedule[0],
+      weekdays: subscription_type?.day || [],
+      datesRange: dates_range || [],
+      startDate: start_date || null,
+      dateRangePicker: false,
+      subscriptionId: id || null,
+      productId: product_id || null,
     });
   }, [modalData]);
-  const [agent, setAgent] = useState({});
 
-  const quantityOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-  const handleQuantityChange = (qty) => {
+  const handleTypeChange = (e) => {
     setEditData((prev) => ({
       ...prev,
-      quantity: qty,
+      type: capitalizeFirstLetter(e.target.value),
     }));
   };
 
-  const handleType = () => {
+  const handleQuantityChange = (qty) =>
+    setEditData((prev) => ({ ...prev, quantity: qty }));
+
+  const toggleDaySelection = (day) =>
     setEditData((prev) => ({
       ...prev,
-      subscription_type: "",
+      weekdays: prev.weekdays.includes(day)
+        ? prev.weekdays.filter((d) => d !== day)
+        : [...prev.weekdays, day],
     }));
+
+  const handlePauseDateChange = (_, dateStrings) =>
+    setEditData((prev) => ({
+      ...prev,
+      datesRange: [
+        ...prev.datesRange,
+        { start_date: dateStrings[0], end_date: dateStrings[1] },
+      ],
+    }));
+
+  const handleDeletePauseDate = (index) =>
+    setEditData((prev) => ({
+      ...prev,
+      datesRange: prev.datesRange.filter((_, i) => i !== index),
+    }));
+
+  const handleAttachTicket = async () => {
+    try {
+      let payload = {
+        subscription_id: editData?.subscriptionId,
+        qty: editData?.quantity,
+        del_schedule_type: {
+          type: editData.type,
+          weekdays: editData.weekdays,
+        },
+        pause_dates: editData?.datesRange,
+        start_date: editData?.startDate,
+        product_id: editData?.productId,
+      };
+
+      await updateSubscriptionDeatils(payload);
+      handleEdit();
+      console.log("Subscription updated successfully");
+    } catch (error) {
+      console.error("Error updating subscription:", error.message);
+    }
   };
 
-  const handleChange = (key, value) => {
-    setAgent((prev) => ({ ...prev, ...{ [key]: value } }));
+  const disabledPastDate = (current) => {
+    return current && current < moment().startOf("day"); // Disable past dates
   };
 
-  const deliverySchedule = [
-    "Daily",
-    "Alternate days",
-    "No Delivery on Weekends",
-    "Weekly",
-  ];
-
-  const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-  const dateFormat = "YYYY-MM-DD";
-
-  function disabledFutureDate(current) {
-    return current && current > moment().endOf("day");
-  }
-
-  function disabledPastDate(current) {
-    return current && current < moment().startOf("day");
-  }
-
-  const { product = {} } = modalData?.data;
-  console.log("product", product);
-  let price = product?.offer_price * editData?.quantity;
-  console.log("price", price);
+  const price = product?.offer_price * editData?.quantity;
 
   return (
-    <div>
-      <Modal open={modalData?.open} width={900} footer={null}>
+    <Modal
+      open={open}
+      width={900}
+      footer={null}
+      onCancel={() => handleOpenClose({})}
+    >
+      <div className="flex space-x-2 p-2">
+        <div className="m-1 p-2 border-2 border-gray-200">
+          <img
+            src={product?.images_list?.[0] || null}
+            width={100}
+            height={100}
+            className="rounded-lg"
+            alt="sub_img"
+          />
+        </div>
+
         <div>
-          <div className="flex space-x-2 p-2">
-            <div className="m-1 p-2 border-2 border-gray-200">
-              <img
-                src={
-                  product?.images_list?.length > 0
-                    ? product?.images_list[0]
+          <div className="font-semibold">{product?.product_sn}</div>
+          <div className="flex items-center">
+            <span>{product?.dprod_unit_qty}</span>
+            <Select
+              value={editData?.quantity}
+              className="w-16 ml-12"
+              onSelect={handleQuantityChange}
+              options={quantityOptions.map((option) => ({
+                label: option,
+                value: option,
+              }))}
+            />
+            <span className="ml-10">
+              <span>₹ {price}</span>
+              <span className="line-through ml-3">₹ {price}</span>
+            </span>
+          </div>
+
+          <div className="flex py-4 space-x-4">
+            <div>
+              <div className="font-semibold">Delivery Schedule</div>
+              <Radio.Group onChange={handleTypeChange} value={editData?.type}>
+                <Space direction="vertical">
+                  {deliverySchedule.map((schedule) => (
+                    <Radio key={schedule} value={schedule}>
+                      {schedule}
+                    </Radio>
+                  ))}
+                </Space>
+              </Radio.Group>
+            </div>
+
+            <div>
+              <div>Starting from</div>
+              <DatePicker
+                value={
+                  editData?.startDate
+                    ? moment(editData.startDate, dateFormat)
                     : null
                 }
-                width={100}
-                height={100}
-                className="rounded-lg"
-                alt="sub_img"
+                format={dateFormat}
+                disabledDate={disabledPastDate}
+                onChange={(_, dateString) =>
+                  setEditData((prev) => ({ ...prev, startDate: dateString }))
+                }
+                placeholder="Select date"
               />
-            </div>
-            <div className="">
-              <div className="font-semibold">{product?.product_sn}</div>
-              <div>
-                <span>{product?.dprod_unit_qty}</span>
-                <Select
-                  name="quantity"
-                  value={{
-                    label: editData?.quantity,
-                    value: editData?.quantity,
-                  }}
-                  className="w-16 ml-12"
-                  onSelect={(val) => handleQuantityChange(val)}
-                  options={quantityOptions.map((option) => ({
-                    label: option,
-                    value: option,
-                  }))}
-                />
 
-                <span className="ml-10">
-                  <span>₹ {product?.offer_price * editData?.quantity}</span>
-                  <span className="line-through ml-3">
-                    ₹ {product?.selling_price * editData?.quantity}
-                  </span>
-                </span>
-              </div>
-              <div className="flex py-4 space-x-4">
-                <div>
-                  <div className="font-semibold">Delivery Schedule</div>
-                  <div>
-                    <Radio.Group onChange={handleType}>
-                      <Space direction="vertical">
-                        {deliverySchedule.map((value) => (
-                          <Radio value={1}>{value}</Radio>
-                        ))}
-                      </Space>
-                    </Radio.Group>
+              <div className="py-2">Choose Day</div>
+              <div className="flex space-x-2">
+                {weekDays.map((day) => (
+                  <div
+                    key={day}
+                    onClick={() => toggleDaySelection(day)}
+                    className={`w-10 h-10 pt-2 rounded-full text-center cursor-pointer ${
+                      editData?.weekdays?.includes(day)
+                        ? "bg-[#FB8171] text-white"
+                        : "text-black border-black border"
+                    }`}
+                  >
+                    {day}
                   </div>
-                </div>
-                <div className="">
-                  <div>Starting from</div>
-                  <div>
-                    <DatePicker
-                      placeholder={"select date"}
-                      format={dateFormat}
-                      disabledDate={disabledFutureDate}
-                      // onChange={(date, dateString) => {
-                      //   handleChange(x, dateString);
-                      // }}
-                    />
-                  </div>
-                  <div className="py-2">Choose Day</div>
-                  <div className="flex text-center space-x-2">
-                    {weekDays.map((day) => (
-                      <div className=" w-10 h-10 pt-2 rounded-full bg-[#FB8171] text-white text-center">
-                        {day}
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
-          </div>
-          <div className="shadow-md py-4 rounded-lg px-2">
-            <div className="flex justify-between">
-              <div className="font-medium">Pause Schedule</div>
-              <div className="text-white bg-[#FB8171] shadow-md p-1 rounded-md px-2">
-                {" "}
-                + ADD PAUSE
-              </div>
-            </div>
-            <div className="flex  flex-row justify-between w-[50%] ">
-              <div className="border border-gray-300 rounded-lg p-2 w-[127px]">
-                <div className="flex justify-end relative bottom-1 left-1">
-                  <img src={trashBin} width={15} height={15} alt="delt-bin" />
-                </div>
-                <div className="flex justify-center">
-                  <div>
-                    <p className="">10 May 2024</p>
-                    <p className="flex justify-center">to</p>
-                    <p className="">20 May 2024</p>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <div className="border border-gray-300 rounded-lg p-2 w-[127px]">
-                  <div className="flex justify-end relative bottom-1 left-1">
-                    <img src={trashBin} width={15} height={15} alt="delt-bin" />
-                  </div>
-                  <div className="flex justify-center">
-                    <div>
-                      <p className="">10 May 2024</p>
-                      <p className="flex justify-center">to</p>
-                      <p className="">20 May 2024</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <div className="border border-gray-300 rounded-lg p-2 w-[127px]">
-                  <div className="flex justify-end relative bottom-1 left-1">
-                    <img src={trashBin} width={15} height={15} alt="delt-bin" />
-                  </div>
-                  <div className="flex justify-center">
-                    <div>
-                      <p className="">10 May 2024</p>
-                      <p className="flex justify-center">to</p>
-                      <p className="">20 May 2024</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex justify-end mt-4">
-            <button
-              className="bg-[#FB8171] text-white px-4 py-2 rounded-md"
-              // onClick={handleAttachTicket}
-            >
-              AttachTicket
-            </button>
           </div>
         </div>
-      </Modal>
-    </div>
+      </div>
+
+      <div className="shadow-md py-4 rounded-lg px-2">
+        <div className="flex justify-between">
+          <div className="font-medium">Pause Schedule</div>
+          <div
+            className="text-white bg-[#FB8171] shadow-md p-1 rounded-md px-2 cursor-pointer"
+            onClick={() =>
+              setEditData((prev) => ({
+                ...prev,
+                dateRangePicker: !prev.dateRangePicker,
+              }))
+            }
+          >
+            {editData?.dateRangePicker ? "- ADD PAUSE" : "+ ADD PAUSE"}
+          </div>
+        </div>
+
+        {editData?.dateRangePicker && (
+          <RangePicker
+            format={dateFormat}
+            onChange={handlePauseDateChange}
+            className="my-2"
+          />
+        )}
+
+        <div className="flex flex-wrap gap-2 mt-2">
+          {editData?.datesRange?.map((item, index) => (
+            <div
+              key={index}
+              className="border border-gray-300 rounded-lg p-2 w-[127px] relative"
+            >
+              <img
+                src={trashBin}
+                width={15}
+                height={15}
+                alt="delete-bin"
+                onClick={() => handleDeletePauseDate(index)}
+                className="absolute top-1 right-1 cursor-pointer"
+              />
+              <div className="text-center">
+                <p>{item.start_date}</p>
+                <p>to</p>
+                <p>{item.end_date}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex justify-end mt-4">
+        <button
+          className="bg-[#FB8171] text-white px-4 py-2 rounded-md"
+          onClick={handleAttachTicket}
+        >
+          AttachTicket
+        </button>
+      </div>
+    </Modal>
   );
 }
 

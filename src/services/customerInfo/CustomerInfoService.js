@@ -24,3 +24,7 @@ export const getSubscriptions = (activeType) => {
     `api/subscription/list?subscription_type=${activeType}`
   );
 };
+
+export const updateSubscriptionDeatils = (payload) => {
+  return httpVendor.post(`api/support_dash/create_subscription`, payload);
+};

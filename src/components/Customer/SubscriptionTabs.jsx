@@ -60,7 +60,6 @@ const SubscriptionData = ({ tab }) => {
     <div>
       {tabData.map((record, index) => {
         const { product, quantity, dates_range } = record;
-        console.log({ record });
         return (
           <div className='m-1 shadow-2xl rounded-lg'>
             <div className='flex justify-between space-x-2 p-2'>

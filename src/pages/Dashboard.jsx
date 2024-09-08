@@ -37,7 +37,6 @@ const Dashboard = () => {
       <Header text={`Dashboard - ${formattedDate}`} />
       {/* <DashboardDetail /> */}
       <CustomerDashboard />
-      <Button onClick={() => setShow(!show)}>Maps</Button>
     </Layout>
   );
 };

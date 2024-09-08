@@ -20,6 +20,7 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
   const [transactionId, setTransactionId] = useState(null);
   const [finalFilters, setFinalFilters] = useState(filters);
   const [debitData, setDebitData] = useState(null);
+  const [address, setAddress] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [size, setSize] = useState(10);
   const [totalCount, setTotalCount] = useState(0);
@@ -45,6 +46,7 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
     getOrders(1, 1, { search_value: debitId, search_type: "order_id" })
       .then((res) => {
         setDebitData(res?.data?.order_details[0]);
+        setAddress(res?.data?.address_info);
       })
       .catch((err) => {
         console.log({ err });
@@ -72,7 +74,13 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
       dataIndex: "name",
       key: "name",
       render: (_, record) => {
-        return transactionName(record);
+        const date = record?.created_date?.split(" ");
+        return (
+          <div className='text-sm'>
+            <div>{transactionName(record)}</div>
+            <div>{moment(date[0], "DD-MM-YYYY").format("ll")}</div>
+          </div>
+        );
       },
     },
     {
@@ -145,11 +153,15 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
         debitData ? (
           <OrderDetails
             data={debitData}
-            closeOrderModal={() => setTransactionId(null)}
+            address={address}
+            closeOrderModal={() => {
+              setTransactionId(null);
+              setDebitData(null);
+            }}
           />
         ) : (
           <>
-            <div className='h-[80vh] overflow-auto transaction-list'>
+            <div className='h-[75vh] overflow-auto transaction-list'>
               <DataTable
                 columns={transactionHeaders}
                 data={transactions}
@@ -163,28 +175,30 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
                 }}
                 loading={isSearchLoading}
                 scroll={{
-                  ...(!showSearch && { y: 450 }),
+                  ...(!showSearch && { y: 500 }),
                 }}
                 showExport={false}
                 showHeader={false}
               />
             </div>
-            <div className='flex justify-end px-4 py-2 transaction-pagination'>
-              <Pagination
-                current={currentPage}
-                total={totalCount}
-                showTotal={(total, range) => (
-                  <div>
-                    {range[0]} - {range[1]} of {totalCount} items
-                  </div>
-                )}
-                onChange={handlePageChange}
-                showSizeChanger={true}
-                pageSizeOptions={pageSizeOptions}
-                onShowSizeChange={handlePageSizeChange}
-                disabled={isSearchLoading}
-              />
-            </div>
+            {showSearch && (
+              <div className='flex justify-end px-4 py-2 transaction-pagination'>
+                <Pagination
+                  current={currentPage}
+                  total={totalCount}
+                  showTotal={(total, range) => (
+                    <div>
+                      {range[0]} - {range[1]} of {totalCount} items
+                    </div>
+                  )}
+                  onChange={handlePageChange}
+                  showSizeChanger={true}
+                  pageSizeOptions={pageSizeOptions}
+                  onShowSizeChange={handlePageSizeChange}
+                  disabled={isSearchLoading}
+                />
+              </div>
+            )}
           </>
         )
       ) : (

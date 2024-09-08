@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import debounce from "lodash/debounce";
+import AddressForm from "./AddressForm";
 
-function Address({ url }) {
+function Address({ url, data, showNext, setShowNext }) {
   const [address, setAddress] = useState({
-    line_1: "the sprinklez",
+    line_1: "the sprin",
   });
 
   const handleChange = (val) => {
@@ -13,7 +14,7 @@ function Address({ url }) {
     }));
   };
 
-  console.log({ address });
+  // console.log({ address });
   let map;
   let infowindow;
   let service;
@@ -32,7 +33,8 @@ function Address({ url }) {
   }, [url]);
 
   useEffect(() => {
-    address?.line_1.length > 5 && initMap();
+    // address?.line_1.length > 5 && initMap();
+    getAutoSearch(address?.line_1);
   }, [address]);
 
   async function initMap() {
@@ -59,7 +61,7 @@ function Address({ url }) {
     map.infowindow.open(map);
   }
 
-  console.log({ map, markers });
+  // console.log({ map, markers });
 
   function createMarker(place, map, latlng = false) {
     // const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
@@ -102,19 +104,51 @@ function Address({ url }) {
     });
   };
 
+  const getAutoSearch = async (text) => {
+    console.log({ text });
+    const { Map } = await google.maps.importLibrary("maps");
+    const options = {
+      // bounds: defaultBounds,
+      componentRestrictions: { country: "in" },
+      fields: ["address_components", "geometry", "icon", "name"],
+      strictBounds: false,
+    };
+    const gurgaon = new google.maps.LatLng(28.457523, 77.026344);
+    map = new google.maps.Map(document.getElementById("mapdiv"), {
+      center: gurgaon,
+      zoom: 15,
+      // mapId: "DEMO_MAP_ID",
+    });
+    const autocomplete = new google.maps.places.AutocompleteService(map);
+    autocomplete.getQueryPredictions({ input: address?.line_1 });
+    console.log(autocomplete, "place autocomplete");
+    const place = autocomplete.getPlaces();
+
+    console.log(place, autocomplete, "place autocomplete");
+  };
+
   window.initMap = initMap;
 
   return (
-    <div className='' style={{ width: "100%" }}>
-      <div id='mapdiv' style={{ position: "static" }}></div>
-      <div>Your Current Location</div>
-      <input
-        type='text'
-        onChange={(e) => handleChange(e.target.value)}
-        value={address?.line_1}
-        className='border-2 border-gray-200'
-      />
-    </div>
+    <>
+      {!showNext ? (
+        <div className='' style={{ width: "100%" }}>
+          <div id='mapdiv' style={{ position: "static" }}></div>
+          <div>Your Current Location</div>
+          <input
+            type='text'
+            onChange={(e) => handleChange(e.target.value)}
+            value={address?.line_1}
+            className='border-2 border-gray-200'
+          />
+          <button onClick={() => setShowNext(true)} className='search-btn'>
+            Next
+          </button>
+        </div>
+      ) : (
+        <AddressForm data={data} />
+      )}
+    </>
   );
 }
 

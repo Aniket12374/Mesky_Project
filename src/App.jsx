@@ -7,19 +7,31 @@ import { Toaster } from "react-hot-toast";
 import Login from "./pages/Login";
 import History from "./pages/History";
 import Agents from "./pages/Agent/Agents";
-import CustomerOrderListing from "./pages/CustomerDashboard/CustomerOrderListing";
 import Subscription from "./pages/Subscription";
 import PrivateRoute from "./components/Auth/PrivateRoute";
 import AreaMapping from "./pages/AreaMapping";
 import Routing from "./pages/Routing";
 import Dashboard from "./pages/Dashboard";
-import CustomerProfile from "./pages/CustomerDashboard/Profile";
-import CustomerTransactions from "./pages/CustomerDashboard/CustomerTransactions";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient();
 
 function App() {
+  useEffect(() => {
+    const head = document.querySelector("head");
+    const script = document.createElement("script");
+
+    script.setAttribute(
+      "src",
+      "https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&libraries=places"
+    );
+    head.appendChild(script);
+
+    return () => {
+      head.removeChild(script);
+    };
+  }, []);
+
   return (
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
@@ -80,15 +92,6 @@ function App() {
               }
             />
             <Route path='/login' element={<Login />} />
-            <Route
-              path='/customer/order-listing'
-              element={<CustomerOrderListing />}
-            />
-            <Route
-              path='/customer/transactions'
-              element={<CustomerTransactions />}
-            />
-            <Route path='/customer/profile' element={<CustomerProfile />} />
           </Routes>
         </div>
         <ReactQueryDevtools initialIsOpen={false} />

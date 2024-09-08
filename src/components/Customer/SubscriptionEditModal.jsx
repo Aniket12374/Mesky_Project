@@ -90,7 +90,6 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
     (val) => val.product_id == editData?.productId
   );
   const createData = filteredData[0];
-  console.log("createData", createData);
 
   useEffect(() => {
     setEditData({

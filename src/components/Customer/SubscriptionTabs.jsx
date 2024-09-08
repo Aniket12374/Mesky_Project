@@ -10,7 +10,6 @@ function SubscriptionTabs() {
     open: false,
     data: [],
   });
-  console.log("modalData", modalData);
 
   return (
     <div className="w-1/3 border-2 border-gray-200">
@@ -83,7 +82,6 @@ const SubscriptionData = ({ tab, modalData, setModalData }) => {
     <div>
       {tabData.map((record, index) => {
         const { product, quantity, dates_range } = record;
-        console.log({ record });
         return (
           <div className="m-1 shadow-2xl rounded-lg">
             <div className="flex justify-between space-x-2 p-2">

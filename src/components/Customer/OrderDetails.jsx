@@ -1,7 +1,7 @@
 import React from "react";
 import { ProductCard } from "../../utils";
 
-export const OrderDetails = ({ data, closeOrderModal }) => {
+export const OrderDetails = ({ data, closeOrderModal, address }) => {
   const { order_id, date, orderitem_info, delivery_images } = data;
 
   const billDetails = {
@@ -12,6 +12,8 @@ export const OrderDetails = ({ data, closeOrderModal }) => {
     "Delivered Charge": <span className='text-green-400'>Free</span>,
     "Grand Total": orderitem_info?.total_price,
   };
+
+  const orderId = orderitem_info?.uid.slice(0, orderitem_info?.uid?.length - 3);
 
   return (
     <div className='mt-3 p-2'>
@@ -27,13 +29,16 @@ export const OrderDetails = ({ data, closeOrderModal }) => {
       <div className='order-id-delivery-address flex justify-between'>
         <div className='flex-1'>
           <div>
-            Order ID : <span className='font-semibold'>{order_id}</span>
+            Order ID : <span className='font-semibold'>{orderId}</span>
           </div>
           <div className='text-[13px]'>Delivered on {date}</div>
         </div>
-        <div className='flex flex-col flex-1 items-end'>
+        <div className='flex flex-col space-x-3 flex-1 items-end'>
           <div className='font-semibold'>Delivery Address</div>
-          <div>ajkgjkskg</div>
+          <div className='text-sm'>
+            {address?.line_1}, {address?.line_2}
+            {address?.city}
+          </div>
         </div>
       </div>
       <div className='delivered-items my-5'>

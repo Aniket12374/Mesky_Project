@@ -198,6 +198,11 @@ const WalletBalanceTransaction = ({ walletData }) => {
     api.open({
       duration: null,
       bottom: 50,
+      right: 0,
+      style: {
+        width: 530,
+        right: 0,
+      },
       message: "",
       description: (
         <div className='w-full mt-10'>

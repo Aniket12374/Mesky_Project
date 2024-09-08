@@ -13,11 +13,13 @@ const OrderListing = () => {
   const [orderModal, setOrderModal] = useState({
     open: false,
     data: {},
+    address: {},
   });
   const [finalFilters, setFinalFilters] = useState({});
   // const [modalOpen, setModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [size, setSize] = useState(10);
+  const [address, setAddress] = useState({});
   const [totalCount, setTotalCount] = useState(2000);
   const [isQueryEnabled, setIsQueryEnabled] = useState(false);
   const [shouldFetch, setShouldFetch] = useState(true);
@@ -37,6 +39,7 @@ const OrderListing = () => {
       keepPreviousData: true, // This keeps the old data until the new one arrives
       onSuccess: (res) => {
         setShouldFetch(false);
+        setAddress(res?.data?.address_info);
         setOrders(res?.data?.order_details);
         setTotalCount(res?.data?.totalcount);
       },
@@ -102,6 +105,7 @@ const OrderListing = () => {
             <OrderDetails
               data={orderModal?.data}
               closeOrderModal={closeOrderModal}
+              address={address}
             />
           ) : (
             orders?.map((order) => (

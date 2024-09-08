@@ -24,3 +24,15 @@ export const getSubscriptions = (activeType) => {
     `api/subscription/list?subscription_type=${activeType}`
   );
 };
+
+export const updateInfo = (payload) => {
+  return httpVendor.put(`api/support_dash/edit-customer-info`, payload);
+};
+
+export const getPinDetails = async (pin) => {
+  return httpVendor.get(`api/cart/pincode/info`, {
+    params: {
+      pincode: pin,
+    },
+  });
+};

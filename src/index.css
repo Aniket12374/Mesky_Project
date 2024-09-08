@@ -227,3 +227,13 @@ body {
 .search-btn {
   @apply bg-orange-400 p-2 rounded-lg text-white;
 }
+
+span.ant-switch-inner {
+  border: 1px solid gray;
+  background-color: gray;
+}
+
+.ant-switch-checked span.ant-switch-inner {
+  border: 1px solid gray;
+  background-color: #1677ff;
+}

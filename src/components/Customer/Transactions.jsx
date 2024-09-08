@@ -124,7 +124,12 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
           </div>
         )}
       </div>
-      <AppliedFilters removeFilter={removeFilter} finalFilters={finalFilters} />
+      {showSearch && (
+        <AppliedFilters
+          removeFilter={removeFilter}
+          finalFilters={finalFilters}
+        />
+      )}
       {modalOpen && (
         <CustomerFilters
           open={modalOpen}

@@ -1,8 +1,13 @@
-import { Checkbox, Modal, Radio, Select, Space, DatePicker } from "antd";
-import React, { useEffect, useState } from "react";
+import { Checkbox, Modal, Radio, Select, Space, DatePicker, Spin } from "antd";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import trashBin from "../../assets/delt-bin.png";
 import moment from "moment";
-import { updateSubscriptionDeatils } from "../../services/customerInfo/CustomerInfoService";
+import debounce from "lodash/debounce";
+import {
+  searchProductList,
+  updateSubscriptionDeatils,
+} from "../../services/customerInfo/CustomerInfoService";
+import MagnifyingGlass from "../../assets/MagnifyingGlass.png";
 
 const { RangePicker } = DatePicker;
 const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -14,6 +19,43 @@ const deliverySchedule = [
   "No Delivery on Weekends",
   "Weekly",
 ];
+
+function DebounceSelect({ fetchOptions, debounceTimeout = 800, ...props }) {
+  const [fetching, setFetching] = useState(false);
+  const [options, setOptions] = useState([]);
+  const fetchRef = useRef(0);
+
+  const debounceFetcher = useMemo(() => {
+    const loadOptions = (value) => {
+      fetchRef.current += 1;
+      const fetchId = fetchRef.current;
+      setOptions([]);
+      setFetching(true);
+
+      fetchOptions(value).then((newOptions) => {
+        if (fetchId !== fetchRef.current) {
+          return;
+        }
+        setOptions(newOptions);
+        setFetching(false);
+      });
+    };
+
+    return debounce(loadOptions, debounceTimeout);
+  }, [fetchOptions, debounceTimeout]);
+
+  return (
+    <Select
+      showSearch
+      labelInValue
+      filterOption={false}
+      onSearch={debounceFetcher}
+      notFoundContent={fetching ? <Spin size="small" /> : null}
+      {...props}
+      options={options}
+    />
+  );
+}
 
 function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
   const { data = {}, open } = modalData;
@@ -27,28 +69,33 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
     product_id,
   } = data;
 
-  const capitalizeFirstLetter = (str) => {
-    if (!str) return "";
-    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-  };
-
   const [editData, setEditData] = useState({
-    quantity: initialQty || null,
-    type: capitalizeFirstLetter(subscription_type?.type) || deliverySchedule[0],
+    quantity: initialQty || 1,
+    type: subscription_type?.type || deliverySchedule[0],
     weekdays: subscription_type?.day || [],
     datesRange: dates_range || [],
     startDate: start_date || null,
     dateRangePicker: false,
     subscriptionId: id || null,
     productId: product_id || null,
+    productName: "",
+    offerPrice: null,
+    sellingPrice: null,
+    productImage: null,
   });
-  console.log("editData", editData);
+
+  const [value, setValue] = useState([]);
+
+  const filteredData = value.filter(
+    (val) => val.product_id == editData?.productId
+  );
+  const createData = filteredData[0];
+  console.log("createData", createData);
 
   useEffect(() => {
     setEditData({
-      quantity: initialQty || null,
-      type:
-        capitalizeFirstLetter(subscription_type?.type) || deliverySchedule[0],
+      quantity: initialQty || 1,
+      type: subscription_type?.type || deliverySchedule[0],
       weekdays: subscription_type?.day || [],
       datesRange: dates_range || [],
       startDate: start_date || null,
@@ -61,7 +108,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
   const handleTypeChange = (e) => {
     setEditData((prev) => ({
       ...prev,
-      type: capitalizeFirstLetter(e.target.value),
+      type: e.target.value,
     }));
   };
 
@@ -113,23 +160,69 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
     }
   };
 
+  const fetchProductOptions = async (search) => {
+    try {
+      if (search) {
+        const res = await searchProductList(search);
+        setValue(res?.data.data);
+
+        const data = res.data.data.map((product) => ({
+          label: product.product_sn,
+          value: product.product_id,
+        }));
+
+        return data;
+      }
+    } catch (error) {
+      console.error("Error fetching product list:", error);
+      return [];
+    }
+  };
   const disabledPastDate = (current) => {
-    return current && current < moment().startOf("day"); // Disable past dates
+    return current && current < moment().startOf("day");
   };
 
-  const price = product?.offer_price * editData?.quantity;
+  const offerPrice =
+    product?.offer_price * editData?.quantity ||
+    createData?.offer_price * editData?.quantity;
+  const sellingPrice =
+    product?.selling_price * editData?.quantity ||
+    createData?.offer_price * editData?.quantity;
 
   return (
     <Modal
       open={open}
       width={900}
       footer={null}
-      onCancel={() => handleOpenClose({})}
+      onCancel={() => handleOpenClose({ setValue: null })}
     >
+      <div className="pb-3 flex justify-center">
+        <DebounceSelect
+          mode="single"
+          value={value}
+          placeholder="Search product to add..."
+          fetchOptions={fetchProductOptions}
+          onChange={(newValue) => {
+            // setValue(newValue); // Update the selected value
+            setEditData((prev) => ({
+              ...prev,
+              productId: newValue.value, // Correct field: use productId here
+              productName: newValue.label, // Set productName from label
+              offerPrice: newValue.offer_price, // Set offer price
+              sellingPrice: newValue.selling_price, // Set selling price
+              productImage: newValue.default_image, // Set product image
+            }));
+          }}
+          style={{
+            width: "70%",
+          }}
+        />
+      </div>
+
       <div className="flex space-x-2 p-2">
         <div className="m-1 p-2 border-2 border-gray-200">
           <img
-            src={product?.images_list?.[0] || null}
+            src={product?.images_list?.[0] || createData?.default_image || null}
             width={100}
             height={100}
             className="rounded-lg"
@@ -138,9 +231,11 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
         </div>
 
         <div>
-          <div className="font-semibold">{product?.product_sn}</div>
+          <div className="font-semibold">
+            {product?.product_sn || editData?.productName}
+          </div>
           <div className="flex items-center">
-            <span>{product?.dprod_unit_qty}</span>
+            <span>{product?.dprod_unit_qty || createData?.dprod_unit_qty}</span>
             <Select
               value={editData?.quantity}
               className="w-16 ml-12"
@@ -151,8 +246,8 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
               }))}
             />
             <span className="ml-10">
-              <span>₹ {price}</span>
-              <span className="line-through ml-3">₹ {price}</span>
+              <span>₹ {offerPrice}</span>
+              <span className="line-through ml-3">₹ {sellingPrice}</span>
             </span>
           </div>
 
@@ -224,18 +319,20 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
         </div>
 
         {editData?.dateRangePicker && (
-          <RangePicker
-            format={dateFormat}
-            onChange={handlePauseDateChange}
-            className="my-2"
-          />
+          <div className="flex py-2">
+            <RangePicker
+              format={dateFormat}
+              disabledDate={disabledPastDate}
+              onChange={handlePauseDateChange}
+              placeholder={["Start Date", "End Date"]}
+            />
+          </div>
         )}
-
-        <div className="flex flex-wrap gap-2 mt-2">
+        <div className="flex space-x-2">
           {editData?.datesRange?.map((item, index) => (
             <div
               key={index}
-              className="border border-gray-300 rounded-lg p-2 w-[127px] relative"
+              className="border border-gray-300 rounded-lg p-2 w-[127px] flex relative"
             >
               <img
                 src={trashBin}

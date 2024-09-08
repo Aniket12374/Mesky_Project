@@ -6,11 +6,26 @@ import SubscriptionEditModal from "./SubscriptionEditModal";
 
 function SubscriptionTabs() {
   const [activeTab, setActiveTab] = useState(1);
+  const [modalData, setModalData] = useState({
+    open: false,
+    data: [],
+  });
+  console.log("modalData", modalData);
 
   return (
-    <div className='w-1/3 border-2 border-gray-200'>
-      <Header text='Subscription' className='m-2' />
-      <div className='ml-2'>
+    <div className="w-1/3 border-2 border-gray-200">
+      <div className="flex justify-between py-2 pr-2">
+        <div>
+          <Header text="Subscription" className="m-2" />
+        </div>
+        <div
+          className="bg-[#FB8171] text-white px-4 pt-2 h-10 rounded-md shadow-md text-center cursor-pointer"
+          onClick={(prev) => setModalData({ ...prev, open: true })}
+        >
+          Create New
+        </div>
+      </div>
+      <div className="ml-2">
         <Tabs
           defaultActiveKey={1}
           style={{ fontFamily: "Fredoka, sans-serif" }}
@@ -19,12 +34,24 @@ function SubscriptionTabs() {
             {
               label: "Active",
               key: "1",
-              children: <SubscriptionData tab={1} />,
+              children: (
+                <SubscriptionData
+                  tab={1}
+                  modalData={modalData}
+                  setModalData={setModalData}
+                />
+              ),
             },
             {
               label: "Inactive",
               key: "2",
-              children: <SubscriptionData tab={2} />,
+              children: (
+                <SubscriptionData
+                  tab={2}
+                  modalData={modalData}
+                  setModalData={setModalData}
+                />
+              ),
             },
           ]}
         />
@@ -33,12 +60,8 @@ function SubscriptionTabs() {
   );
 }
 
-const SubscriptionData = ({ tab }) => {
+const SubscriptionData = ({ tab, modalData, setModalData }) => {
   const [tabData, setTabData] = useState([]);
-  const [modalData, setModalData] = useState({
-    open: false,
-    data: [],
-  });
 
   useEffect(() => {
     getSubscriptions(tab == 1 ? "active" : "inactive").then((res) => {
@@ -62,9 +85,9 @@ const SubscriptionData = ({ tab }) => {
         const { product, quantity, dates_range } = record;
         console.log({ record });
         return (
-          <div className='m-1 shadow-2xl rounded-lg'>
-            <div className='flex justify-between space-x-2 p-2'>
-              <div className='m-1 p-2 border-2 border-gray-200'>
+          <div className="m-1 shadow-2xl rounded-lg">
+            <div className="flex justify-between space-x-2 p-2">
+              <div className="m-1 p-2 border-2 border-gray-200">
                 <img
                   src={
                     product?.images_list.length > 0
@@ -73,26 +96,29 @@ const SubscriptionData = ({ tab }) => {
                   }
                   width={50}
                   height={50}
-                  className='rounded-lg'
-                  alt='sub_img'
+                  className="rounded-lg"
+                  alt="sub_img"
                 />
               </div>
-              <div className='flex-1'>
+              <div className="flex-1">
                 <div>{product?.product_sn}</div>
-                <div className=''>
+                <div className="">
                   <span>
                     {product?.dprod_unit_qty} x {quantity}
                   </span>
-                  <span className='ml-10'>
+                  <span className="ml-10">
                     <span>₹ {product?.offer_price}</span>
-                    <span className='line-through ml-3'>
+                    <span className="line-through ml-3">
                       ₹ {product?.selling_price}
                     </span>
                   </span>
                 </div>
               </div>
-              <div onClick={() => handleEditOpen(record)}>
-                <i class='fas fa-pencil-alt'></i>
+              <div
+                onClick={() => handleEditOpen(record)}
+                className="cursor-pointer"
+              >
+                <i class="fas fa-pencil-alt"></i>
               </div>
             </div>
             <div
@@ -102,13 +128,13 @@ const SubscriptionData = ({ tab }) => {
               style={{ fontSize: "12px", padding: "4px" }}
             >
               <span>Daily Subscription</span>
-              <span className='inline-flex items-center'>
+              <span className="inline-flex items-center">
                 <Dotted />
                 <span>Starting {dates_range[0]["start_date"]}</span>
               </span>
-              <span className='inline-flex items-center'>
+              <span className="inline-flex items-center">
                 <Dotted />
-                <span className='break-word'>
+                <span className="break-word">
                   Ending {dates_range[0]["end_date"]}
                 </span>
               </span>
@@ -179,7 +205,7 @@ const SubscriptionData = ({ tab }) => {
 };
 
 const Dotted = () => (
-  <span className='inline-flex mx-2 h-2 w-2 bg-white rounded-full'></span>
+  <span className="inline-flex mx-2 h-2 w-2 bg-white rounded-full"></span>
 );
 
 export default SubscriptionTabs;

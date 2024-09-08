@@ -74,9 +74,7 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
       dataIndex: "name",
       key: "name",
       render: (_, record) => {
-        console.log({ record });
         const date = record?.created_date?.split(" ");
-        console.log({ date });
         return (
           <div className='text-sm'>
             <div>{transactionName(record)}</div>

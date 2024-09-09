@@ -28,7 +28,7 @@ export const DataTable = ({
   const navigate = useNavigate();
   const location = useLocation();
 
-  const paths = ["/subscription", "/history", "/customer"];
+  const paths = ["/subscription", "/history", "/customer/credit"];
   const pathIncludes = paths.some((path) => location?.pathname.includes(path));
   const iscustomerPage = location?.pathname.includes("/customer");
 

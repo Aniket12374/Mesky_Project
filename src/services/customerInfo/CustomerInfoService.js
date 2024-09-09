@@ -26,7 +26,7 @@ export const getSubscriptions = (activeType) => {
 };
 
 export const updateSubscriptionDeatils = (payload) => {
-  return httpVendor.post(`api/support_dash/update_subscription`, payload);
+  return httpVendor.put(`api/support_dash/update_subscription`, payload);
 };
 
 export const createSubscriptionDeatils = (payload) => {

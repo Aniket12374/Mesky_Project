@@ -4,10 +4,12 @@ import trashBin from "../../assets/delt-bin.png";
 import moment from "moment";
 import debounce from "lodash/debounce";
 import {
+  createSubscriptionDeatils,
   searchProductList,
   updateSubscriptionDeatils,
 } from "../../services/customerInfo/CustomerInfoService";
 import MagnifyingGlass from "../../assets/MagnifyingGlass.png";
+import toast from "react-hot-toast";
 
 const { RangePicker } = DatePicker;
 const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -58,7 +60,7 @@ function DebounceSelect({ fetchOptions, debounceTimeout = 800, ...props }) {
 }
 
 function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
-  const { data = {}, open } = modalData;
+  const { data = {}, open, isCreateSubscription } = modalData;
   const {
     product = {},
     subscription_type = {},
@@ -69,9 +71,14 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
     product_id,
   } = data;
 
+  const capitalizeFirstLetter = (str) => {
+    if (!str) return "";
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  };
+
   const [editData, setEditData] = useState({
     quantity: initialQty || 1,
-    type: subscription_type?.type || deliverySchedule[0],
+    type: capitalizeFirstLetter(subscription_type?.type) || deliverySchedule[0],
     weekdays: subscription_type?.day || [],
     datesRange: dates_range || [],
     startDate: start_date || null,
@@ -84,6 +91,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
     productImage: null,
   });
 
+
   const [value, setValue] = useState([]);
 
   const filteredData = value.filter(
@@ -91,10 +99,12 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
   );
   const createData = filteredData[0];
 
+
   useEffect(() => {
     setEditData({
       quantity: initialQty || 1,
-      type: subscription_type?.type || deliverySchedule[0],
+      type:
+        capitalizeFirstLetter(subscription_type?.type) || deliverySchedule[0],
       weekdays: subscription_type?.day || [],
       datesRange: dates_range || [],
       startDate: start_date || null,
@@ -107,7 +117,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
   const handleTypeChange = (e) => {
     setEditData((prev) => ({
       ...prev,
-      type: e.target.value,
+      type: capitalizeFirstLetter(e.target.value),
     }));
   };
 
@@ -140,7 +150,8 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
   const handleAttachTicket = async () => {
     try {
       let payload = {
-        subscription_id: editData?.subscriptionId,
+        [isCreateSubscription ? "address_id" : "subscription_id"]:
+          editData?.subscriptionId || createData?.id,
         qty: editData?.quantity,
         del_schedule_type: {
           type: editData.type,
@@ -151,11 +162,15 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
         product_id: editData?.productId,
       };
 
-      await updateSubscriptionDeatils(payload);
+      isCreateSubscription
+        ? await createSubscriptionDeatils(payload)
+        : await updateSubscriptionDeatils(payload);
       handleEdit();
+      handleOpenClose();
+      toast.success("Successfull");
       console.log("Subscription updated successfully");
     } catch (error) {
-      console.error("Error updating subscription:", error.message);
+      toast.error("Error updating subscription:", error.message);
     }
   };
 
@@ -195,28 +210,30 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
       footer={null}
       onCancel={() => handleOpenClose({ setValue: null })}
     >
-      <div className="pb-3 flex justify-center">
-        <DebounceSelect
-          mode="single"
-          value={value}
-          placeholder="Search product to add..."
-          fetchOptions={fetchProductOptions}
-          onChange={(newValue) => {
-            // setValue(newValue); // Update the selected value
-            setEditData((prev) => ({
-              ...prev,
-              productId: newValue.value, // Correct field: use productId here
-              productName: newValue.label, // Set productName from label
-              offerPrice: newValue.offer_price, // Set offer price
-              sellingPrice: newValue.selling_price, // Set selling price
-              productImage: newValue.default_image, // Set product image
-            }));
-          }}
-          style={{
-            width: "70%",
-          }}
-        />
-      </div>
+      {isCreateSubscription && (
+        <div className="pb-3 flex justify-center">
+          <DebounceSelect
+            mode="single"
+            value={value}
+            placeholder="Search product to add..."
+            fetchOptions={fetchProductOptions}
+            onChange={(newValue) => {
+              // setValue(newValue); // Update the selected value
+              setEditData((prev) => ({
+                ...prev,
+                productId: newValue.value, // Correct field: use productId here
+                productName: newValue.label, // Set productName from label
+                offerPrice: newValue.offer_price, // Set offer price
+                sellingPrice: newValue.selling_price, // Set selling price
+                productImage: newValue.default_image, // Set product image
+              }));
+            }}
+            style={{
+              width: "70%",
+            }}
+          />
+        </div>
+      )}
 
       <div className="flex space-x-2 p-2">
         <div className="m-1 p-2 border-2 border-gray-200">

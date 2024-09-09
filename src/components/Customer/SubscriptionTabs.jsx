@@ -8,6 +8,7 @@ function SubscriptionTabs() {
   const [activeTab, setActiveTab] = useState(1);
   const [modalData, setModalData] = useState({
     open: false,
+    isCreateSubscription: false,
     data: [],
   });
 
@@ -19,7 +20,9 @@ function SubscriptionTabs() {
         </div>
         <div
           className="bg-[#FB8171] text-white px-4 pt-2 h-10 rounded-md shadow-md text-center cursor-pointer"
-          onClick={(prev) => setModalData({ ...prev, open: true })}
+          onClick={(prev) =>
+            setModalData({ ...prev, isCreateSubscription: true, open: true })
+          }
         >
           Create New
         </div>

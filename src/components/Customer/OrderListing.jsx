@@ -81,15 +81,19 @@ const OrderListing = () => {
 
   return (
     <div className='w-1/3 border-2 border-gray-200'>
-      <div className='flex'>
+      <div className='flex flex-wrap justify-between'>
         <Header text='Order History' className='m-2' />
-        <input
-          type='text'
-          onClick={() => setFilterModalOpen(true)}
-          onChange={closeModal}
-          className='border-b-2 border-gray-300 w-32 ml-10 focus:outline-none'
-          placeholder='Search'
-        />
+        <div className='flex space-x-2'>
+          <button
+            onClick={() => setFilterModalOpen(true)}
+            className='search-btn'
+          >
+            Search
+          </button>
+          <button className='search-btn' onClick={() => setFinalFilters({})}>
+            Clear
+          </button>
+        </div>
       </div>
       <AppliedFilters finalFilters={finalFilters} removeFilter={removeFilter} />
 

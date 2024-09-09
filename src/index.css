@@ -1,27 +1,27 @@
-@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap");
 
 .fredoka-400 {
-  font-family: "Fredoka", sans-serif;
+  font-family: "Roboto", sans-serif;
   font-weight: 400;
 }
 
 .fredoka-500 {
-  font-family: "Fredoka", sans-serif;
+  font-family: "Roboto", sans-serif;
   font-weight: 500;
 }
 
 .fredoka-600 {
-  font-family: "Fredoka", sans-serif;
+  font-family: "Roboto", sans-serif;
   font-weight: 600;
 }
 
 .fredoka-700 {
-  font-family: "Fredoka", sans-serif;
+  font-family: "Roboto", sans-serif;
   font-weight: 700;
 }
 
 body {
-  font-family: "Fredoka", sans-serif;
+  font-family: "Roboto", sans-serif;
   font-weight: 400;
 }
 
@@ -33,7 +33,7 @@ body {
 .ant-table-wrapper .ant-table-tbody > tr > td {
   font-size: 16px;
   border-bottom: 2px solid #e5e7eb;
-  font-family: "Fredoka", sans-serif !important;
+  font-family: "Roboto", sans-serif !important;
 }
 
 .pricing-form span.ant-input-suffix {
@@ -225,7 +225,7 @@ body {
 }
 
 .search-btn {
-  @apply bg-orange-400 p-2 rounded-lg text-white;
+  @apply bg-[#FB8171] p-2 rounded-lg text-white;
 }
 
 span.ant-switch-inner {

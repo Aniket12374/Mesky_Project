@@ -119,7 +119,7 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
 
   return (
     <div className={!showBorder ? "" : "w-1/3 border-2 border-gray-200"}>
-      <div className='flex flex-wrap'>
+      <div className='flex flex-wrap justify-between'>
         <Header text='Transactions' className='m-2' />
         {showSearch && (
           <div className='flex space-x-2'>

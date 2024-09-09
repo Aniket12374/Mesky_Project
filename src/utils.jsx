@@ -68,7 +68,7 @@ export const transactionName = (record) => {
   const type = record?.type;
   const isCreditTransaction = type === "CREDIT" || type === "REFUND";
   const isCreditType = type === "CREDIT";
-  const orderId = record?.order_id.split("-")[1];
+  const orderId = !isCreditTransaction ? record?.order_id?.split("-")[1] : null;
 
   return !isCreditTransaction
     ? `Paid for Order ID: ${orderId}`

@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { transactionName } from "../../utils";
+import moment from "moment/moment";
+import { getTransactionDetail } from "../../services/customerOrders/CustomerOrderService";
 
 const TransactionDetailTile = ({ transactionId, setTransactionId }) => {
   const [data, setData] = useState({});
@@ -14,8 +16,8 @@ const TransactionDetailTile = ({ transactionId, setTransactionId }) => {
   }, [transactionId]);
 
   const details = {
-    "Added/Deducted/Refund Amount": data?.transaction_amount,
-    "Wallet Closing Balance": data?.current_amount,
+    "Added/Deducted/Refund Amount": `₹ ${data?.transaction_amount}`,
+    "Wallet Closing Balance": `₹ ${data?.current_amount}`,
     "Transactional Id": data?.id,
     "Payment Mode": data?.payment_mode,
     Status: data?.transaction_status,
@@ -33,7 +35,9 @@ const TransactionDetailTile = ({ transactionId, setTransactionId }) => {
           ></i>
         </button>
       </div>
-      <div className='mt-10 ml-3'>{transactionName(data)}</div>
+      <div className='mt-10 ml-3 font-semibold text-lg'>
+        {transactionName(data)}
+      </div>
       <div className='ml-3'>
         {moment(data?.created_date, "DD-MM-YYYY hh:mm").format("lll")}
       </div>

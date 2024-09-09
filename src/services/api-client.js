@@ -13,7 +13,7 @@ httpVendor.interceptors.request.use((conf) => {
     conf.headers = {
       ...conf.headers,
       // Authorization: token,
-      Authorization: "8N5NvRjzGYxRx2L5qMIu",
+      Authorization: "hckNNp81T6XpTuafyAmT",
     };
   }
   return conf;

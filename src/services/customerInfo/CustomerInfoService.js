@@ -25,6 +25,18 @@ export const getSubscriptions = (activeType) => {
   );
 };
 
+
+export const updateSubscriptionDeatils = (payload) => {
+  return httpVendor.put(`api/support_dash/update_subscription`, payload);
+};
+
+export const createSubscriptionDeatils = (payload) => {
+  return httpVendor.post(`api/support_dash/create_subscription`, payload);
+};
+
+export const searchProductList = (search) => {
+  return httpVendor.get(`api/support_dash/search-product?q=${search}`);
+
 export const updateInfo = (payload) => {
   return httpVendor.put(`api/support_dash/edit-customer-info`, payload);
 };
@@ -35,4 +47,5 @@ export const getPinDetails = async (pin) => {
       pincode: pin,
     },
   });
+
 };

@@ -42,7 +42,7 @@ function App() {
           />
 
           <Route
-            path="/customer"
+            path="/customer/credit"
             element={
               <PrivateRoute>
                 <Customer />

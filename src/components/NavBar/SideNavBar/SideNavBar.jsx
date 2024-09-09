@@ -26,8 +26,8 @@ const SidebarNavItems = [
   },
   {
     id: 3,
-    name: "Customer",
-    path: "customer",
+    name: "Customer Credit",
+    path: "customer/credit",
     icon1: Images["ShoppingColoredLogo"],
     icon2: Images["ShoppingLogo"],
   },

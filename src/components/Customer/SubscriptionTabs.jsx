@@ -69,7 +69,7 @@ const SubscriptionData = ({ tab, modalData, setModalData }) => {
     getSubscriptions(tab == 1 ? "active" : "inactive").then((res) => {
       setTabData(res?.data);
     });
-  }, []);
+  }, [modalData]);
 
   const handleEdit = () => {};
 

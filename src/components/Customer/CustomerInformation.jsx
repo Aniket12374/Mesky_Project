@@ -11,7 +11,6 @@ import Transactions from "./Transactions";
 import AddressForm from "./AddressForm";
 import Address from "./AddressMap";
 import toast from "react-hot-toast";
-import useCustomerStore from "../../store/customer";
 
 const CustomerInformation = () => {
   const [details, setDetails] = useState({});

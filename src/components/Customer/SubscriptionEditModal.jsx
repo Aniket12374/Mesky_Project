@@ -18,7 +18,7 @@ const quantityOptions = Array.from({ length: 10 }, (_, i) => i + 1);
 const deliverySchedule = [
   "Daily",
   "Alternate days",
-  "No Delivery on Weekends",
+  "No delivery on weekends",
   "Weekly",
 ];
 
@@ -90,7 +90,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
     sellingPrice: null,
     productImage: null,
   });
-
+  console.log("editData", editData);
 
   const [value, setValue] = useState([]);
 
@@ -98,7 +98,6 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
     (val) => val.product_id == editData?.productId
   );
   const createData = filteredData[0];
-
 
   useEffect(() => {
     setEditData({

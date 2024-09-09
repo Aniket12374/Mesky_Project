@@ -40,7 +40,11 @@ const OrderListing = () => {
       onSuccess: (res) => {
         setShouldFetch(false);
         setAddress(res?.data?.address_info);
-        setOrders(res?.data?.order_details);
+        const finalOrders = res?.data?.order_details.filter(
+          (x) => x?.status === "Order Delivered"
+        );
+        // setOrders(res?.data?.order_details);
+        setOrders(finalOrders);
         setTotalCount(res?.data?.totalcount);
       },
     }

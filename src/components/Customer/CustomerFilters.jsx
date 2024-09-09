@@ -30,7 +30,11 @@ function CustomerFilters({
   finalFilters,
 }) {
   const normalFilters =
-    Object.keys(finalFilters).length > 0 ? finalFilters : {};
+    Object.keys(finalFilters).length > 0
+      ? finalFilters
+      : {
+          is_csd: true,
+        };
   const isTnlModal = modal == "transaction";
   const dropDownSelection = isTnlModal ? TransactionsOptions : OrderOptions;
   const dropDownOptions = Object.keys(dropDownSelection).map((option) => ({
@@ -108,8 +112,8 @@ function CustomerFilters({
           placeholder='Select one option'
           value={
             optionSelected || {
-              label: filters?.transaction_type,
-              value: filters?.transaction_type,
+              label: filters?.transaction_type || filters?.search_type,
+              value: filters?.transaction_type || filters?.search_type,
             }
           }
         />
@@ -125,10 +129,10 @@ function CustomerFilters({
         {!isTnlModal && (
           <input
             type='text'
-            className='border-b-2 border-gray-300 flex-1'
+            className='border-b-2 border-gray-300 flex-1 p-1'
             placeholder='Search'
             name='search_value'
-            // value={filters?.search_value}
+            value={filters?.search_value}
             onChange={(e) => onChangeHandler(e, "search_value")}
           />
         )}

@@ -90,7 +90,9 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
     sellingPrice: null,
     productImage: null,
   });
-  console.log("editData", editData);
+
+  const addressId = localStorage.getItem("addressId");
+
 
   const [value, setValue] = useState([]);
 
@@ -150,7 +152,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
     try {
       let payload = {
         [isCreateSubscription ? "address_id" : "subscription_id"]:
-          editData?.subscriptionId || createData?.id,
+          editData?.subscriptionId || addressId,
         qty: editData?.quantity,
         del_schedule_type: {
           type: editData.type,

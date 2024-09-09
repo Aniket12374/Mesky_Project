@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import History from "./pages/History";
 import Agents from "./pages/Agent/Agents";
 import Subscription from "./pages/Subscription";
+import Customer from "./pages/Customer";
 import PrivateRoute from "./components/Auth/PrivateRoute";
 import AreaMapping from "./pages/AreaMapping";
 import Routing from "./pages/Routing";
@@ -36,6 +37,15 @@ function App() {
             element={
               <PrivateRoute>
                 <Subscription />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/customer/credit"
+            element={
+              <PrivateRoute>
+                <Customer />
               </PrivateRoute>
             }
           />

@@ -8,7 +8,7 @@ import DashboardDetail from "../components/Dashboard/DashboardDetail";
 import dayjs from "dayjs";
 import CustomerDashboard from "../components/Customer/CustomerDashboard";
 import { Button } from "antd";
-import Address from "../components/Customer/Address";
+import Address from "../components/Customer/AddressMap";
 
 const Dashboard = () => {
   const user = useMainStore((state) => state.user);
@@ -19,7 +19,6 @@ const Dashboard = () => {
   useEffect(() => {
     const token = Cookies.get("token");
     if (!token) {
-      console.log("check");
       return navigate("/login");
     }
   }, [navigate]);
@@ -38,14 +37,6 @@ const Dashboard = () => {
       <Header text={`Dashboard - ${formattedDate}`} />
       {/* <DashboardDetail /> */}
       <CustomerDashboard />
-      <Button onClick={() => setShow(!show)}>Maps</Button>
-      {show && (
-        <Address
-          url={
-            "https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&callback=initMap&libraries=places&v=weekly"
-          }
-        />
-      )}
     </Layout>
   );
 };

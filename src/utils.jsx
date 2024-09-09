@@ -68,12 +68,13 @@ export const transactionName = (record) => {
   const type = record?.type;
   const isCreditTransaction = type === "CREDIT" || type === "REFUND";
   const isCreditType = type === "CREDIT";
+  const orderId = record?.order_id.split("-")[1];
 
   return !isCreditTransaction
-    ? `Paid for Order ID: ${record?.order_id}`
+    ? `Paid for Order ID: ${orderId}`
     : isCreditType
     ? `Recharged wallet with ${record?.transaction_amount}`
-    : `Refund for Order ID:  ${record?.order_id}`;
+    : `Refund for Order ID:  ${orderId}`;
 };
 
 export const ProductCard = ({ product, quantity, children }) => (

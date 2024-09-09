@@ -1,0 +1,53 @@
+import React, { useEffect, useState } from "react";
+import { transactionName } from "../../utils";
+
+const TransactionDetailTile = ({ transactionId, setTransactionId }) => {
+  const [data, setData] = useState({});
+  useEffect(() => {
+    getTransactionDetail(transactionId)
+      .then((res) => {
+        setData(res?.data);
+      })
+      .catch((err) => {
+        console.log({ err });
+      });
+  }, [transactionId]);
+
+  const details = {
+    "Added/Deducted/Refund Amount": data?.transaction_amount,
+    "Wallet Closing Balance": data?.current_amount,
+    "Transactional Id": data?.id,
+    "Payment Mode": data?.payment_mode,
+    Status: data?.transaction_status,
+  };
+  return (
+    <div className='m-3 flex flex-col justify-center'>
+      <div>
+        <button
+          className='p-2 w-8 h-8 flex rounded-full border-2 border-gray-400'
+          onClick={() => setTransactionId(null)}
+        >
+          <i
+            className='fa fa-long-arrow-left text-sm rounded-full'
+            aria-hidden='true'
+          ></i>
+        </button>
+      </div>
+      <div className='mt-10 ml-3'>{transactionName(data)}</div>
+      <div className='ml-3'>
+        {moment(data?.created_date, "DD-MM-YYYY hh:mm").format("lll")}
+      </div>
+
+      <div className='border-2 border-gray-200 m-3 p-3 rounded-lg'>
+        {Object.keys(details).map((detail) => (
+          <div className='flex justify-between' key={detail}>
+            <div>{detail}</div>
+            <div>{details[detail]}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default TransactionDetailTile;

@@ -1,18 +1,11 @@
 import React from "react";
 import { ProductCard } from "../../utils";
 
-export const OrderDetails = ({ data }) => {
+export const OrderDetails = ({ data, closeOrderModal, address }) => {
   const { order_id, date, orderitem_info, delivery_images } = data;
 
   const billDetails = {
-    "Sub Total": (
-      <span className='flex'>
-        {orderitem_info?.total_price}
-        {/* <span className='ml-2 line-through'>
-          {orderitem_info?.selling_price * orderitem_info?.quantity}
-        </span> */}
-      </span>
-    ),
+    "Sub Total": <span className='flex'>{orderitem_info?.total_price}</span>,
     MRP: orderitem_info?.total_price,
     "Product Discount": 0,
     "Returned Items": 0,
@@ -20,18 +13,32 @@ export const OrderDetails = ({ data }) => {
     "Grand Total": orderitem_info?.total_price,
   };
 
+  const orderId = orderitem_info?.uid.slice(0, orderitem_info?.uid?.length - 3);
+
   return (
-    <div className='mt-10'>
+    <div className='mt-3 p-2'>
+      <button
+        onClick={closeOrderModal}
+        className='mb-3 rounded-full border-2 border-gray-400 w-8 h-8'
+      >
+        <i
+          className='fa fa-long-arrow-left text-sm rounded-full'
+          aria-hidden='true'
+        ></i>
+      </button>
       <div className='order-id-delivery-address flex justify-between'>
         <div className='flex-1'>
           <div>
-            Order ID : <span className='font-semibold'>{order_id}</span>
+            Order ID : <span className='font-semibold'>{orderId}</span>
           </div>
           <div className='text-[13px]'>Delivered on {date}</div>
         </div>
-        <div className='flex flex-col flex-1 items-end'>
+        <div className='flex flex-col space-x-3 flex-1 items-end'>
           <div className='font-semibold'>Delivery Address</div>
-          <div>ajkgjkskg</div>
+          <div className='text-sm'>
+            {address?.line_1}, {address?.line_2}
+            {address?.city}
+          </div>
         </div>
       </div>
       <div className='delivered-items my-5'>

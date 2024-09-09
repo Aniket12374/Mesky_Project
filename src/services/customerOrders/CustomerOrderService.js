@@ -23,10 +23,15 @@ export const getTransactionDetail = (transactionId) => {
   );
 };
 
-export const getOrders = (page = 1, size = 5) => {
+export const getOrders = (page = 1, size = 5, filters = {}) => {
   const start = (page - 1) * size;
+  let filtersAppend = "";
+  Object.keys(filters).forEach((x) => {
+    filtersAppend = filtersAppend + `&${x}=${filters[x]}`;
+  });
+
   const end = start + size;
   return httpVendor.get(
-    `api/order/subscription/delivery/history?_start=${start}&_end=${end}`
+    `api/order/subscription/delivery/history?_start=${start}&_end=${end}${filtersAppend}`
   );
 };

@@ -345,24 +345,28 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
         )}
         <div className="flex space-x-2">
           {editData?.datesRange?.map((item, index) => (
-            <div
-              key={index}
-              className="border border-gray-300 rounded-lg p-2 w-[127px] flex relative"
-            >
-              <img
-                src={trashBin}
-                width={15}
-                height={15}
-                alt="delete-bin"
-                onClick={() => handleDeletePauseDate(index)}
-                className="absolute top-1 right-1 cursor-pointer"
-              />
-              <div className="text-center">
-                <p>{item.start_date}</p>
-                <p>to</p>
-                <p>{item.end_date}</p>
-              </div>
-            </div>
+            <>
+              {item.start_date && (
+                <div
+                  key={index}
+                  className="border border-gray-300 rounded-lg p-2 w-[127px] flex relative"
+                >
+                  <img
+                    src={trashBin}
+                    width={15}
+                    height={15}
+                    alt="delete-bin"
+                    onClick={() => handleDeletePauseDate(index)}
+                    className="absolute top-1 right-1 cursor-pointer"
+                  />
+                  <div className="text-center">
+                    <p>{item.start_date}</p>
+                    <p>to</p>
+                    <p>{item.end_date}</p>
+                  </div>
+                </div>
+              )}
+            </>
           ))}
         </div>
       </div>

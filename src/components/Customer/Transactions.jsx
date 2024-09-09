@@ -169,7 +169,7 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
                   return {
                     onClick: () =>
                       record.type === "DEBIT"
-                        ? getDebitData(record?.order_id)
+                        ? getDebitData(record?.order_id?.split("-")[1])
                         : setTransactionId(record?.id),
                   };
                 }}

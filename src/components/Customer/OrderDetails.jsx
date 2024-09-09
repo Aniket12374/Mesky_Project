@@ -2,7 +2,7 @@ import React from "react";
 import { ProductCard } from "../../utils";
 
 export const OrderDetails = ({ data, closeOrderModal, address }) => {
-  const { order_id, date, orderitem_info, delivery_images } = data;
+  const { order_id, date, orderitem_info, delivery_images = [] } = data;
 
   const billDetails = {
     "Sub Total": <span className='flex'>{orderitem_info?.total_price}</span>,
@@ -13,7 +13,10 @@ export const OrderDetails = ({ data, closeOrderModal, address }) => {
     "Grand Total": orderitem_info?.total_price,
   };
 
-  const orderId = orderitem_info?.uid.slice(0, orderitem_info?.uid?.length - 3);
+  const orderId = orderitem_info?.uid?.slice(
+    0,
+    orderitem_info?.uid?.length - 3
+  );
 
   return (
     <div className='mt-3 p-2'>

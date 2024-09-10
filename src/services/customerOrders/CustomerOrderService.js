@@ -13,7 +13,7 @@ export const getTransactions = (page = 1, size = 10, payload = {}) => {
   const end = start + size;
   return httpVendor.post(
     `api/support_dash/transactions?_start=${start}&_end=${end}`,
-    payload
+    { ...payload, i_csd: true }
   );
 };
 

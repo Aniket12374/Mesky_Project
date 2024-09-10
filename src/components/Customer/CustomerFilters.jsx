@@ -14,7 +14,7 @@ const TransactionsOptions = {
 };
 
 const OrderOptions = {
-  "Product Name": "none",
+  "Product Name": "product_name",
   "Order Value": "order_value",
   "Order Id": "order_id",
   "Promotional Products": "promotional_products",
@@ -30,11 +30,7 @@ function CustomerFilters({
   finalFilters,
 }) {
   const normalFilters =
-    Object.keys(finalFilters).length > 0
-      ? finalFilters
-      : {
-          is_csd: true,
-        };
+    Object.keys(finalFilters).length > 0 ? finalFilters : {};
   const isTnlModal = modal == "transaction";
   const dropDownSelection = isTnlModal ? TransactionsOptions : OrderOptions;
   const dropDownOptions = Object.keys(dropDownSelection).map((option) => ({
@@ -70,27 +66,27 @@ function CustomerFilters({
   };
 
   return (
-    <div className='filters-common m-3 p-2 bg-orange-300'>
-      {modal == "transaction" && (
-        <div className='flex mt-2'>
-          <div className='flex-1'>Search By</div>
+    <div className='filters-common p-2 bg-orange-300 text-xs'>
+      {/* {modal == "transaction" && (
+        <div className='flex space-x-2 mt-2'>
+          <div className='w-1/6'>Search By</div>
           <input
             type='text'
             placeholder='Search by free text'
-            className='flex-1 border-b-2 border-gray-300 w-full w-64'
+            className='flex-1 p-1 border-b-2 border-gray-300 rounded-md'
             value={filters?.q}
           />
         </div>
-      )}
+      )} */}
       <div className='flex items-center space-x-2 my-5'>
-        <div className='flex-1'>
+        <div className='w-1/6'>
           {isTnlModal ? "Date Between" : "Delivery Date"}
         </div>
         <Input
           type='date'
           placeholder='Start-Date'
           name='start_date'
-          className='flex-1'
+          className='flex-1 mr-2 w-5/12'
           value={moment(filters?.start_date, "DD-MM-YYYY").format("YYYY-MM-DD")}
           onChange={(e) => onChangeHandler(e, "start_date")}
         />
@@ -98,15 +94,15 @@ function CustomerFilters({
           type='date'
           placeholder='End-Date'
           name='end_date'
-          className='flex-1'
+          className='flex-1 w-5/12'
           value={moment(filters?.end_date, "DD-MM-YYYY").format("YYYY-MM-DD")}
           onChange={(e) => onChangeHandler(e, "end_date")}
         />
       </div>
       <div className='flex items-center space-x-2'>
-        <span className='flex-1'>Search By</span>
+        <span className='w-1/6'>Search By</span>
         <Select
-          className='flex-1'
+          className='flex-1 w-8/12'
           options={dropDownOptions}
           onChange={onChangeOption}
           placeholder='Select one option'
@@ -120,7 +116,7 @@ function CustomerFilters({
         {isTnlModal && (
           <Input
             type='number'
-            className='border-b-2 border-gray-300 flex-1'
+            className='border-b-2 border-gray-300 flex-1 w-2/12'
             placeholder='Amount'
             value={filters?.amount}
             onChange={(e) => onChangeHandler(e, "amount")}
@@ -129,7 +125,7 @@ function CustomerFilters({
         {!isTnlModal && (
           <input
             type='text'
-            className='border-b-2 border-gray-300 flex-1 p-1'
+            className='border-b-2 border-gray-300 flex-1 p-1 w-5/12'
             placeholder='Search'
             name='search_value'
             value={filters?.search_value}
@@ -160,7 +156,7 @@ function CustomerFilters({
 export const AppliedFilters = ({ finalFilters, removeFilter }) => (
   <div className='bg-pink-300'>
     {Object.keys(finalFilters).map((filter) =>
-      finalFilters[filter] ? (
+      finalFilters[filter] !== null ? (
         <div className='inline-flex border-gray-200 bg-gray-200 border-2 m-2 space-x-2 items-center'>
           <div className='text-sm'>{filter.toUpperCase()}:</div>
           <div>{finalFilters[filter]}</div>

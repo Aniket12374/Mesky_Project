@@ -83,12 +83,14 @@ const OrderListing = () => {
     <div className='w-1/3 border-2 border-gray-200'>
       <div className='flex flex-wrap justify-between'>
         <Header text='Order History' className='m-2' />
-        <div className='flex space-x-2'>
+        <div className='flex space-x-2 mt-2 mr-2'>
           <button
             onClick={() => setFilterModalOpen(true)}
             className='search-btn'
           >
-            Search
+            <span>
+              <i class='fa-solid fa-magnifying-glass ml-2'></i>
+            </span>
           </button>
           <button className='search-btn' onClick={() => setFinalFilters({})}>
             Clear

@@ -4,7 +4,7 @@ import { Spin } from "antd";
 
 export const Header = ({ text, className = "" }) => (
   <div className={`flex justify-between items-center ${className}`}>
-    <div className='text-3xl font-semibold '>{text}</div>
+    <div className='text-2xl font-semibold '>{text}</div>
   </div>
 );
 
@@ -73,14 +73,14 @@ export const transactionName = (record) => {
   return !isCreditTransaction
     ? `Paid for Order ID: ${orderId}`
     : isCreditType
-    ? `Recharged wallet with ${record?.transaction_amount}`
+    ? `Recharged wallet with ₹${record?.transaction_amount}`
     : `Refund for Order ID:  ${orderId}`;
 };
 
 export const ProductCard = ({ product, quantity, children }) => (
   <div>
     <div className='flex justify-between space-x-2 p-2 shadow-md'>
-      <div className='m-1 p-2 border-2 border-gray-200'>
+      <div className='m-1 p-2 border-2 border-gray-200 text-sm'>
         <img
           src={
             product?.default_image
@@ -97,8 +97,8 @@ export const ProductCard = ({ product, quantity, children }) => (
       </div>
       <div className='flex-1'>
         <div>{product?.product_sn}</div>
-        <div className='flex justify-between mt-2'>
-          <span>
+        <div className='flex justify-between mt-2 text-xs'>
+          <span className='gray-color'>
             {product?.dprod_unit_qty} x {quantity}
           </span>
           <span className='ml-10'>

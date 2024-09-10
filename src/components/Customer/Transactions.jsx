@@ -14,7 +14,12 @@ import { Pagination } from "antd";
 import CustomerFilters, { AppliedFilters } from "./CustomerFilters";
 import TransactionDetailTile from "./TransactionDetailTile";
 
-function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
+function Transactions({
+  showSearch = true,
+  filters = {},
+  showBorder = true,
+  name,
+}) {
   const [modalOpen, setModalOpen] = useState(false);
   const [transactions, setTransactions] = useState([]);
   const [transactionId, setTransactionId] = useState(null);
@@ -28,7 +33,7 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
 
   const closeModal = () => setModalOpen((prev) => !prev);
 
-  const { isLoading: isSearchLoading } = useQuery(
+  const { isLoading: isSearchLoading, refetch } = useQuery(
     ["getTransactions", currentPage, size, finalFilters],
     () => getTransactions(currentPage, size, finalFilters),
     {
@@ -73,12 +78,15 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
       title: "Transaction Name",
       dataIndex: "name",
       key: "name",
+      width: 330,
       render: (_, record) => {
         const date = record?.created_date?.split(" ");
         return (
           <div className='text-sm'>
             <div>{transactionName(record)}</div>
-            <div>{moment(date[0], "DD-MM-YYYY").format("ll")}</div>
+            <div className='text-xs gray-color'>
+              {moment(date[0], "DD-MM-YYYY").format("ll")}
+            </div>
           </div>
         );
       },
@@ -87,8 +95,24 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
       title: "Transaction Amount",
       dataIndex: "amount",
       key: "amount",
-      width: 100,
-      render: (_, record) => `₹ ${record?.transaction_amount}`,
+      width: 120,
+      render: (_, record) => (
+        <div className={record?.type === "DEBIT" ? "" : "text-[#008000]"}>
+          {record?.type === "DEBIT" ? "-" : "+"}
+          <span className='ml-1'>₹ {record?.transaction_amount}</span>
+        </div>
+      ),
+    },
+    {
+      title: "icon redirect",
+      dataIndex: "icon-redirect",
+      key: "icon-redirect",
+      width: 10,
+      render: (_, record) => (
+        <div className='text-[#beb8b8] text-[13px]'>
+          <i class='fa-solid fa-chevron-right'></i>
+        </div>
+      ),
     },
   ];
 
@@ -106,6 +130,7 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
       });
 
     setFinalFilters(modifiedFilters);
+    closeModal();
     setShouldFetch(true);
   };
 
@@ -119,14 +144,23 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
 
   return (
     <div className={!showBorder ? "" : "w-1/3 border-2 border-gray-200"}>
-      <div className='flex flex-wrap justify-between'>
-        <Header text='Transactions' className='m-2' />
+      <div className='flex flex-wrap justify-between items-center'>
+        <Header text={name || "Transactions"} className='m-2' />
         {showSearch && (
-          <div className='flex space-x-2'>
+          <div className='flex space-x-2 mt-2 mr-2'>
             <button onClick={() => setModalOpen(true)} className='search-btn'>
-              Search
+              <span>
+                <i class='fa-solid fa-magnifying-glass ml-2'></i>
+              </span>
             </button>
-            <button className='search-btn' onClick={() => setFinalFilters({})}>
+            <button
+              className='search-btn'
+              onClick={() => {
+                setFinalFilters({});
+                setModalOpen(false);
+                setShouldFetch(true);
+              }}
+            >
               Clear
             </button>
           </div>
@@ -161,21 +195,24 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
           />
         ) : (
           <>
-            <div className='h-[75vh] overflow-auto transaction-list'>
+            <div className='h-[75vh] overflow-y-auto transaction-list'>
               <DataTable
                 columns={transactionHeaders}
                 data={transactions}
                 onRow={(record, rowIndex) => {
-                  return {
-                    onClick: () =>
-                      record.type === "DEBIT"
-                        ? getDebitData(record?.order_id?.split("-")[1])
-                        : setTransactionId(record?.id),
-                  };
+                  return !name
+                    ? {
+                        onCopy: (e) => e.preventDefault(),
+                        onClick: () =>
+                          record.type === "DEBIT"
+                            ? getDebitData(record?.order_id?.split("-")[1])
+                            : setTransactionId(record?.id),
+                      }
+                    : null;
                 }}
                 loading={isSearchLoading}
                 scroll={{
-                  ...(!showSearch && { y: 500 }),
+                  ...(!showSearch && { y: 500, x: 0 }),
                 }}
                 showExport={false}
                 showHeader={false}

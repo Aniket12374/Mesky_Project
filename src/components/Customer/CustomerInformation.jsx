@@ -79,8 +79,14 @@ const CustomerInformation = () => {
 };
 
 const CustomerDetails = ({ info, address, setModalOpen }) => {
-  const { default_email, first_name, last_name, id, default_mobile_number } =
-    info;
+  const {
+    default_email,
+    first_name,
+    last_name,
+    id,
+    default_mobile_number,
+    created_date,
+  } = info;
   localStorage.setItem("addressId", info?.id);
   const data = {
     Mobile: default_mobile_number,
@@ -106,7 +112,9 @@ const CustomerDetails = ({ info, address, setModalOpen }) => {
           <div>
             {first_name.toUpperCase()} {last_name.toUpperCase()}
           </div>
-          <div>Since </div>
+          <div className='gray-color text-sm'>
+            Since {moment(created_date, "YYYY-MM-DD").format("ll")}
+          </div>
         </div>
       </div>
       <div className='customer-details m-5'>
@@ -191,9 +199,10 @@ const DeliveryInstruction = ({ address }) => {
 const WalletBalanceTransaction = ({ walletData }) => {
   const { current_balance, recharges } = walletData;
   const navigate = useNavigate();
+  const [name, setName] = useState("Transactions");
   const [api, contextHolder] = notification.useNotification();
   const navigateHandler = () => navigate("/customer/transactions");
-  const openNotification = (filters = {}) => {
+  const openNotification = (filters = {}, name) => {
     api.open({
       duration: null,
       bottom: 50,
@@ -209,6 +218,7 @@ const WalletBalanceTransaction = ({ walletData }) => {
             showSearch={false}
             filters={filters}
             showBorder={false}
+            name={name}
           />
         </div>
       ),
@@ -223,7 +233,7 @@ const WalletBalanceTransaction = ({ walletData }) => {
           {contextHolder}
           <div
             className='text-[#7F39FB] text-sm font-semibold cursor-pointer'
-            onClick={() => openNotification()}
+            onClick={() => openNotification({}, "Latest Transactions")}
           >
             See More
           </div>
@@ -237,9 +247,12 @@ const WalletBalanceTransaction = ({ walletData }) => {
             <div
               className='text-[#7F39FB] text-sm font-semibold cursor-pointer'
               onClick={() =>
-                openNotification({
-                  transaction_type: "credit",
-                })
+                openNotification(
+                  {
+                    transaction_type: "credit",
+                  },
+                  "Latest Wallet Recharges"
+                )
               }
             >
               See More

@@ -25,22 +25,25 @@ const OrderDetailTile = ({
       data: record,
     }));
   return (
-    <div className='card shadow-lg m-2' onClick={setOrderData}>
+    <div className='card shadow-md m-2' onClick={setOrderData}>
       <div className='card flex justify-between  rounded-lg m-2'>
-        <div className='flex justify-between'>
-          <div className={`border-b-2 border-gray-200 ${textColor}`}>
-            {date}
+        <div className='flex justify-between items-center'>
+          <div className={`border-b-2 border-gray-200 text-xs ${textColor}`}>
+            Delivered on {date}
           </div>
           <div className='text-[#DF4584] font-bold text-lg'>₹ {price}</div>
         </div>
 
         <div className='border-gray-200 border-dashed border-b-2 flex justify-between items-center px-1'>
-          <div className='text-base py-1'>{productName}</div>
-          <div className='text-gray-400'>
+          <div className='text-sm py-1'>{productName}</div>
+          <div className='text-gray-400 text-xs'>
             {unitQuantity}x{quantity}
           </div>
         </div>
-        <div className='py-1'> Order ID: {orderId}</div>
+        <div className='py-1 text-xs'>
+          <span className='font-bold gray-color'>Order ID:</span>
+          <span className='font-bold ml-1'>{orderId}</span>
+        </div>
       </div>
     </div>
   );

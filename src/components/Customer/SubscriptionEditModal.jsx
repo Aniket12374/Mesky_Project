@@ -213,12 +213,6 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
     }));
 
   const handleAttachTicket = async () => {
-    let newDate = isCreateSubscription && editData?.newStartDate;
-    let existingDate =
-      !isCreateSubscription == "false" &&
-      editData?.alternateDay == "Alternate days"
-        ? editData?.newStartDate
-        : editData?.startDate;
     try {
       let payload = {
         [isCreateSubscription ? "address_id" : "subscription_id"]:
@@ -229,7 +223,9 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
           weekdays: editData.weekdays,
         },
         pause_dates: editData?.datesRange,
-        start_date: !isCreateSubscription ? newDate : existingDate,
+        start_date: isCreateSubscription
+          ? editData?.newStartDate
+          : editData?.newStartDate || editData?.startDate,
         product_id: editData?.productId,
       };
 
@@ -240,6 +236,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
       handleOpenClose();
       toast.success("Successfull");
       console.log("Subscription updated successfully");
+      setEditData({});
     } catch (error) {
       toast.error("Error updating subscription:", error.message);
     }

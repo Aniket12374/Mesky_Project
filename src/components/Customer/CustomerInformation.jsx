@@ -12,7 +12,7 @@ import AddressForm from "./AddressForm";
 import Address from "./AddressMap";
 import toast from "react-hot-toast";
 
-const CustomerInformation = () => {
+const CustomerInformation = ({ token }) => {
   const [details, setDetails] = useState({});
   const [modalOpen, setModalOpen] = useState(false);
   const [showNext, setShowNext] = useState(false);
@@ -30,13 +30,11 @@ const CustomerInformation = () => {
       .catch((err) => {
         console.log({ err });
       });
-  }, [modalOpen]);
+  }, [modalOpen, token]);
 
   const addressData = details?.address_info?.find(
     (x) => x.address_name !== null
   );
-
-  console.log({ addressData });
 
   const addressFormData = {
     is_only_misc: false,
@@ -81,8 +79,15 @@ const CustomerInformation = () => {
 };
 
 const CustomerDetails = ({ info, address, setModalOpen }) => {
-  const { default_email, first_name, last_name, id, default_mobile_number } =
-    info;
+  const {
+    default_email,
+    first_name,
+    last_name,
+    id,
+    default_mobile_number,
+    created_date,
+  } = info;
+  localStorage.setItem("addressId", info?.id);
   const data = {
     Mobile: default_mobile_number,
     Email: default_email,
@@ -107,7 +112,9 @@ const CustomerDetails = ({ info, address, setModalOpen }) => {
           <div>
             {first_name.toUpperCase()} {last_name.toUpperCase()}
           </div>
-          <div>Since </div>
+          <div className='gray-color text-sm'>
+            Since {moment(created_date, "YYYY-MM-DD").format("ll")}
+          </div>
         </div>
       </div>
       <div className='customer-details m-5'>
@@ -122,8 +129,8 @@ const CustomerDetails = ({ info, address, setModalOpen }) => {
         ))}
       </div>
       <div className='customer-address m-5'>
-        <div>Delivery Address</div>
-        <div>
+        <div className='text-gray-500'>Delivery Address</div>
+        <div className='text-sm'>
           {address?.line_1}, {address?.line_2}, {address?.line_3},{" "}
           {address?.city}-{address?.pincode}, {address?.state}
         </div>
@@ -159,7 +166,7 @@ const DeliveryInstruction = ({ address }) => {
       },
     },
   };
-  console.log({ checked, btnHl });
+
   return (
     <div className='flex flex-col items-center border-2 border-gray-200 w-1/3'>
       <div className='w-full p-3 text-center text-lg font-semibold border-b-2 border-gray-200'>
@@ -191,10 +198,9 @@ const DeliveryInstruction = ({ address }) => {
 
 const WalletBalanceTransaction = ({ walletData }) => {
   const { current_balance, recharges } = walletData;
-  const navigate = useNavigate();
   const [api, contextHolder] = notification.useNotification();
-  const navigateHandler = () => navigate("/customer/transactions");
-  const openNotification = (filters = {}) => {
+
+  const openNotification = (filters = {}, name) => {
     api.open({
       duration: null,
       bottom: 50,
@@ -210,6 +216,7 @@ const WalletBalanceTransaction = ({ walletData }) => {
             showSearch={false}
             filters={filters}
             showBorder={false}
+            name={name}
           />
         </div>
       ),
@@ -224,7 +231,7 @@ const WalletBalanceTransaction = ({ walletData }) => {
           {contextHolder}
           <div
             className='text-[#7F39FB] text-sm font-semibold cursor-pointer'
-            onClick={() => openNotification()}
+            onClick={() => openNotification({}, "Transactions")}
           >
             See More
           </div>
@@ -238,9 +245,12 @@ const WalletBalanceTransaction = ({ walletData }) => {
             <div
               className='text-[#7F39FB] text-sm font-semibold cursor-pointer'
               onClick={() =>
-                openNotification({
-                  transaction_type: "credit",
-                })
+                openNotification(
+                  {
+                    transaction_type: "credit",
+                  },
+                  "Latest Wallet Recharges"
+                )
               }
             >
               See More

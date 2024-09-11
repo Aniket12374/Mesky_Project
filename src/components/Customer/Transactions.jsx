@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Header, IconGreen, transactionName } from "../../utils";
 import CustomerPopup from "../Common/CustomerPopup";
+import { AudioOutlined } from "@ant-design/icons";
 import {
   getOrders,
   getTransactionDetail,
@@ -10,26 +11,34 @@ import DataTable from "../Common/DataTable/DataTable";
 import moment from "moment";
 import { OrderDetails } from "./OrderDetails";
 import { useQuery } from "react-query";
-import { Pagination } from "antd";
+import { Input, Pagination, Table } from "antd";
 import CustomerFilters, { AppliedFilters } from "./CustomerFilters";
 import TransactionDetailTile from "./TransactionDetailTile";
 
-function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
+function Transactions({
+  showSearch = true,
+  filters = {},
+  showBorder = true,
+  name,
+  token = "",
+}) {
   const [modalOpen, setModalOpen] = useState(false);
   const [transactions, setTransactions] = useState([]);
   const [transactionId, setTransactionId] = useState(null);
   const [finalFilters, setFinalFilters] = useState(filters);
+  const [appliedFilters, setAppliedFilters] = useState({});
   const [debitData, setDebitData] = useState(null);
   const [address, setAddress] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [size, setSize] = useState(10);
   const [totalCount, setTotalCount] = useState(0);
   const [shouldFetch, setShouldFetch] = useState(true);
+  const [copied, setCopied] = useState(false);
 
   const closeModal = () => setModalOpen((prev) => !prev);
 
-  const { isLoading: isSearchLoading } = useQuery(
-    ["getTransactions", currentPage, size, finalFilters],
+  const { isLoading: isSearchLoading, refetch } = useQuery(
+    [`getTransactions_${token}`, currentPage, size, finalFilters, token],
     () => getTransactions(currentPage, size, finalFilters),
     {
       enabled: shouldFetch,
@@ -42,6 +51,10 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
     }
   );
 
+  useEffect(() => {
+    refetch();
+  }, [token]);
+
   const getDebitData = (debitId) => {
     getOrders(1, 1, { search_value: debitId, search_type: "order_id" })
       .then((res) => {
@@ -53,12 +66,22 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
       });
   };
 
+  const clickHandler = (record) => {
+    return !copied
+      ? !name
+        ? record.type === "DEBIT"
+          ? getDebitData(record?.order_id?.split("-")[1])
+          : setTransactionId(record?.id)
+        : null
+      : null;
+  };
+
   const transactionHeaders = [
     {
       title: "Icon",
       dataIndex: "icon",
       key: "icon",
-      width: 50,
+      width: "10%",
       render: (_, record) => {
         const type = record?.type;
         const isCreditTransaction = type === "CREDIT" || type === "REFUND";
@@ -73,12 +96,15 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
       title: "Transaction Name",
       dataIndex: "name",
       key: "name",
+      width: "60%",
       render: (_, record) => {
         const date = record?.created_date?.split(" ");
         return (
           <div className='text-sm'>
             <div>{transactionName(record)}</div>
-            <div>{moment(date[0], "DD-MM-YYYY").format("ll")}</div>
+            <div className='text-xs gray-color'>
+              {moment(date[0], "DD-MM-YYYY").format("ll")}
+            </div>
           </div>
         );
       },
@@ -87,8 +113,25 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
       title: "Transaction Amount",
       dataIndex: "amount",
       key: "amount",
-      width: 100,
-      render: (_, record) => `₹ ${record?.transaction_amount}`,
+      width: "20%",
+      render: (_, record) => (
+        <div className={record?.type === "DEBIT" ? "" : "text-[#008000]"}>
+          {record?.type === "DEBIT" ? "-" : "+"}
+          <span className='ml-1'>₹ {record?.transaction_amount}</span>
+        </div>
+      ),
+    },
+    {
+      title: "icon redirect",
+      dataIndex: "icon-redirect",
+      key: "icon-redirect",
+      width: "5%",
+      render: (_, record) =>
+        !name && (
+          <div className='text-[#beb8b8] text-[13px]'>
+            <i class='fa-solid fa-chevron-right'></i>
+          </div>
+        ),
     },
   ];
 
@@ -99,13 +142,21 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
 
   const removeFilter = (key) => {
     let modifiedFilters = {};
-    Object.keys(finalFilters)
+    Object.keys(appliedFilters)
       .filter((x) => x !== key)
       .forEach((x, index) => {
-        modifiedFilters[x] = finalFilters[x];
+        modifiedFilters[x] = appliedFilters[x];
       });
 
     setFinalFilters(modifiedFilters);
+    setAppliedFilters(modifiedFilters);
+    setShouldFetch(true);
+  };
+
+  const handleClear = () => {
+    setFinalFilters({});
+    setAppliedFilters({});
+    setModalOpen(false);
     setShouldFetch(true);
   };
 
@@ -119,26 +170,24 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
 
   return (
     <div className={!showBorder ? "" : "w-1/3 border-2 border-gray-200"}>
-      <div className='flex flex-wrap'>
-        <Header text='Transactions' className='m-2' />
+      <div className='flex flex-wrap justify-between items-center'>
+        <Header text={name || "Transactions"} className='m-2' />
         {showSearch && (
-          <div className='flex space-x-2'>
-            <button onClick={() => setModalOpen(true)} className='search-btn'>
-              Search
-            </button>
-            <button className='search-btn' onClick={() => setFinalFilters({})}>
-              Clear
+          <div className='mt-2 mr-1 cursor-pointer'>
+            <button
+              className='border-2 border-gray-200 text-xs text-gray-300 p-1 rounded-md'
+              onClick={() => setModalOpen(true)}
+            >
+              <span>Search by amount, transaction type..</span>
+              <span className='text-[#645d5d]'>
+                <i class='fa-solid fa-magnifying-glass' />
+              </span>
             </button>
           </div>
         )}
       </div>
+
       {showSearch && (
-        <AppliedFilters
-          removeFilter={removeFilter}
-          finalFilters={finalFilters}
-        />
-      )}
-      {modalOpen && (
         <CustomerFilters
           open={modalOpen}
           closeModal={closeModal}
@@ -147,8 +196,13 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
           setFinalFilters={setFinalFilters}
           finalFilters={finalFilters}
           setShouldFetch={setShouldFetch}
+          setAppliedFilters={setAppliedFilters}
+          appliedFilters={appliedFilters}
+          removeFilter={removeFilter}
+          clear={handleClear}
         />
       )}
+
       {transactionId === null ? (
         debitData ? (
           <OrderDetails
@@ -161,18 +215,17 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
           />
         ) : (
           <>
-            <div className='h-[75vh] overflow-auto transaction-list'>
-              <DataTable
+            <div className='h-[75vh] overflow-y-auto transaction-list'>
+              <Table
                 columns={transactionHeaders}
-                data={transactions}
-                onRow={(record, rowIndex) => {
-                  return {
-                    onClick: () =>
-                      record.type === "DEBIT"
-                        ? getDebitData(record?.order_id)
-                        : setTransactionId(record?.id),
-                  };
-                }}
+                dataSource={transactions}
+                onRow={(record) => ({
+                  onClick: () => clickHandler(record),
+                  onKeyDown: (event) => setCopied(true),
+                  onMouseDown: (event) => setCopied(false),
+                  onMouseLeave: (event) => setCopied(false),
+                  tabIndex: 0, // Make row focusable
+                })}
                 loading={isSearchLoading}
                 scroll={{
                   ...(!showSearch && { y: 500 }),
@@ -209,14 +262,6 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
           />
         </>
       )}
-
-      {/* <CustomerPopup
-        open={modalOpen}
-        closeModal={closeModal}
-        options={"TransactionsOptions"}
-        modal={"transaction"}
-        setFinalFilters={setFinalFilters}
-      /> */}
     </div>
   );
 }

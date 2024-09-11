@@ -1,4 +1,4 @@
-import { httpVendor } from "../api-client";
+import { httpVendor, httpCustomerAgent } from "../api-client";
 
 export const getCustomers = (searchTerm, _start = 0, _end = 20) => {
   return httpVendor.get(
@@ -13,7 +13,7 @@ export const customerInfo = (
     is_wallet_info: true,
   }
 ) => {
-  return httpVendor.post(
+  return httpCustomerAgent.post(
     `api/support_dash/dashboard_info?_start=0&_end=3`,
     payload
   );
@@ -38,7 +38,7 @@ export const searchProductList = (search) => {
 };
 
 export const updateInfo = (payload) => {
-  return httpVendor.put(`api/support_dash/edit-customer-info`, payload);
+  return httpCustomerAgent.put(`api/support_dash/edit-customer-info`, payload);
 };
 
 export const getPinDetails = async (pin) => {

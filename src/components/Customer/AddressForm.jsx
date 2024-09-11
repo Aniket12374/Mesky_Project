@@ -7,8 +7,20 @@ import toast from "react-hot-toast";
 
 function AddressForm({ data, closeModal }) {
   const [formData, setFormData] = useState(data || {});
-  let fields = ["pincode", "line_1", "line_2", "landmark"];
+  let fields = ["pincode", "sector_name", "line_1", "line_2", "landmark"];
+  let placeHolders = [
+    "Pincode",
+    "Sector/ Plot.No",
+    "Flat No/ Floor No/ Apartment name/ Block",
+    "Search the address",
+    "Landmark",
+  ];
   let personalFields = ["first_name", "last_name", "default_email"];
+
+  useEffect(() => {
+    setFormData(data);
+  }, [data]);
+
   const onChange = (key, value) => {
     setFormData((prev) => ({
       ...prev,
@@ -23,6 +35,11 @@ function AddressForm({ data, closeModal }) {
     });
     autocomplete.addListener("place_changed", function () {
       const place = autocomplete.getPlace();
+      const latLngs = place?.geometry?.location;
+      const lat = latLngs?.lat();
+      const lng = latLngs?.lng();
+      onChange("latitude", lat);
+      onChange("longitude", lng);
 
       let pincodeCompo = place?.address_components?.find((x) =>
         x.types.includes("postal_code")
@@ -36,8 +53,17 @@ function AddressForm({ data, closeModal }) {
         });
       });
       onChange("line_2", place?.name);
+      onChange("sector_name", extractSectorValue(place?.formatted_address));
     });
   }, []);
+
+  const extractSectorValue = (line) => {
+    if (typeof line !== "string") return "";
+
+    const sectorPattern = /sector\s*[^,]*/i; // Match 'sector' followed by any number of spaces and then any characters except a comma
+    const result = line.match(sectorPattern);
+    return result ? result[0].trim() : "";
+  };
 
   const updateAddressInfo = () => {
     updateInfo(formData)
@@ -61,10 +87,10 @@ function AddressForm({ data, closeModal }) {
             id={field}
             value={formData[field]}
             onChange={(e) => onChange(field, e.target.value)}
-            className={`m-2 border-b-2 border-gray-200 ${
+            className={`m-2 border-b-2 border-gray-200 focus:outline-none ${
               index > 1 ? "w-full" : ""
             }`}
-            placeholder={field}
+            placeholder={placeHolders[index]}
           />
         ))}
       </div>

@@ -11,23 +11,16 @@ import {
 
 const SidebarNavItems = [
   {
-    id: 9,
-    name: "Order Listing",
-    path: "customer/order-listing",
-    icon1: Images["SupportLogoColored"],
-    icon2: Images["SupportLogo"],
-  },
-  {
-    id: 10,
-    name: "Transactions",
-    path: "customer/transactions",
-    icon1: Images["SupportLogoColored"],
-    icon2: Images["SupportLogo"],
-  },
-  {
     id: 1,
     name: "Dashboard",
     path: "dashboard",
+    icon1: Images["DashboardColored"],
+    icon2: Images["Dashboard"],
+  },
+  {
+    id: 9,
+    name: "Customer Support",
+    path: "customer-support",
     icon1: Images["DashboardColored"],
     icon2: Images["Dashboard"],
   },

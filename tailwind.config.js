@@ -10,5 +10,8 @@ export default {
   plugins: [daisyui],
   daisyui: {
     themes: ["light"],
+    fontFamily: {
+      'roboto': ['Roboto', 'sans-serif'],
+    }
   },
 };

@@ -18,7 +18,7 @@ const quantityOptions = Array.from({ length: 10 }, (_, i) => i + 1);
 const deliverySchedule = [
   "Daily",
   "Alternate days",
-  "No Delivery on Weekends",
+  "No delivery on weekends",
   "Weekly",
 ];
 
@@ -91,6 +91,8 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
     productImage: null,
   });
 
+  const addressId = localStorage.getItem("addressId");
+
 
   const [value, setValue] = useState([]);
 
@@ -98,7 +100,6 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
     (val) => val.product_id == editData?.productId
   );
   const createData = filteredData[0];
-
 
   useEffect(() => {
     setEditData({
@@ -151,7 +152,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
     try {
       let payload = {
         [isCreateSubscription ? "address_id" : "subscription_id"]:
-          editData?.subscriptionId || createData?.id,
+          editData?.subscriptionId || addressId,
         qty: editData?.quantity,
         del_schedule_type: {
           type: editData.type,
@@ -346,24 +347,28 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
         )}
         <div className="flex space-x-2">
           {editData?.datesRange?.map((item, index) => (
-            <div
-              key={index}
-              className="border border-gray-300 rounded-lg p-2 w-[127px] flex relative"
-            >
-              <img
-                src={trashBin}
-                width={15}
-                height={15}
-                alt="delete-bin"
-                onClick={() => handleDeletePauseDate(index)}
-                className="absolute top-1 right-1 cursor-pointer"
-              />
-              <div className="text-center">
-                <p>{item.start_date}</p>
-                <p>to</p>
-                <p>{item.end_date}</p>
-              </div>
-            </div>
+            <>
+              {item.start_date && (
+                <div
+                  key={index}
+                  className="border border-gray-300 rounded-lg p-2 w-[127px] flex relative"
+                >
+                  <img
+                    src={trashBin}
+                    width={15}
+                    height={15}
+                    alt="delete-bin"
+                    onClick={() => handleDeletePauseDate(index)}
+                    className="absolute top-1 right-1 cursor-pointer"
+                  />
+                  <div className="text-center">
+                    <p>{item.start_date}</p>
+                    <p>to</p>
+                    <p>{item.end_date}</p>
+                  </div>
+                </div>
+              )}
+            </>
           ))}
         </div>
       </div>

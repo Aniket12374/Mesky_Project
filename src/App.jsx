@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { QueryClient, QueryClientProvider } from "react-query";
@@ -12,7 +13,7 @@ import PrivateRoute from "./components/Auth/PrivateRoute";
 import AreaMapping from "./pages/AreaMapping";
 import Routing from "./pages/Routing";
 import Dashboard from "./pages/Dashboard";
-import { useEffect } from "react";
+import CustomerDashboardMain from "./pages/CustomerDashboard";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +45,14 @@ function App() {
               element={
                 <PrivateRoute>
                   <Dashboard />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path='/customer-support'
+              element={
+                <PrivateRoute>
+                  <CustomerDashboardMain />
                 </PrivateRoute>
               }
             />

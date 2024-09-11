@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Input, Modal, Select } from "antd";
+import React, { useEffect, useState } from "react";
+import { Input, Modal, Select, DatePicker } from "antd";
 import moment from "moment";
 
 const TransactionsOptions = {
@@ -28,6 +28,10 @@ function CustomerFilters({
   setFinalFilters,
   setShouldFetch,
   finalFilters,
+  removeFilter,
+  setAppliedFilters,
+  appliedFilters,
+  clear,
 }) {
   const normalFilters =
     Object.keys(finalFilters).length > 0 ? finalFilters : {};
@@ -38,6 +42,10 @@ function CustomerFilters({
     value: dropDownSelection[option],
   }));
   const [filters, setFilters] = useState(normalFilters);
+
+  useEffect(() => {
+    setFilters(finalFilters);
+  }, [finalFilters]);
 
   const [optionSelected, setOptionSelected] = useState();
 
@@ -52,12 +60,13 @@ function CustomerFilters({
   };
 
   const onChangeHandler = (e, key) => {
-    let value = e.target.value;
+    let value = "";
+
     if (key == "search_value") {
-      value = value;
+      value = e.target.value;
     } else if (key !== "amount") {
-      value = moment(value, "YYYY-MM-DD").format("DD-MM-YYYY");
-    } else value = !isTnlModal ? value : Number(value);
+      value = e;
+    } else value = !isTnlModal ? e.target.value : Number(e.target.value);
 
     setFilters((prev) => ({
       ...prev,
@@ -66,7 +75,7 @@ function CustomerFilters({
   };
 
   return (
-    <div className='filters-common p-2 bg-orange-300 text-xs'>
+    <div className='filters-common drop-shadow-md border-1 rounded-md border-gray-200 m-2 p-2 text-xs'>
       {/* {modal == "transaction" && (
         <div className='flex space-x-2 mt-2'>
           <div className='w-1/6'>Search By</div>
@@ -82,26 +91,37 @@ function CustomerFilters({
         <div className='w-1/6'>
           {isTnlModal ? "Date Between" : "Delivery Date"}
         </div>
-        <Input
-          type='date'
-          placeholder='Start-Date'
+        <DatePicker
           name='start_date'
-          className='flex-1 mr-2 w-5/12'
-          value={moment(filters?.start_date, "DD-MM-YYYY").format("YYYY-MM-DD")}
-          onChange={(e) => onChangeHandler(e, "start_date")}
+          placeholder='Start Date'
+          format={"DD-MM-YYYY"}
+          value={
+            filters?.start_date
+              ? moment(filters?.start_date, "DD-MM-YYYY")
+              : null
+          }
+          onChange={(val) => {
+            let formattedDate = val.format("DD-MM-YYYY");
+            onChangeHandler(formattedDate, "start_date");
+          }}
         />
-        <Input
-          type='date'
-          placeholder='End-Date'
+        <DatePicker
           name='end_date'
-          className='flex-1 w-5/12'
-          value={moment(filters?.end_date, "DD-MM-YYYY").format("YYYY-MM-DD")}
-          onChange={(e) => onChangeHandler(e, "end_date")}
+          format={"DD-MM-YYYY"}
+          placeholder='End Date'
+          value={
+            filters?.end_date ? moment(filters?.end_date, "DD-MM-YYYY") : null
+          }
+          onChange={(val) => {
+            let formattedDate = val.format("DD-MM-YYYY");
+            onChangeHandler(formattedDate, "end_date");
+          }}
         />
       </div>
       <div className='flex items-center space-x-2'>
         <span className='w-1/6'>Search By</span>
         <Select
+          size={"large"}
           className='flex-1 w-8/12'
           options={dropDownOptions}
           onChange={onChangeOption}
@@ -116,16 +136,16 @@ function CustomerFilters({
         {isTnlModal && (
           <Input
             type='number'
-            className='border-b-2 border-gray-300 flex-1 w-2/12'
+            className='border-b-2 border-gray-300 flex-1 w-2/12 p-2'
             placeholder='Amount'
             value={filters?.amount}
             onChange={(e) => onChangeHandler(e, "amount")}
           />
         )}
         {!isTnlModal && (
-          <input
+          <Input
             type='text'
-            className='border-b-2 border-gray-300 flex-1 p-1 w-5/12'
+            className='border-b-2 border-gray-300 flex-1 p-2 w-5/12 rounded-lg'
             placeholder='Search'
             name='search_value'
             value={filters?.search_value}
@@ -138,8 +158,8 @@ function CustomerFilters({
           className='orange-btn'
           onClick={() => {
             setFinalFilters(filters);
-            // closeModal();
             setShouldFetch(true);
+            setAppliedFilters(filters);
           }}
         >
           + Search
@@ -148,17 +168,22 @@ function CustomerFilters({
           close
         </button>
       </div>
+
+      <AppliedFilters
+        finalFilters={appliedFilters}
+        removeFilter={removeFilter}
+        clear={clear}
+      />
     </div>
-    // </Modal>
   );
 }
 
-export const AppliedFilters = ({ finalFilters, removeFilter }) => (
-  <div className='bg-pink-300'>
+export const AppliedFilters = ({ finalFilters, removeFilter, clear }) => (
+  <div className='mt-5'>
     {Object.keys(finalFilters).map((filter) =>
       finalFilters[filter] !== null ? (
-        <div className='inline-flex border-gray-200 bg-gray-200 border-2 m-2 space-x-2 items-center'>
-          <div className='text-sm'>{filter.toUpperCase()}:</div>
+        <div className='inline-flex bg-[#F3EBFE] m-1 p-1 rounded-md space-x-2 items-center font-bold'>
+          <div className=''>{filter.toUpperCase()}:</div>
           <div>{finalFilters[filter]}</div>
           <button
             className='text-gray-400'
@@ -169,6 +194,16 @@ export const AppliedFilters = ({ finalFilters, removeFilter }) => (
         </div>
       ) : null
     )}
+    <div>
+      {Object.keys(finalFilters).length > 0 && (
+        <button
+          onClick={clear}
+          className='bg-[#fc8172] p-1 rounded-lg font-bold text-white'
+        >
+          Clear All
+        </button>
+      )}
+    </div>
   </div>
 );
 

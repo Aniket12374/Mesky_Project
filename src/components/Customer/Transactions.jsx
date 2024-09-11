@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Header, IconGreen, transactionName } from "../../utils";
 import CustomerPopup from "../Common/CustomerPopup";
+import { AudioOutlined } from "@ant-design/icons";
 import {
   getOrders,
   getTransactionDetail,
@@ -10,7 +11,7 @@ import DataTable from "../Common/DataTable/DataTable";
 import moment from "moment";
 import { OrderDetails } from "./OrderDetails";
 import { useQuery } from "react-query";
-import { Pagination, Table } from "antd";
+import { Input, Pagination, Table } from "antd";
 import CustomerFilters, { AppliedFilters } from "./CustomerFilters";
 import TransactionDetailTile from "./TransactionDetailTile";
 
@@ -32,8 +33,10 @@ function Transactions({
   const [totalCount, setTotalCount] = useState(0);
   const [shouldFetch, setShouldFetch] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [appliedFilters, setAppliedFilters] = useState({});
 
   const closeModal = () => setModalOpen((prev) => !prev);
+  const { Search } = Input;
 
   const { isLoading: isSearchLoading, refetch } = useQuery(
     [`getTransactions_${token}`, currentPage, size, finalFilters, token],
@@ -140,16 +143,31 @@ function Transactions({
 
   const removeFilter = (key) => {
     let modifiedFilters = {};
-    Object.keys(finalFilters)
+    Object.keys(appliedFilters)
       .filter((x) => x !== key)
       .forEach((x, index) => {
-        modifiedFilters[x] = finalFilters[x];
+        modifiedFilters[x] = appliedFilters[x];
       });
 
     setFinalFilters(modifiedFilters);
-    closeModal();
+    setAppliedFilters(modifiedFilters);
     setShouldFetch(true);
   };
+
+  const handleClear = () => {
+    setFinalFilters({});
+    setModalOpen(false);
+    setShouldFetch(true);
+  };
+
+  const suffix = (
+    <AudioOutlined
+      style={{
+        fontSize: 16,
+        color: "#1677ff",
+      }}
+    />
+  );
 
   const pageSizeOptions = ["10", "20", "50", "100", "250", "500"];
 
@@ -164,21 +182,15 @@ function Transactions({
       <div className='flex flex-wrap justify-between items-center'>
         <Header text={name || "Transactions"} className='m-2' />
         {showSearch && (
-          <div className='flex space-x-2 mt-2 mr-2'>
-            <button onClick={() => setModalOpen(true)} className='search-btn'>
-              <span>
-                <i class='fa-solid fa-magnifying-glass ml-2'></i>
-              </span>
-            </button>
+          <div className='mt-2 mr-1 cursor-pointer'>
             <button
-              className='search-btn'
-              onClick={() => {
-                setFinalFilters({});
-                setModalOpen(false);
-                setShouldFetch(true);
-              }}
+              className='border-2 border-gray-200 text-xs text-gray-300 p-1 rounded-md'
+              onClick={() => setModalOpen(true)}
             >
-              Clear
+              <span>Search by amount, transaction type..</span>
+              <span className='text-[#645d5d]'>
+                <i class='fa-solid fa-magnifying-glass' />
+              </span>
             </button>
           </div>
         )}
@@ -193,6 +205,10 @@ function Transactions({
           setFinalFilters={setFinalFilters}
           finalFilters={finalFilters}
           setShouldFetch={setShouldFetch}
+          setAppliedFilters={setAppliedFilters}
+          appliedFilters={appliedFilters}
+          removeFilter={removeFilter}
+          clear={handleClear}
         />
       )}
       {transactionId === null ? (

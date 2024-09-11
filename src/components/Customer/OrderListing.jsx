@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getOrders } from "../../services/customerOrders/CustomerOrderService";
 import { Header } from "../../utils";
 import { OrderDetails } from "./OrderDetails";
-import { Pagination } from "antd";
+import { Input, Pagination } from "antd";
 import { useQuery } from "react-query";
 import CustomerFilters, { AppliedFilters } from "./CustomerFilters";
 import OrderDetailTile from "./OrderDetailTile";
@@ -16,6 +16,7 @@ const OrderListing = ({ token }) => {
     address: {},
   });
   const [finalFilters, setFinalFilters] = useState({});
+  const [appliedFilters, setAppliedFilters] = useState({});
   // const [modalOpen, setModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [size, setSize] = useState(10);
@@ -45,7 +46,7 @@ const OrderListing = ({ token }) => {
         );
         // setOrders(res?.data?.order_details);
         setOrders(finalOrders);
-        setTotalCount(res?.data?.totalcount);
+        setTotalCount(res?.data?.totalcount || 0);
       },
     }
   );
@@ -63,7 +64,7 @@ const OrderListing = ({ token }) => {
       });
 
     setFinalFilters(modifiedFilters);
-    setFilterModalOpen(false);
+    setAppliedFilters(modifiedFilters);
     setShouldFetch(true);
   };
 
@@ -94,18 +95,18 @@ const OrderListing = ({ token }) => {
     <div className='w-1/3 border-2 border-gray-200'>
       <div className='flex flex-wrap justify-between'>
         <Header text='Order History' className='m-2' />
-        <div className='flex space-x-2 mt-2 mr-2'>
-          <button
-            onClick={() => setFilterModalOpen(true)}
-            className='search-btn'
-          >
-            <span>
-              <i class='fa-solid fa-magnifying-glass ml-2'></i>
-            </span>
-          </button>
-          <button className='search-btn' onClick={handleClear}>
-            Clear
-          </button>
+        <div className=''>
+          <div className='mt-2 mr-1'>
+            <button
+              className='border-2 border-gray-200 text-xs text-gray-300 p-1 rounded-md'
+              onClick={() => setFilterModalOpen(true)}
+            >
+              <span>Search by Order Id, product name..</span>
+              <span className='text-[#645d5d]'>
+                <i class='fa-solid fa-magnifying-glass' />
+              </span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -118,6 +119,9 @@ const OrderListing = ({ token }) => {
           finalFilters={finalFilters}
           setFinalFilters={setFinalFilters}
           removeFilter={removeFilter}
+          setAppliedFilters={setAppliedFilters}
+          appliedFilters={appliedFilters}
+          clear={handleClear}
         />
       )}
 

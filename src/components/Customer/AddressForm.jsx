@@ -11,8 +11,8 @@ function AddressForm({ data, closeModal }) {
   let placeHolders = [
     "Pincode",
     "Sector/ Plot.No",
-    "Search the address",
     "Flat No/ Floor No/ Apartment name/ Block",
+    "Search the address",
     "Landmark",
   ];
   let personalFields = ["first_name", "last_name", "default_email"];

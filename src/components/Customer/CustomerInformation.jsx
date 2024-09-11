@@ -12,7 +12,7 @@ import AddressForm from "./AddressForm";
 import Address from "./AddressMap";
 import toast from "react-hot-toast";
 
-const CustomerInformation = () => {
+const CustomerInformation = ({ token }) => {
   const [details, setDetails] = useState({});
   const [modalOpen, setModalOpen] = useState(false);
   const [showNext, setShowNext] = useState(false);
@@ -30,7 +30,7 @@ const CustomerInformation = () => {
       .catch((err) => {
         console.log({ err });
       });
-  }, [modalOpen]);
+  }, [modalOpen, token]);
 
   const addressData = details?.address_info?.find(
     (x) => x.address_name !== null
@@ -166,7 +166,7 @@ const DeliveryInstruction = ({ address }) => {
       },
     },
   };
-  console.log({ checked, btnHl });
+
   return (
     <div className='flex flex-col items-center border-2 border-gray-200 w-1/3'>
       <div className='w-full p-3 text-center text-lg font-semibold border-b-2 border-gray-200'>
@@ -233,7 +233,7 @@ const WalletBalanceTransaction = ({ walletData }) => {
           {contextHolder}
           <div
             className='text-[#7F39FB] text-sm font-semibold cursor-pointer'
-            onClick={() => openNotification({}, "Latest Transactions")}
+            onClick={() => openNotification({}, "Transactions")}
           >
             See More
           </div>

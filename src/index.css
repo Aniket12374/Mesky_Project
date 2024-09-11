@@ -241,3 +241,7 @@ span.ant-switch-inner {
 .gray-color {
   color: #878787;
 }
+
+.transaction-list .ant-table-cell {
+  padding: 16px 8px !important;
+}

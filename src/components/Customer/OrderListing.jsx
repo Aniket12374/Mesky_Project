@@ -7,7 +7,7 @@ import { useQuery } from "react-query";
 import CustomerFilters, { AppliedFilters } from "./CustomerFilters";
 import OrderDetailTile from "./OrderDetailTile";
 
-const OrderListing = () => {
+const OrderListing = ({ token }) => {
   const [orders, setOrders] = useState([]);
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [orderModal, setOrderModal] = useState({
@@ -31,8 +31,8 @@ const OrderListing = () => {
       open: !prev?.open,
     }));
 
-  const { isLoading: isSearchLoading } = useQuery(
-    ["getOrders", currentPage, size, finalFilters],
+  const { isLoading: isSearchLoading, refetch } = useQuery(
+    [`getOrders_${token}`, currentPage, size, finalFilters, token],
     () => getOrders(currentPage, size, finalFilters),
     {
       enabled: shouldFetch, // Only fetch when shouldFetch is true
@@ -50,6 +50,10 @@ const OrderListing = () => {
     }
   );
 
+  useEffect(() => {
+    refetch();
+  }, [token]);
+
   const removeFilter = (key) => {
     let modifiedFilters = {};
     Object.keys(finalFilters)
@@ -59,6 +63,7 @@ const OrderListing = () => {
       });
 
     setFinalFilters(modifiedFilters);
+    setFilterModalOpen(false);
     setShouldFetch(true);
   };
 
@@ -73,6 +78,12 @@ const OrderListing = () => {
     setSize(page);
     setCurrentPage(1);
     setShouldFetch(true);
+  };
+
+  const handleClear = () => {
+    setShouldFetch(true);
+    setFinalFilters({});
+    setFilterModalOpen(false);
   };
 
   const orderTileClassName = orderModal?.open
@@ -92,12 +103,11 @@ const OrderListing = () => {
               <i class='fa-solid fa-magnifying-glass ml-2'></i>
             </span>
           </button>
-          <button className='search-btn' onClick={() => setFinalFilters({})}>
+          <button className='search-btn' onClick={handleClear}>
             Clear
           </button>
         </div>
       </div>
-      <AppliedFilters finalFilters={finalFilters} removeFilter={removeFilter} />
 
       {filterModalOpen && (
         <CustomerFilters
@@ -107,8 +117,10 @@ const OrderListing = () => {
           setShouldFetch={setShouldFetch}
           finalFilters={finalFilters}
           setFinalFilters={setFinalFilters}
+          removeFilter={removeFilter}
         />
       )}
+
       <div>
         <div className={orderTileClassName}>
           {orderModal?.open ? (

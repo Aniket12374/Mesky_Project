@@ -25,8 +25,8 @@ const OrderDetailTile = ({
       data: record,
     }));
   return (
-    <div className='card shadow-md m-2' onClick={setOrderData}>
-      <div className='card flex justify-between  rounded-lg m-2'>
+    <div className='rounded-md shadow-md m-2' onClick={setOrderData}>
+      <div className='card flex justify-between  m-2'>
         <div className='flex justify-between items-center'>
           <div className={`border-b-2 border-gray-200 text-xs ${textColor}`}>
             Delivered on {date}

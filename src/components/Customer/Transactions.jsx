@@ -10,7 +10,7 @@ import DataTable from "../Common/DataTable/DataTable";
 import moment from "moment";
 import { OrderDetails } from "./OrderDetails";
 import { useQuery } from "react-query";
-import { Pagination } from "antd";
+import { Pagination, Table } from "antd";
 import CustomerFilters, { AppliedFilters } from "./CustomerFilters";
 import TransactionDetailTile from "./TransactionDetailTile";
 
@@ -19,6 +19,7 @@ function Transactions({
   filters = {},
   showBorder = true,
   name,
+  token = "",
 }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [transactions, setTransactions] = useState([]);
@@ -30,11 +31,12 @@ function Transactions({
   const [size, setSize] = useState(10);
   const [totalCount, setTotalCount] = useState(0);
   const [shouldFetch, setShouldFetch] = useState(true);
+  const [copied, setCopied] = useState(false);
 
   const closeModal = () => setModalOpen((prev) => !prev);
 
   const { isLoading: isSearchLoading, refetch } = useQuery(
-    ["getTransactions", currentPage, size, finalFilters],
+    [`getTransactions_${token}`, currentPage, size, finalFilters, token],
     () => getTransactions(currentPage, size, finalFilters),
     {
       enabled: shouldFetch,
@@ -47,6 +49,10 @@ function Transactions({
     }
   );
 
+  useEffect(() => {
+    refetch();
+  }, [token]);
+
   const getDebitData = (debitId) => {
     getOrders(1, 1, { search_value: debitId, search_type: "order_id" })
       .then((res) => {
@@ -58,12 +64,22 @@ function Transactions({
       });
   };
 
+  const clickHandler = (record) => {
+    return !copied
+      ? !name
+        ? record.type === "DEBIT"
+          ? getDebitData(record?.order_id?.split("-")[1])
+          : setTransactionId(record?.id)
+        : null
+      : null;
+  };
+
   const transactionHeaders = [
     {
       title: "Icon",
       dataIndex: "icon",
       key: "icon",
-      width: 50,
+      width: "10%",
       render: (_, record) => {
         const type = record?.type;
         const isCreditTransaction = type === "CREDIT" || type === "REFUND";
@@ -78,7 +94,7 @@ function Transactions({
       title: "Transaction Name",
       dataIndex: "name",
       key: "name",
-      width: 330,
+      width: "60%",
       render: (_, record) => {
         const date = record?.created_date?.split(" ");
         return (
@@ -95,7 +111,7 @@ function Transactions({
       title: "Transaction Amount",
       dataIndex: "amount",
       key: "amount",
-      width: 120,
+      width: "20%",
       render: (_, record) => (
         <div className={record?.type === "DEBIT" ? "" : "text-[#008000]"}>
           {record?.type === "DEBIT" ? "-" : "+"}
@@ -107,12 +123,13 @@ function Transactions({
       title: "icon redirect",
       dataIndex: "icon-redirect",
       key: "icon-redirect",
-      width: 10,
-      render: (_, record) => (
-        <div className='text-[#beb8b8] text-[13px]'>
-          <i class='fa-solid fa-chevron-right'></i>
-        </div>
-      ),
+      width: "5%",
+      render: (_, record) =>
+        !name && (
+          <div className='text-[#beb8b8] text-[13px]'>
+            <i class='fa-solid fa-chevron-right'></i>
+          </div>
+        ),
     },
   ];
 
@@ -166,12 +183,7 @@ function Transactions({
           </div>
         )}
       </div>
-      {showSearch && (
-        <AppliedFilters
-          removeFilter={removeFilter}
-          finalFilters={finalFilters}
-        />
-      )}
+
       {modalOpen && (
         <CustomerFilters
           open={modalOpen}
@@ -196,23 +208,19 @@ function Transactions({
         ) : (
           <>
             <div className='h-[75vh] overflow-y-auto transaction-list'>
-              <DataTable
+              <Table
                 columns={transactionHeaders}
-                data={transactions}
-                onRow={(record, rowIndex) => {
-                  return !name
-                    ? {
-                        onCopy: (e) => e.preventDefault(),
-                        onClick: () =>
-                          record.type === "DEBIT"
-                            ? getDebitData(record?.order_id?.split("-")[1])
-                            : setTransactionId(record?.id),
-                      }
-                    : null;
-                }}
+                dataSource={transactions}
+                onRow={(record) => ({
+                  onClick: () => clickHandler(record),
+                  onKeyDown: (event) => setCopied(true),
+                  onMouseDown: (event) => setCopied(false),
+                  onMouseLeave: (event) => setCopied(false),
+                  tabIndex: 0, // Make row focusable
+                })}
                 loading={isSearchLoading}
                 scroll={{
-                  ...(!showSearch && { y: 500, x: 0 }),
+                  ...(!showSearch && { y: 500 }),
                 }}
                 showExport={false}
                 showHeader={false}

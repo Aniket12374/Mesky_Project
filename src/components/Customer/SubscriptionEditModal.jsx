@@ -61,13 +61,16 @@ function DebounceSelect({ fetchOptions, debounceTimeout = 800, ...props }) {
     >
       {options?.map((option) => (
         <Option key={option.value} value={option.value} label={option.label}>
-          <div className="flex items-center">
-            <img
-              src={option.img}
-              alt={option.label}
-              style={{ width: 30, height: 30, marginRight: 10 }} // Adjust image styling as needed
-            />
-            <span>{option.label}</span>
+          <div className="flex items-center justify-between">
+            <div className="flex">
+              <img
+                src={option.img}
+                alt={option.label}
+                style={{ width: 30, height: 30, marginRight: 10 }} // Adjust image styling as needed
+              />
+              <span>{option.label}</span>
+            </div>
+            <div>₹{option.price}</div>
           </div>
         </Option>
       ))}
@@ -252,6 +255,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
           label: product.product_sn,
           value: product.product_id,
           img: product.default_image,
+          price: product?.selling_price,
         }));
 
         return data;
@@ -311,6 +315,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
                 productId: newValue.value,
                 productName: newValue.label,
                 img: newValue.img,
+                price: newValue?.price,
               }));
             }}
             style={{

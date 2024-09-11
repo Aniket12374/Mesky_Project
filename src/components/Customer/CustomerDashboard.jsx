@@ -18,7 +18,7 @@ function CustomerDashboard() {
     const presentToken = getCustomerTokenFromCookie();
     if (presentToken !== token) {
       setToken(presentToken);
-      navigate("/dashboard");
+      navigate("/customer-support");
     }
   }, [customerTokenChanged]);
 

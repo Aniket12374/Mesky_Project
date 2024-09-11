@@ -16,6 +16,11 @@ function AddressForm({ data, closeModal }) {
     "Landmark",
   ];
   let personalFields = ["first_name", "last_name", "default_email"];
+
+  useEffect(() => {
+    setFormData(data);
+  }, [data]);
+
   const onChange = (key, value) => {
     setFormData((prev) => ({
       ...prev,

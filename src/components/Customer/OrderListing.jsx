@@ -84,6 +84,7 @@ const OrderListing = ({ token }) => {
   const handleClear = () => {
     setShouldFetch(true);
     setFinalFilters({});
+    setAppliedFilters({});
     setFilterModalOpen(false);
   };
 
@@ -110,20 +111,18 @@ const OrderListing = ({ token }) => {
         </div>
       </div>
 
-      {filterModalOpen && (
-        <CustomerFilters
-          open={filterModalOpen}
-          closeModal={closeModal}
-          modal={"order"}
-          setShouldFetch={setShouldFetch}
-          finalFilters={finalFilters}
-          setFinalFilters={setFinalFilters}
-          removeFilter={removeFilter}
-          setAppliedFilters={setAppliedFilters}
-          appliedFilters={appliedFilters}
-          clear={handleClear}
-        />
-      )}
+      <CustomerFilters
+        open={filterModalOpen}
+        closeModal={closeModal}
+        modal={"order"}
+        setShouldFetch={setShouldFetch}
+        finalFilters={finalFilters}
+        setFinalFilters={setFinalFilters}
+        removeFilter={removeFilter}
+        setAppliedFilters={setAppliedFilters}
+        appliedFilters={appliedFilters}
+        clear={handleClear}
+      />
 
       <div>
         <div className={orderTileClassName}>

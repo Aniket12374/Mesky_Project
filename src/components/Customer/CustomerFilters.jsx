@@ -33,40 +33,36 @@ function CustomerFilters({
   appliedFilters,
   clear,
 }) {
-  const normalFilters =
-    Object.keys(finalFilters).length > 0 ? finalFilters : {};
-  const isTnlModal = modal == "transaction";
-  const dropDownSelection = isTnlModal ? TransactionsOptions : OrderOptions;
+  const isTnlM = modal == "transaction";
+  const dropDownSelection = isTnlM ? TransactionsOptions : OrderOptions;
   const dropDownOptions = Object.keys(dropDownSelection).map((option) => ({
     label: option,
     value: dropDownSelection[option],
   }));
-  const [filters, setFilters] = useState(normalFilters);
+  const [filters, setFilters] = useState(finalFilters || {});
+  const [optionSelected, setOptionSelected] = useState();
 
   useEffect(() => {
     setFilters(finalFilters);
   }, [finalFilters]);
-
-  const [optionSelected, setOptionSelected] = useState();
 
   const onChangeOption = (value) => {
     const option = dropDownOptions.find((x) => x.value === value);
     setOptionSelected(option);
     setFilters((prev) => ({
       ...prev,
-      ...(isTnlModal && { transaction_type: value }),
-      ...(!isTnlModal && { search_type: value }),
+      ...(isTnlM && { transaction_type: value }),
+      ...(!isTnlM && { search_type: value }),
     }));
   };
 
   const onChangeHandler = (e, key) => {
     let value = "";
-
     if (key == "search_value") {
       value = e.target.value;
     } else if (key !== "amount") {
       value = e;
-    } else value = !isTnlModal ? e.target.value : Number(e.target.value);
+    } else value = !isTnlM ? e.target.value : Number(e.target.value);
 
     setFilters((prev) => ({
       ...prev,
@@ -74,8 +70,21 @@ function CustomerFilters({
     }));
   };
 
+  const showBoxShadow =
+    Object.keys(appliedFilters).length > 0 ||
+    Object.keys(finalFilters).length > 0 ||
+    open;
+
+  const handleSearch = () => {
+    setFinalFilters(filters);
+    setShouldFetch(true);
+    setAppliedFilters(filters);
+  };
+
+  const dateFormat = "DD-MM-YYYY";
+
   return (
-    <div className='filters-common drop-shadow-md border-1 rounded-md border-gray-200 m-2 p-2 text-xs'>
+    <div className={`${showBoxShadow ? "filters-boxshadow-common" : ""}`}>
       {/* {modal == "transaction" && (
         <div className='flex space-x-2 mt-2'>
           <div className='w-1/6'>Search By</div>
@@ -87,88 +96,61 @@ function CustomerFilters({
           />
         </div>
       )} */}
-      <div className='flex items-center space-x-2 my-5'>
-        <div className='w-1/6'>
-          {isTnlModal ? "Date Between" : "Delivery Date"}
+      {open && (
+        <div className='filters'>
+          <div className='filters-dates flex items-center space-x-2 my-5'>
+            <div className='w-1/6'>
+              {isTnlM ? "Date Between" : "Delivery Date"}
+            </div>
+            {["start_date", "end_date"].map((date, index) => (
+              <DatePicker
+                name={date}
+                placeholder={date.replace("_", " ")}
+                format={dateFormat}
+                value={filters[date] ? moment(filters[date], dateFormat) : null}
+                onChange={(val) => {
+                  let formattedDate = val.format(dateFormat);
+                  onChangeHandler(formattedDate, date);
+                }}
+              />
+            ))}
+          </div>
+          <div className='filters-search flex items-center space-x-2'>
+            <span className='w-1/6'>Search By</span>
+            <Select
+              size={"large"}
+              className='flex-1 w-8/12'
+              options={dropDownOptions}
+              onChange={onChangeOption}
+              placeholder='Select one option'
+              defaultValue={{
+                label: filters?.transaction_type || filters?.search_type || "",
+                value: filters?.transaction_type || filters?.search_type | "",
+              }}
+            />
+            <Input
+              type={isTnlM ? "number" : "text"}
+              className='border-b-2 border-gray-300 flex-1 w-2/12 p-2'
+              placeholder={isTnlM ? "Amount" : "Search"}
+              value={isTnlM ? filters?.amount : filters?.search_value}
+              onChange={(e) =>
+                onChangeHandler(e, isTnlM ? "amount" : "search_value")
+              }
+            />
+          </div>
+          <div className='filters-footer flex justify-end space-x-2 mt-3'>
+            <button className='orange-btn' onClick={handleSearch}>
+              + Search
+            </button>
+            <button
+              onClick={closeModal}
+              className='w-32 bg-gray-200 rounded-lg'
+            >
+              Close
+            </button>
+          </div>
         </div>
-        <DatePicker
-          name='start_date'
-          placeholder='Start Date'
-          format={"DD-MM-YYYY"}
-          value={
-            filters?.start_date
-              ? moment(filters?.start_date, "DD-MM-YYYY")
-              : null
-          }
-          onChange={(val) => {
-            let formattedDate = val.format("DD-MM-YYYY");
-            onChangeHandler(formattedDate, "start_date");
-          }}
-        />
-        <DatePicker
-          name='end_date'
-          format={"DD-MM-YYYY"}
-          placeholder='End Date'
-          value={
-            filters?.end_date ? moment(filters?.end_date, "DD-MM-YYYY") : null
-          }
-          onChange={(val) => {
-            let formattedDate = val.format("DD-MM-YYYY");
-            onChangeHandler(formattedDate, "end_date");
-          }}
-        />
-      </div>
-      <div className='flex items-center space-x-2'>
-        <span className='w-1/6'>Search By</span>
-        <Select
-          size={"large"}
-          className='flex-1 w-8/12'
-          options={dropDownOptions}
-          onChange={onChangeOption}
-          placeholder='Select one option'
-          value={
-            optionSelected || {
-              label: filters?.transaction_type || filters?.search_type,
-              value: filters?.transaction_type || filters?.search_type,
-            }
-          }
-        />
-        {isTnlModal && (
-          <Input
-            type='number'
-            className='border-b-2 border-gray-300 flex-1 w-2/12 p-2'
-            placeholder='Amount'
-            value={filters?.amount}
-            onChange={(e) => onChangeHandler(e, "amount")}
-          />
-        )}
-        {!isTnlModal && (
-          <Input
-            type='text'
-            className='border-b-2 border-gray-300 flex-1 p-2 w-5/12 rounded-lg'
-            placeholder='Search'
-            name='search_value'
-            value={filters?.search_value}
-            onChange={(e) => onChangeHandler(e, "search_value")}
-          />
-        )}
-      </div>
-      <div className='filters-footer flex justify-end space-x-2 mt-3'>
-        <button
-          className='orange-btn'
-          onClick={() => {
-            setFinalFilters(filters);
-            setShouldFetch(true);
-            setAppliedFilters(filters);
-          }}
-        >
-          + Search
-        </button>
-        <button onClick={closeModal} className='w-32 bg-gray-200 rounded-lg'>
-          close
-        </button>
-      </div>
-
+      )}
       <AppliedFilters
         finalFilters={appliedFilters}
         removeFilter={removeFilter}

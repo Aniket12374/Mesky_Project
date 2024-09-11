@@ -26,6 +26,7 @@ function Transactions({
   const [transactions, setTransactions] = useState([]);
   const [transactionId, setTransactionId] = useState(null);
   const [finalFilters, setFinalFilters] = useState(filters);
+  const [appliedFilters, setAppliedFilters] = useState({});
   const [debitData, setDebitData] = useState(null);
   const [address, setAddress] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
@@ -33,10 +34,8 @@ function Transactions({
   const [totalCount, setTotalCount] = useState(0);
   const [shouldFetch, setShouldFetch] = useState(true);
   const [copied, setCopied] = useState(false);
-  const [appliedFilters, setAppliedFilters] = useState({});
 
   const closeModal = () => setModalOpen((prev) => !prev);
-  const { Search } = Input;
 
   const { isLoading: isSearchLoading, refetch } = useQuery(
     [`getTransactions_${token}`, currentPage, size, finalFilters, token],
@@ -156,18 +155,10 @@ function Transactions({
 
   const handleClear = () => {
     setFinalFilters({});
+    setAppliedFilters({});
     setModalOpen(false);
     setShouldFetch(true);
   };
-
-  const suffix = (
-    <AudioOutlined
-      style={{
-        fontSize: 16,
-        color: "#1677ff",
-      }}
-    />
-  );
 
   const pageSizeOptions = ["10", "20", "50", "100", "250", "500"];
 
@@ -196,7 +187,7 @@ function Transactions({
         )}
       </div>
 
-      {modalOpen && (
+      {showSearch && (
         <CustomerFilters
           open={modalOpen}
           closeModal={closeModal}
@@ -211,6 +202,7 @@ function Transactions({
           clear={handleClear}
         />
       )}
+
       {transactionId === null ? (
         debitData ? (
           <OrderDetails
@@ -270,14 +262,6 @@ function Transactions({
           />
         </>
       )}
-
-      {/* <CustomerPopup
-        open={modalOpen}
-        closeModal={closeModal}
-        options={"TransactionsOptions"}
-        modal={"transaction"}
-        setFinalFilters={setFinalFilters}
-      /> */}
     </div>
   );
 }

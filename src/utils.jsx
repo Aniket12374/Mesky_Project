@@ -66,9 +66,14 @@ export const IconGreen = ({ icon }) => (
 export const transactionName = (record) => {
   if (!record) return "";
   const type = record?.type;
+  const orderIdArr = record?.order_id?.split("-");
   const isCreditTransaction = type === "CREDIT" || type === "REFUND";
   const isCreditType = type === "CREDIT";
-  const orderId = !isCreditTransaction ? record?.order_id?.split("-")[1] : null;
+  const orderId = !isCreditTransaction
+    ? orderIdArr
+      ? orderIdArr[orderIdArr.length - 1]
+      : ""
+    : null;
 
   return !isCreditTransaction
     ? `Paid for Order ID: ${orderId}`

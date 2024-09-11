@@ -228,6 +228,10 @@ body {
   @apply bg-[#FB8171] p-2 rounded-lg text-white;
 }
 
+.filters-boxshadow-common {
+  @apply shadow-md rounded-md border-gray-200 m-2 p-2 text-xs;
+}
+
 span.ant-switch-inner {
   border: 1px solid gray;
   background-color: gray;

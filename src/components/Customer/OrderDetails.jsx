@@ -32,6 +32,9 @@ export const OrderDetails = ({ data, closeOrderModal, address }) => {
       >
         <i class='fa-sharp fa-solid fa-arrow-left text-2xl'></i>
       </button>
+      {!orderId ? (
+        <div className='text-lg text-red-500 text-center'>Paused Order</div>
+      ) : null}
       <div className='order-id-delivery-address flex justify-between mt-5'>
         <div className='flex-1'>
           <div className='text-[13px]'>

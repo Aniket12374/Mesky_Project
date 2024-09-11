@@ -129,8 +129,8 @@ const CustomerDetails = ({ info, address, setModalOpen }) => {
         ))}
       </div>
       <div className='customer-address m-5'>
-        <div>Delivery Address</div>
-        <div>
+        <div className='text-gray-500'>Delivery Address</div>
+        <div className='text-sm'>
           {address?.line_1}, {address?.line_2}, {address?.line_3},{" "}
           {address?.city}-{address?.pincode}, {address?.state}
         </div>
@@ -198,10 +198,8 @@ const DeliveryInstruction = ({ address }) => {
 
 const WalletBalanceTransaction = ({ walletData }) => {
   const { current_balance, recharges } = walletData;
-  const navigate = useNavigate();
-  const [name, setName] = useState("Transactions");
   const [api, contextHolder] = notification.useNotification();
-  const navigateHandler = () => navigate("/customer/transactions");
+
   const openNotification = (filters = {}, name) => {
     api.open({
       duration: null,

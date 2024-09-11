@@ -24,12 +24,22 @@ const OrderDetailTile = ({
       open: true,
       data: record,
     }));
+
+  const dateArr = date.replace(" GMT", "").split(" ");
+  let time = dateArr[dateArr.length - 1];
+  dateArr.pop();
+  let timeArr = time.split(":");
+  if (timeArr[0] > 12) timeArr[0] = timeArr[0] - 12;
+  time = timeArr.reduce((acc, cur) => acc + ":" + cur);
+  const final = dateArr.reduce((acc, cur) => acc + " " + cur);
+  const finalDate = final + " " + time;
+
   return (
     <div className='rounded-md shadow-md m-2' onClick={setOrderData}>
       <div className='card flex justify-between  m-2'>
         <div className='flex justify-between items-center'>
           <div className={`border-b-2 border-gray-200 text-xs ${textColor}`}>
-            Delivered on {date}
+            Delivered on {finalDate}
           </div>
           <div className='text-[#DF4584] font-bold text-lg'>₹ {price}</div>
         </div>

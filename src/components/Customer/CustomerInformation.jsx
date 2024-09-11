@@ -5,97 +5,91 @@ import {
 } from "../../services/customerInfo/CustomerInfoService";
 import { Modal, Switch, notification } from "antd";
 import moment from "moment";
-import { SmileOutlined } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
 import Transactions from "./Transactions";
 import AddressForm from "./AddressForm";
-import Address from "./AddressMap";
+// import Address from "./AddressMap";
 import toast from "react-hot-toast";
 
 const CustomerInformation = ({ token }) => {
   const [details, setDetails] = useState({});
   const [modalOpen, setModalOpen] = useState(false);
-  const [showNext, setShowNext] = useState(false);
+  // const [showNext, setShowNext] = useState(false);
 
   const closeModal = () => {
     setModalOpen(false);
-    setShowNext(false);
+    // setShowNext(false);
   };
 
   useEffect(() => {
     customerInfo()
-      .then((res) => {
-        setDetails(res?.data);
-      })
-      .catch((err) => {
-        console.log({ err });
-      });
+      .then((res) => setDetails(res?.data))
+      .catch((err) => console.log({ err }));
   }, [modalOpen, token]);
 
   const addressData = details?.address_info?.find(
     (x) => x.address_name !== null
   );
 
-  const addressFormData = {
+  const addressPayload = {
     is_only_misc: false,
     ...addressData,
     address_id: addressData?.id,
   };
 
+  const { customer_info: csrInfo = {}, wallet_info: walletInfo = {} } = details;
+
   return (
-    <div>
-      <div className='flex space-x-2'>
-        {details?.customer_info && (
-          <CustomerDetails
-            info={details?.customer_info}
-            address={addressData}
-            setModalOpen={setModalOpen}
-          />
-        )}
-        {addressData && <DeliveryInstruction address={addressData} />}
-        {details?.wallet_info && (
-          <WalletBalanceTransaction walletData={details?.wallet_info} />
-        )}
-        <Modal
-          open={modalOpen}
-          onOk={null}
-          onCancel={closeModal}
-          width={580}
-          footer={null}
-        >
-          {/* <Address
+    <div className='flex space-x-2 mt-2'>
+      <CustomerDetails
+        info={csrInfo}
+        address={addressData}
+        setModalOpen={setModalOpen}
+      />
+      <DeliveryInstruction address={addressData} />
+      <WalletBalanceTransaction walletData={walletInfo} />
+      <Modal
+        open={modalOpen}
+        onOk={null}
+        onCancel={closeModal}
+        width={580}
+        footer={null}
+      >
+        {/* <Address
             url={
               "https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&callback=initMap&libraries=places&v=weekly"
             }
-            data={addressFormData}
+            data={addressPayload}
             showNext={showNext}
             setShowNext={setShowNext}
           /> */}
-          <AddressForm data={addressFormData} closeModal={closeModal} />
-        </Modal>
-      </div>
+        <AddressForm data={addressPayload} closeModal={closeModal} />
+      </Modal>
     </div>
   );
 };
 
 const CustomerDetails = ({ info, address, setModalOpen }) => {
   const {
-    default_email,
-    first_name,
-    last_name,
-    id,
-    default_mobile_number,
-    created_date,
+    default_email = "",
+    first_name = "",
+    last_name = "",
+    id = "",
+    default_mobile_number = "",
+    created_date = new Date(),
   } = info;
+
   localStorage.setItem("addressId", info?.id);
+
   const data = {
     Mobile: default_mobile_number,
     Email: default_email,
     "Customer Id": id,
   };
 
+  const fullName = `${first_name}  ${last_name}`;
+
   return (
-    <div className='w-1/3 border-2 border-gray-200'>
+    <div className='customer-information w-1/3 border-2 border-[#ebe8e8]'>
       <div className='flex justify-between space-x-10 border-b-2 border-gray-200 p-2'>
         <div className='font-semibold text-lg'>Account Info</div>
         <button onClick={() => setModalOpen(true)}>
@@ -103,28 +97,25 @@ const CustomerDetails = ({ info, address, setModalOpen }) => {
         </button>
       </div>
       <div className='customer-name flex space-x-3 m-5 items-center'>
-        <div className='w-12 h-12 rounded-full bg-[#FB8171] p-3 text-white text-lg font-semibold flex items-center justify-center'>
-          {first_name[0].toUpperCase()}
-          {last_name[0].toUpperCase()}
+        <div className='w-12 h-12 rounded-full bg-[#FB8171] p-3 text-white text-lg font-semibold'>
+          {first_name ? first_name[0].toUpperCase() : ""}
+          {last_name ? last_name[0].toUpperCase() : ""}
         </div>
-
         <div>
-          <div>
-            {first_name.toUpperCase()} {last_name.toUpperCase()}
-          </div>
+          <div>{fullName?.toUpperCase()}</div>
           <div className='gray-color text-sm'>
             Since {moment(created_date, "YYYY-MM-DD").format("ll")}
           </div>
         </div>
       </div>
       <div className='customer-details m-5'>
-        {Object.keys(data).map((x, index) => (
+        {Object.entries(data)?.map(([key, value], index) => (
           <div
             className='flex justify-between items-center space-y-2 space-x-5'
             key={index}
           >
-            <div className='text-gray-500'>{x}</div>
-            <div className='break-word'>{data[x]}</div>
+            <div className='text-gray-500'>{key}</div>
+            <div className='break-word'>{value}</div>
           </div>
         ))}
       </div>
@@ -145,17 +136,6 @@ const DeliveryInstruction = ({ address }) => {
   );
   const [btnHl, setBtnHl] = useState(false);
 
-  const updateRTBOption = () => {
-    updateInfo(payload)
-      .then((res) => {
-        toast.success("Updated Successfully");
-        setBtnHl(false);
-      })
-      .catch((err) => {
-        toast.error("Updated is not Successfully!");
-      });
-  };
-
   const payload = {
     is_only_misc: true,
     address_id: address?.id,
@@ -167,8 +147,17 @@ const DeliveryInstruction = ({ address }) => {
     },
   };
 
+  const updateRTBOption = () => {
+    updateInfo(payload)
+      .then((res) => {
+        toast.success("Updated Successfully");
+        setBtnHl(false);
+      })
+      .catch((err) => toast.error("Updated is not Successfully!"));
+  };
+
   return (
-    <div className='flex flex-col items-center border-2 border-gray-200 w-1/3'>
+    <div className='customer-delivery-instructions flex flex-col items-center border-2 border-gray-200 w-1/3'>
       <div className='w-full p-3 text-center text-lg font-semibold border-b-2 border-gray-200'>
         Delivery Instructions
       </div>
@@ -185,9 +174,7 @@ const DeliveryInstruction = ({ address }) => {
         />
       </div>
       <button
-        className={`mb-3 ${
-          btnHl ? "orange-btn" : "bg-gray-200 w-32 p-2 rounded-lg"
-        }`}
+        className={`mb-3 ${btnHl ? "orange-btn" : "gray-btn p-2"}`}
         onClick={updateRTBOption}
       >
         Update
@@ -197,7 +184,7 @@ const DeliveryInstruction = ({ address }) => {
 };
 
 const WalletBalanceTransaction = ({ walletData }) => {
-  const { current_balance, recharges } = walletData;
+  const { current_balance, recharges = [] } = walletData;
   const [api, contextHolder] = notification.useNotification();
 
   const openNotification = (filters = {}, name) => {
@@ -236,7 +223,7 @@ const WalletBalanceTransaction = ({ walletData }) => {
             See More
           </div>
         </div>
-        <div className='text-lg text-gray-500'>Wallet Balance</div>
+        <div className='text-lg text-gray-500 mt-2'>Wallet Balance</div>
       </div>
       <div className='customer-last-recharges border-2 border-gray-200'>
         <div className='customer-last-recharge-heading p-2 border-b-2 border-gray-200'>
@@ -257,8 +244,8 @@ const WalletBalanceTransaction = ({ walletData }) => {
             </div>
           </div>
         </div>
-        {recharges.map((recharge, index) => {
-          const date = recharge?.created_date.split(" ")[0];
+        {recharges?.map((recharge, index) => {
+          const date = recharge?.created_date?.split(" ")[0];
           return (
             <div
               className='flex justify-between items-center space-y-2 space-x-5 px-2'

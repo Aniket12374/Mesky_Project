@@ -18,20 +18,20 @@ function CustomerDashboard() {
     const presentToken = getCustomerTokenFromCookie();
     if (presentToken !== token) {
       setToken(presentToken);
-      navigate("/dashboard");
+      navigate("/customer-support");
     }
   }, [customerTokenChanged]);
 
   return (
     token && (
-      <div>
+      <React.Fragment>
         <CustomerInformation token={token} />
         <div className='flex space-x-2 mt-5'>
           <Transactions token={token} />
           <OrderListing token={token} />
           <SubscriptionTabs />
         </div>
-      </div>
+      </React.Fragment>
     )
   );
 }

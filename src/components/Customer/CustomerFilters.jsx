@@ -1,25 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Input, Modal, Select, DatePicker } from "antd";
 import moment from "moment";
-
-const TransactionsOptions = {
-  None: "none",
-  "Transaction Value": "transaction_value",
-  Credit: "credit",
-  Debit: "debit",
-  "Wallet Recharges": "wallet_recharges",
-  "Offers & Promotions": "offers",
-  "Promotional Products": "promotional",
-  Refunds: "refund",
-};
-
-const OrderOptions = {
-  "Product Name": "product_name",
-  "Order Value": "order_value",
-  "Order Id": "order_id",
-  "Promotional Products": "promotional_products",
-  "Item Id": "item_id",
-};
+import { OrderOptions, TransactionsOptions } from "./CustomerConstants";
 
 function CustomerFilters({
   open,
@@ -107,7 +89,9 @@ function CustomerFilters({
                 name={date}
                 placeholder={date.replace("_", " ")}
                 format={dateFormat}
-                value={filters[date] ? moment(filters[date], dateFormat) : null}
+                defaultValue={
+                  filters[date] ? moment(filters[date], dateFormat) : null
+                }
                 onChange={(val) => {
                   let formattedDate = val.format(dateFormat);
                   onChangeHandler(formattedDate, date);

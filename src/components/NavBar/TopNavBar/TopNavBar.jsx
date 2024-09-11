@@ -27,7 +27,6 @@ const TopNavBar = () => {
           <Search />
           <div className='flex items-center'>
             <div className='flex justify-between items-center space-x-5'>
-              {/* <BsBell size={20} /> */}
               <ProfileDropdown />
             </div>
           </div>
@@ -51,17 +50,17 @@ const Search = () => {
       setOptions([]);
       setFetching(true);
       getCustomers(Number(value)).then((res) => {
+        console.log({ res }, res?.data);
         const customers = res?.data?.data;
         const customersData = customers.map((customer) => ({
           label: `${customer.default_mobile_number} - ${customer.first_name} ${customer.last_name}`,
           value: customer.Customertoken,
-          customerToken: customer.Customertoken,
         }));
         setOptions(customersData);
         setFetching(false);
       });
     };
-    return debounce(loadOptions, 300);
+    return debounce(loadOptions, 200);
   }, []);
 
   return (
@@ -71,6 +70,7 @@ const Search = () => {
         optionFilterProp='label'
         options={options}
         onSearch={debounceFetcher}
+        onKeyDown={debounceFetcher}
         className='w-96'
         notFoundContent={fetching ? <Spin size='small' /> : null}
         onChange={(newValue) => {

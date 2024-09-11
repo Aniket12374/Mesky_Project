@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import { getOrders } from "../../services/customerOrders/CustomerOrderService";
 import { Header } from "../../utils";
 import { OrderDetails } from "./OrderDetails";
-import { Pagination } from "antd";
+import { Input, Pagination } from "antd";
 import { useQuery } from "react-query";
 import CustomerFilters, { AppliedFilters } from "./CustomerFilters";
 import OrderDetailTile from "./OrderDetailTile";
 
-const OrderListing = () => {
+const OrderListing = ({ token }) => {
   const [orders, setOrders] = useState([]);
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [orderModal, setOrderModal] = useState({
@@ -16,6 +16,7 @@ const OrderListing = () => {
     address: {},
   });
   const [finalFilters, setFinalFilters] = useState({});
+  const [appliedFilters, setAppliedFilters] = useState({});
   // const [modalOpen, setModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [size, setSize] = useState(10);
@@ -31,8 +32,8 @@ const OrderListing = () => {
       open: !prev?.open,
     }));
 
-  const { isLoading: isSearchLoading } = useQuery(
-    ["getOrders", currentPage, size, finalFilters],
+  const { isLoading: isSearchLoading, refetch } = useQuery(
+    [`getOrders_${token}`, currentPage, size, finalFilters, token],
     () => getOrders(currentPage, size, finalFilters),
     {
       enabled: shouldFetch, // Only fetch when shouldFetch is true
@@ -45,10 +46,14 @@ const OrderListing = () => {
         );
         // setOrders(res?.data?.order_details);
         setOrders(finalOrders);
-        setTotalCount(res?.data?.totalcount);
+        setTotalCount(res?.data?.totalcount || 0);
       },
     }
   );
+
+  useEffect(() => {
+    refetch();
+  }, [token]);
 
   const removeFilter = (key) => {
     let modifiedFilters = {};
@@ -59,6 +64,7 @@ const OrderListing = () => {
       });
 
     setFinalFilters(modifiedFilters);
+    setAppliedFilters(modifiedFilters);
     setShouldFetch(true);
   };
 
@@ -75,34 +81,49 @@ const OrderListing = () => {
     setShouldFetch(true);
   };
 
+  const handleClear = () => {
+    setShouldFetch(true);
+    setFinalFilters({});
+    setAppliedFilters({});
+    setFilterModalOpen(false);
+  };
+
   const orderTileClassName = orderModal?.open
     ? "h-[95vh] overflow-y-auto"
     : "h-[80vh] overflow-y-auto";
 
   return (
-    <div className="w-1/3 border-2 border-gray-200">
-      <div className="flex">
-        <Header text="Order History" className="m-2" />
-        <input
-          type="text"
-          onClick={() => setFilterModalOpen(true)}
-          onChange={closeModal}
-          className="border-b-2 border-gray-300 w-32 ml-10 focus:outline-none"
-          placeholder="Search"
-        />
+    <div className='w-1/3 border-2 border-gray-200'>
+      <div className='flex flex-wrap justify-between'>
+        <Header text='Order History' className='m-2' />
+        <div className=''>
+          <div className='mt-2 mr-1'>
+            <button
+              className='border-2 border-gray-200 text-xs text-gray-300 p-1 rounded-md'
+              onClick={() => setFilterModalOpen(true)}
+            >
+              <span>Search by Order Id, product name..</span>
+              <span className='text-[#645d5d]'>
+                <i class='fa-solid fa-magnifying-glass' />
+              </span>
+            </button>
+          </div>
+        </div>
       </div>
-      <AppliedFilters finalFilters={finalFilters} removeFilter={removeFilter} />
 
-      {filterModalOpen && (
-        <CustomerFilters
-          open={filterModalOpen}
-          closeModal={closeModal}
-          modal={"order"}
-          setShouldFetch={setShouldFetch}
-          finalFilters={finalFilters}
-          setFinalFilters={setFinalFilters}
-        />
-      )}
+      <CustomerFilters
+        open={filterModalOpen}
+        closeModal={closeModal}
+        modal={"order"}
+        setShouldFetch={setShouldFetch}
+        finalFilters={finalFilters}
+        setFinalFilters={setFinalFilters}
+        removeFilter={removeFilter}
+        setAppliedFilters={setAppliedFilters}
+        appliedFilters={appliedFilters}
+        clear={handleClear}
+      />
+
       <div>
         <div className={orderTileClassName}>
           {orderModal?.open ? (

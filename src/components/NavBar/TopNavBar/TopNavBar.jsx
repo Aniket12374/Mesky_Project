@@ -6,6 +6,8 @@ import _, { debounce } from "lodash";
 import ProfileDropdown from "../../ProfileDropdown/ProfileDropdown";
 import logo from "../../../assets/mesky-logos/mesky_logo_dashboard.svg";
 import { getCustomers } from "../../../services/customerInfo/CustomerInfoService";
+import { setCustomerTokenCookie } from "../../../services/cookiesFunc";
+import { useMainStore } from "../../../store/store";
 
 const TopNavBar = () => {
   return (
@@ -39,8 +41,12 @@ const Search = () => {
   const [text, setText] = useState("");
   const [options, setOptions] = useState([]);
   const [fetching, setFetching] = useState(true);
+  const setCustomerTokenChanged = useMainStore(
+    (state) => state.setCustomerTokenChanged
+  );
 
   const debounceFetcher = useMemo(() => {
+    setCustomerTokenChanged(false);
     const loadOptions = (value) => {
       setOptions([]);
       setFetching(true);
@@ -48,7 +54,8 @@ const Search = () => {
         const customers = res?.data?.data;
         const customersData = customers.map((customer) => ({
           label: `${customer.default_mobile_number} - ${customer.first_name} ${customer.last_name}`,
-          value: customer.id,
+          value: customer.Customertoken,
+          customerToken: customer.Customertoken,
         }));
         setOptions(customersData);
         setFetching(false);
@@ -67,7 +74,9 @@ const Search = () => {
         className='w-96'
         notFoundContent={fetching ? <Spin size='small' /> : null}
         onChange={(newValue) => {
-          () => setText(newValue);
+          setText(newValue);
+          setCustomerTokenCookie(newValue);
+          setCustomerTokenChanged(true);
         }}
       />
     </div>

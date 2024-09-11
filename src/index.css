@@ -1,22 +1,22 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap");
 
 .fredoka-400 {
-  font-family: "Fredoka", sans-serif;
+  font-family: "Roboto", sans-serif;
   font-weight: 400;
 }
 
 .fredoka-500 {
-  font-family: "Fredoka", sans-serif;
+  font-family: "Roboto", sans-serif;
   font-weight: 500;
 }
 
 .fredoka-600 {
-  font-family: "Fredoka", sans-serif;
+  font-family: "Roboto", sans-serif;
   font-weight: 600;
 }
 
 .fredoka-700 {
-  font-family: "Fredoka", sans-serif;
+  font-family: "Roboto", sans-serif;
   font-weight: 700;
 }
 
@@ -33,7 +33,7 @@ body {
 .ant-table-wrapper .ant-table-tbody > tr > td {
   font-size: 16px;
   border-bottom: 2px solid #e5e7eb;
-  font-family: "Fredoka", sans-serif !important;
+  font-family: "Roboto", sans-serif !important;
 }
 
 .pricing-form span.ant-input-suffix {
@@ -225,7 +225,11 @@ body {
 }
 
 .search-btn {
-  @apply bg-orange-400 p-2 rounded-lg text-white;
+  @apply bg-[#FB8171] p-2 rounded-lg text-white;
+}
+
+.filters-boxshadow-common {
+  @apply shadow-md rounded-md border-gray-200 m-2 p-2 text-xs;
 }
 
 span.ant-switch-inner {
@@ -236,4 +240,12 @@ span.ant-switch-inner {
 .ant-switch-checked span.ant-switch-inner {
   border: 1px solid gray;
   background-color: #1677ff;
+}
+
+.gray-color {
+  color: #878787;
+}
+
+.transaction-list .ant-table-cell {
+  padding: 16px 8px !important;
 }

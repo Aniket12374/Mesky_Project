@@ -10,7 +10,15 @@ const userInitialInfo = () => {
 
 export const createAuthSlice = (set) => ({
   user: { ...userInitialInfo() },
+  customerTokenChanged: false,
   sidebarOpen: true,
+
+  setCustomerTokenChanged: () => {
+    set((state) => {
+      state.customerTokenChanged = !state.customerTokenChanged;
+    });
+  },
+
   setSideBarOpen: () => {
     set((state) => {
       state.sidebarOpen = !state.sidebarOpen;

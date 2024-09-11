@@ -1,4 +1,4 @@
-import { httpVendor } from "../api-client";
+import { httpVendor, httpVendorExisting } from "../api-client";
 
 export const getCustomers = (searchTerm, _start = 0, _end = 20) => {
   return httpVendor.get(
@@ -20,7 +20,7 @@ export const customerInfo = (
 };
 
 export const getSubscriptions = (activeType) => {
-  return httpVendor.get(
+  return httpVendorExisting.get(
     `api/subscription/list?subscription_type=${activeType}`
   );
 };

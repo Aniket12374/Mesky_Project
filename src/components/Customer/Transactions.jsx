@@ -186,6 +186,7 @@ function Transactions({ showSearch = true, filters = {}, showBorder = true }) {
                 <Pagination
                   current={currentPage}
                   total={totalCount}
+                  showQuickJumper
                   showTotal={(total, range) => (
                     <div>
                       {range[0]} - {range[1]} of {totalCount} items

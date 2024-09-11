@@ -67,7 +67,7 @@ export const OrderDetails = ({ data, closeOrderModal, address }) => {
         </div>
         <div className='flex justify-center mt-2'>
           <img
-            src={delivery_images.length > 0 ? delivery_images[0] : null}
+            src={delivery_images?.length > 0 ? delivery_images[0] : null}
             alt='delivered-img'
             height={200}
             width={200}

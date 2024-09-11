@@ -80,15 +80,15 @@ const OrderListing = () => {
     : "h-[80vh] overflow-y-auto";
 
   return (
-    <div className='w-1/3 border-2 border-gray-200'>
-      <div className='flex'>
-        <Header text='Order History' className='m-2' />
+    <div className="w-1/3 border-2 border-gray-200">
+      <div className="flex">
+        <Header text="Order History" className="m-2" />
         <input
-          type='text'
+          type="text"
           onClick={() => setFilterModalOpen(true)}
           onChange={closeModal}
-          className='border-b-2 border-gray-300 w-32 ml-10 focus:outline-none'
-          placeholder='Search'
+          className="border-b-2 border-gray-300 w-32 ml-10 focus:outline-none"
+          placeholder="Search"
         />
       </div>
       <AppliedFilters finalFilters={finalFilters} removeFilter={removeFilter} />
@@ -137,13 +137,14 @@ const OrderListing = () => {
         /> */}
 
         {!orderModal?.open ? (
-          <div className='flex justify-end px-4 py-2 order-listing'>
+          <div className="flex justify-end px-4 py-2 order-listing">
             <Pagination
               current={currentPage}
               total={totalCount}
               showTotal={(total, range) =>
                 `${range[0]}-${range[1]} of ${totalCount} items`
               }
+              showQuickJumper
               onChange={handlePageChange}
               showSizeChanger={true}
               pageSizeOptions={pageSizeOptions}

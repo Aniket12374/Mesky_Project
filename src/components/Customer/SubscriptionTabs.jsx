@@ -91,7 +91,7 @@ const SubscriptionData = ({ tab, modalData, setModalData }) => {
       {tabData.map((record, index) => {
         const { product, quantity, dates_range, start_date, end_date } = record;
         return (
-          <div className="m-1 shadow-2xl rounded-lg">
+          <div className="m-1 shadow-lg rounded-lg">
             <div className="flex justify-between space-x-2 p-2">
               <div className="m-1 p-2 border-2 border-gray-200">
                 <img

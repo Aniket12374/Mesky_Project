@@ -108,6 +108,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
     productImage: null,
     alternateDay: [],
     day: "",
+    dateRangePickerOpen: false,
   });
   console.log("editData", editData);
 
@@ -186,12 +187,22 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
     }));
 
   const handlePauseDateChange = (_, dateStrings) => {
+    if (dateStrings[0] && dateStrings[1]) {
+      setEditData((prev) => ({
+        ...prev,
+        datesRange: [
+          ...prev.datesRange,
+          { start_date: dateStrings[0], end_date: dateStrings[1] },
+        ],
+        dateRangePickerOpen: false,
+        dateRangePicker: false,
+      }));
+    }
+  };
+  const handleOpenChange = (open) => {
     setEditData((prev) => ({
       ...prev,
-      datesRange: [
-        ...prev.datesRange,
-        { start_date: dateStrings[0], end_date: dateStrings[1] },
-      ],
+      dateRangePickerOpen: open,
     }));
   };
 
@@ -218,7 +229,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
           weekdays: editData.weekdays,
         },
         pause_dates: editData?.datesRange,
-        start_date: isCreateSubscription == "true" ? newDate : existingDate,
+        start_date: !isCreateSubscription ? newDate : existingDate,
         product_id: editData?.productId,
       };
 
@@ -279,7 +290,6 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
       setIsWarning(false);
     }
   }, [editData, editData?.type]);
-  console.log(isCreateSubscription);
 
   return (
     <Modal
@@ -474,7 +484,8 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
                   onChange={handlePauseDateChange}
                   placeholder={["Start Date", "End Date"]}
                   autoFocus={true}
-                  open={editData?.dateRangePicker}
+                  open={editData?.dateRangePickerOpen}
+                  onOpenChange={handleOpenChange}
                 />
               </div>
             )}

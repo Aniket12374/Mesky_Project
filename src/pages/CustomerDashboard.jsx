@@ -6,10 +6,11 @@ import { Header } from "../utils";
 import Cookies from "js-cookie";
 import DashboardDetail from "../components/Dashboard/DashboardDetail";
 import dayjs from "dayjs";
+import CustomerDashboard from "../components/Customer/CustomerDashboard";
+import { Button } from "antd";
+import Address from "../components/Customer/AddressMap";
 
-const Dashboard = () => {
-  const user = useMainStore((state) => state.user);
-  const [show, setShow] = useState(false);
+const CustomerDashboardMain = () => {
   const navigate = useNavigate();
 
   // check this useffect after token added
@@ -32,9 +33,9 @@ const Dashboard = () => {
   return (
     <Layout>
       <Header text={`Dashboard - ${formattedDate}`} />
-      <DashboardDetail />
+      <CustomerDashboard />
     </Layout>
   );
 };
 
-export default Dashboard;
+export default CustomerDashboardMain;

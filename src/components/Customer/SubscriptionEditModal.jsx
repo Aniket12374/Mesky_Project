@@ -113,7 +113,6 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
     day: "",
     dateRangePickerOpen: false,
   });
-  console.log("editData", editData);
 
   const addressId = localStorage.getItem("addressId");
 
@@ -238,7 +237,6 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
       handleEdit();
       handleOpenClose();
       toast.success("Successfull");
-      console.log("Subscription updated successfully");
       setEditData({});
     } catch (error) {
       toast.error("Error updating subscription:", error.message);

@@ -22,7 +22,6 @@ const OrderListing = ({ token }) => {
   const [size, setSize] = useState(10);
   const [address, setAddress] = useState({});
   const [totalCount, setTotalCount] = useState(2000);
-  const [isQueryEnabled, setIsQueryEnabled] = useState(false);
   const [shouldFetch, setShouldFetch] = useState(true);
 
   const closeModal = () => setFilterModalOpen((prev) => !prev);
@@ -44,9 +43,12 @@ const OrderListing = ({ token }) => {
         const finalOrders = res?.data?.order_details.filter(
           (x) => x?.status === "Order Delivered"
         );
-        // setOrders(res?.data?.order_details);
         setOrders(finalOrders);
         setTotalCount(res?.data?.totalcount || 0);
+      },
+      onError: () => {
+        setShouldFetch(false);
+        setTotalCount(0);
       },
     }
   );
@@ -89,8 +91,8 @@ const OrderListing = ({ token }) => {
   };
 
   const orderTileClassName = orderModal?.open
-    ? "h-[95vh] overflow-y-auto"
-    : "h-[80vh] overflow-y-auto";
+    ? "h-[450px] overflow-y-auto"
+    : "h-[500px] overflow-y-auto";
 
   return (
     <div className='w-1/3 border-2 border-gray-200'>
@@ -151,11 +153,6 @@ const OrderListing = ({ token }) => {
             ))
           )}
         </div>
-        {/* <CustomerPopup
-          open={modalOpen}
-          closeModal={closeModal}
-          modal={"order"}
-        /> */}
 
         {!orderModal?.open ? (
           <div className='flex justify-end px-4 py-2 order-listing'>

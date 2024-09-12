@@ -14,6 +14,7 @@ import AreaMapping from "./pages/AreaMapping";
 import Routing from "./pages/Routing";
 import Dashboard from "./pages/Dashboard";
 import CustomerDashboardMain from "./pages/CustomerDashboard";
+import { getCookie } from "./services/cookiesFunc";
 
 const queryClient = new QueryClient();
 
@@ -33,74 +34,76 @@ function App() {
     };
   }, []);
 
+  const isCustomerAgent = getCookie("customerAgent");
+
   return (
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <div className='relative'>
           <Routes>
             <Route index path='/' element={<Navigate to='/login' />} />
-
-            <Route
-              path='/dashboard'
-              element={
-                <PrivateRoute>
-                  <Dashboard />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path='/customer-support'
-              element={
-                <PrivateRoute>
-                  <CustomerDashboardMain />
-                </PrivateRoute>
-              }
-            />
-
-            <Route
-              path='/subscription'
-              element={
-                <PrivateRoute>
-                  <Subscription />
-                </PrivateRoute>
-              }
-            />
-
-            <Route
-              path='/routing'
-              element={
-                <PrivateRoute>
-                  <Routing />
-                </PrivateRoute>
-              }
-            />
-
-            <Route
-              path='/history'
-              element={
-                <PrivateRoute>
-                  <History />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path='/agents'
-              element={
-                <PrivateRoute>
-                  <Agents />
-                </PrivateRoute>
-              }
-            />
-
-            <Route
-              path='/AreaMapping'
-              element={
-                <PrivateRoute>
-                  <AreaMapping />
-                </PrivateRoute>
-              }
-            />
-            <Route path='/login' element={<Login />} />
+            {isCustomerAgent ? (
+              <Route
+                path='/customer-support'
+                element={
+                  <PrivateRoute>
+                    <CustomerDashboardMain />
+                  </PrivateRoute>
+                }
+              />
+            ) : (
+              <>
+                <Route
+                  path='/dashboard'
+                  element={
+                    <PrivateRoute>
+                      <Dashboard />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path='/subscription'
+                  element={
+                    <PrivateRoute>
+                      <Subscription />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path='/routing'
+                  element={
+                    <PrivateRoute>
+                      <Routing />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path='/history'
+                  element={
+                    <PrivateRoute>
+                      <History />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path='/agents'
+                  element={
+                    <PrivateRoute>
+                      <Agents />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path='/AreaMapping'
+                  element={
+                    <PrivateRoute>
+                      <AreaMapping />
+                    </PrivateRoute>
+                  }
+                />
+                <Route path='/login' element={<Login />} />
+              </>
+            )}
           </Routes>
         </div>
         <ReactQueryDevtools initialIsOpen={false} />

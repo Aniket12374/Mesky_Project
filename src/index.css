@@ -249,3 +249,7 @@ span.ant-switch-inner {
 .transaction-list .ant-table-cell {
   padding: 16px 8px !important;
 }
+
+.gray-btn {
+  @apply w-32 bg-gray-200 rounded-lg;
+}

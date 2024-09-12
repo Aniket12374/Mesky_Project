@@ -90,15 +90,15 @@ const OrderListing = ({ token }) => {
     setFilterModalOpen(false);
   };
 
-  const orderTileClassName = orderModal?.open
-    ? "h-[450px] overflow-y-auto"
-    : "h-[500px] overflow-y-auto";
+  const orderTileClassName = filterModalOpen
+    ? "h-[200px] overflow-y-auto"
+    : "h-[400px] overflow-y-auto";
 
   return (
     <div className='w-1/3 border-2 border-gray-200'>
       <OrderTnxHeader
         showSearch={true}
-        name={"Order Historyu"}
+        name={"Order History"}
         setModalOpen={setFilterModalOpen}
         placeholder={"Search by Order Id, product name.."}
       />

@@ -82,7 +82,7 @@ const SubscriptionData = ({ tab, modalData, setModalData }) => {
   const activeTab = tab === 1;
 
   return (
-    <div>
+    <div className='h-[400px] overflow-y-auto'>
       {tabData.map((record, index) => {
         const { product, quantity, dates_range, start_date, end_date } = record;
         return (

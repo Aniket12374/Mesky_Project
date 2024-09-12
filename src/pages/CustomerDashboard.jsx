@@ -32,7 +32,6 @@ const CustomerDashboardMain = () => {
 
   return (
     <Layout>
-      <Header text={`Dashboard - ${formattedDate}`} />
       <CustomerDashboard />
     </Layout>
   );

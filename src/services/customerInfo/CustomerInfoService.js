@@ -20,7 +20,7 @@ export const customerInfo = (
 };
 
 export const getSubscriptions = (activeType) => {
-  return httpVendorExisting.get(
+  return httpVendor.get(
     `api/subscription/list?subscription_type=${activeType}`
   );
 };

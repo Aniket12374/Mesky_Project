@@ -8,6 +8,17 @@ import {
   faSquareCaretLeft,
   faSquareCaretRight,
 } from "@fortawesome/free-solid-svg-icons";
+import { getCookie } from "../../../services/cookiesFunc";
+
+const sideBarAgent = [
+  {
+    id: 9,
+    name: "Customer Support",
+    path: "customer-support",
+    icon1: Images["DashboardColored"],
+    icon2: Images["Dashboard"],
+  },
+];
 
 const SidebarNavItems = [
   {
@@ -97,6 +108,9 @@ const SideNavBar = () => {
     </li>
   );
 
+  const isCustomerAgent = getCookie("customerAgent");
+  const sidebarItems = !isCustomerAgent ? SidebarNavItems : sideBarAgent;
+
   return (
     <div
       id='logo-sidebar'
@@ -116,7 +130,7 @@ const SideNavBar = () => {
           </button>
         </div>
         <ul className='py-2 space-y-2'>
-          {SidebarNavItems.map((sidebarItem, index) => (
+          {sidebarItems.map((sidebarItem, index) => (
             <LiItem
               path={sidebarItem.path}
               name={sidebarItem.name}

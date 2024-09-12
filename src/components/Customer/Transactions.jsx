@@ -14,6 +14,7 @@ import { useQuery } from "react-query";
 import { Input, Pagination, Table } from "antd";
 import CustomerFilters, { AppliedFilters } from "./CustomerFilters";
 import TransactionDetailTile from "./TransactionDetailTile";
+import { OrderTnxHeader } from "./CustomerConstants";
 
 function Transactions({
   showSearch = true,
@@ -168,24 +169,18 @@ function Transactions({
     setShouldFetch(true);
   };
 
+  const trnxTileClassName = modalOpen
+    ? "h-[450px] overflow-y-auto transaction-list"
+    : "h-[500px] overflow-y-auto transaction-list";
+
   return (
     <div className={!showBorder ? "" : "w-1/3 border-2 border-gray-200"}>
-      <div className='flex flex-wrap justify-between items-center'>
-        <Header text={name || "Transactions"} className='m-2' />
-        {showSearch && (
-          <div className='mt-2 mr-1 cursor-pointer'>
-            <button
-              className='border-2 border-gray-200 text-xs text-gray-300 p-1 rounded-md'
-              onClick={() => setModalOpen(true)}
-            >
-              <span>Search by amount, transaction type..</span>
-              <span className='text-[#645d5d]'>
-                <i class='fa-solid fa-magnifying-glass' />
-              </span>
-            </button>
-          </div>
-        )}
-      </div>
+      <OrderTnxHeader
+        showSearch={showSearch}
+        name={name}
+        setModalOpen={setModalOpen}
+        placeholder={"Search by amount, transaction type.."}
+      />
 
       {showSearch && (
         <CustomerFilters
@@ -215,7 +210,7 @@ function Transactions({
           />
         ) : (
           <>
-            <div className='h-[75vh] overflow-y-auto transaction-list'>
+            <div className={trnxTileClassName}>
               <Table
                 columns={transactionHeaders}
                 dataSource={transactions}
@@ -256,12 +251,10 @@ function Transactions({
           </>
         )
       ) : (
-        <>
-          <TransactionDetailTile
-            transactionId={transactionId}
-            setTransactionId={setTransactionId}
-          />
-        </>
+        <TransactionDetailTile
+          transactionId={transactionId}
+          setTransactionId={setTransactionId}
+        />
       )}
     </div>
   );

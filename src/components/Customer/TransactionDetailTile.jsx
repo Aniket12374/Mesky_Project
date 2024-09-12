@@ -31,10 +31,6 @@ const TransactionDetailTile = ({ transactionId, setTransactionId }) => {
           className='rounded-full border-2 border-gray-400 w-8 h-8 flex justify-center items-center'
           onClick={() => setTransactionId(null)}
         >
-          {/* <i
-            className='fa fa-long-arrow-left text-sm rounded-full'
-            aria-hidden='true'
-          ></i> */}
           <i class='fa-sharp fa-solid fa-arrow-left text-2xl'></i>
         </button>
       </div>

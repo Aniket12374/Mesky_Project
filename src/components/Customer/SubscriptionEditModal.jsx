@@ -151,9 +151,6 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
 
   const handleTypeChange = (e) => {
     if (capitalizeFirstLetter(e.target.value) == "No delivery on weekends") {
-      if (editData?.day == "Sun" || editData?.day == "Sat") {
-        setIsWarning(true);
-      }
       let days = ["Mon", "Tue", "Wed", "Thu", "Fri"];
       setEditData({
         ...editData,
@@ -215,6 +212,18 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
     }));
 
   const handleAttachTicket = async () => {
+    if (isCreateSubscription && !editData.newStartDate) {
+      toast.error("For create Subscription Please add starting date !!");
+      return;
+    }
+
+    if (!isCreateSubscription && editData?.type == deliverySchedule[1]) {
+      if (!editData?.newStartDate) {
+        toast.error("For Update Subscription Please add starting date !!");
+        return;
+      }
+    }
+
     try {
       let payload = {
         [isCreateSubscription ? "address_id" : "subscription_id"]:
@@ -276,19 +285,17 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
     createData?.offer_price * editData?.quantity;
 
   useEffect(() => {
-    if (
-      (iswarning &&
-        isCreateSubscription &&
-        editData?.type == "No delivery on weekends" &&
-        alternateDays[0] == "Sun") ||
-      alternateDays[0] == "Sat"
-    ) {
-      showWarningToast(
-        `Are you Sure ? , You Have Selected ${alternateDays[0]}day`
-      );
-      setIsWarning(false);
+    if (iswarning && isCreateSubscription) {
+      if (editData?.type == deliverySchedule[2]) {
+        if (alternateDays[0] == "Sun" || alternateDays[0] == "Sat") {
+          showWarningToast(
+            `Are you Sure ? , You Have Selected ${alternateDays[0]}day`
+          );
+          setIsWarning(false);
+        }
+      }
     }
-  }, [editData, editData?.type]);
+  }, [editData.type, editData?.newStartDate]);
 
   return (
     <Modal
@@ -352,7 +359,9 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
             />
             <span className="ml-10">
               <span>₹ {offerPrice}</span>
-              <span className="line-through ml-3 text-[#9DA49E]">₹ {sellingPrice}</span>
+              <span className="line-through ml-3 text-[#9DA49E]">
+                ₹ {sellingPrice}
+              </span>
             </span>
           </div>
 
@@ -388,9 +397,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
                         setEditData((prev) => ({
                           ...prev,
                           newStartDate: dateString,
-                          weekdays: getDayOfWeekAndAlternates(
-                            editData?.newStartDate
-                          ),
+                          weekdays: getDayOfWeekAndAlternates(dateString),
                           day: alternateDays[0],
                         }));
                       } else {
@@ -421,9 +428,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
                             setEditData((prev) => ({
                               ...prev,
                               newStartDate: dateString,
-                              weekdays: getDayOfWeekAndAlternates(
-                                editData?.newStartDate || dateString
-                              ),
+                              weekdays: getDayOfWeekAndAlternates(dateString),
                               day: alternateDays[0],
                             }));
                           } else {

@@ -3,7 +3,10 @@ import meskyLogoCircle from "@/assets/mesky-logos/mesky-circle.png";
 import { MdArrowDropDown } from "react-icons/md";
 import { BiLogOut } from "react-icons/bi";
 import { BsPersonCircle } from "react-icons/bs";
-import { removeTokenFromCookie } from "../../services/cookiesFunc";
+import {
+  removeAllCookies,
+  removeTokenFromCookie,
+} from "../../services/cookiesFunc";
 import { useMainStore } from "../../store/store";
 import { Link, useNavigate } from "react-router-dom";
 import { useQueryClient } from "react-query";
@@ -13,6 +16,7 @@ import Cookies from "js-cookie";
 const ProfileDropdown = () => {
   const logoutUser = useMainStore((state) => state.logoutUser);
   const user = useMainStore((state) => state.user);
+  console.log({ user });
   let queryClient = useQueryClient();
   let navigate = useNavigate();
 
@@ -21,6 +25,7 @@ const ProfileDropdown = () => {
       position: "bottom-right",
     });
     removeTokenFromCookie();
+    removeAllCookies();
     logoutUser();
     queryClient.removeQueries();
   };
@@ -34,21 +39,22 @@ const ProfileDropdown = () => {
 
   return (
     <div>
-      <div className="dropdown">
+      <div className='dropdown'>
         <div
           tabIndex={0}
-          className="btn m-1 w-56 h-8 rounded-3xl text-black border-none shadow-xl hover:bg-white bg-white justify-between"
+          className='btn m-1 w-56 h-8 rounded-3xl text-black border-none shadow-xl hover:bg-white bg-white justify-between'
         >
-          <div className="box-border rounded-3xl flex flex-row h-8 w-8 mask mask-squircle">
-            <img src={meskyLogoCircle} alt="user image" />
-          </div>
-          {user.name}
+          {/* <div className='box-border rounded-3xl flex flex-row h-8 w-8 mask mask-squircle'>
+            <img src={meskyLogoCircle} alt='user image' />
+          </div> */}
+          <div className=''> {user?.name}</div>
+
           <MdArrowDropDown />
         </div>
 
         <ul
           tabIndex={0}
-          className="dropdown-content menu ml-2 p-2 shadow-2xl bg-slate-100 border w-52 rounded-2xl"
+          className='dropdown-content menu ml-2 p-2 shadow-2xl bg-slate-100 border w-52 rounded-2xl'
         >
           {/* <li>
             <Link to="/profile">

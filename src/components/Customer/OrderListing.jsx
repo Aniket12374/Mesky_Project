@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { getOrders } from "../../services/customerOrders/CustomerOrderService";
-import { Header } from "../../utils";
-import { OrderDetails } from "./OrderDetails";
 import { Input, Pagination } from "antd";
 import { useQuery } from "react-query";
-import CustomerFilters, { AppliedFilters } from "./CustomerFilters";
+import { OrderDetails } from "./OrderDetails";
+import CustomerFilters from "./CustomerFilters";
 import OrderDetailTile from "./OrderDetailTile";
+import { OrderTnxHeader } from "./CustomerConstants";
+import { getOrders } from "../../services/customerOrders/CustomerOrderService";
 
 const OrderListing = ({ token }) => {
   const [orders, setOrders] = useState([]);
@@ -90,28 +90,20 @@ const OrderListing = ({ token }) => {
     setFilterModalOpen(false);
   };
 
-  const orderTileClassName = orderModal?.open
-    ? "h-[450px] overflow-y-auto"
-    : "h-[500px] overflow-y-auto";
+  const orderTileClassName = filterModalOpen
+    ? "h-[200px] overflow-y-auto"
+    : orderModal?.open
+    ? "h-[525px] overflow-y-auto"
+    : "h-[400px] overflow-y-auto";
 
   return (
     <div className='w-1/3 border-2 border-gray-200'>
-      <div className='flex flex-wrap justify-between'>
-        <Header text='Order History' className='m-2' />
-        <div className=''>
-          <div className='mt-2 mr-1'>
-            <button
-              className='border-2 border-gray-200 text-xs text-gray-300 p-1 rounded-md'
-              onClick={() => setFilterModalOpen(true)}
-            >
-              <span>Search by Order Id, product name..</span>
-              <span className='text-[#645d5d]'>
-                <i class='fa-solid fa-magnifying-glass' />
-              </span>
-            </button>
-          </div>
-        </div>
-      </div>
+      <OrderTnxHeader
+        showSearch={true}
+        name={"Order History"}
+        setModalOpen={setFilterModalOpen}
+        placeholder={"Search by Order Id, product name.."}
+      />
 
       <CustomerFilters
         open={filterModalOpen}
@@ -149,13 +141,14 @@ const OrderListing = ({ token }) => {
                 status={order?.status}
                 record={order}
                 setOrderModal={setOrderModal}
+                setFilterModalOpen={setFilterModalOpen}
               />
             ))
           )}
         </div>
 
         {!orderModal?.open ? (
-          <div className="flex justify-end px-4 py-2 order-listing">
+          <div className='px-4 py-2 order-listing'>
             <Pagination
               current={currentPage}
               total={totalCount}

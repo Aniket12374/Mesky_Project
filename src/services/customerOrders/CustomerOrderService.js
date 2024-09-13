@@ -20,7 +20,7 @@ export const getOrders = (page = 1, size = 5, filters = {}) => {
   const start = (page - 1) * size;
   let filtersAppend = "";
   Object.keys(filters).forEach((x) => {
-    filtersAppend = filtersAppend + `&${x}=${filters[x]}`;
+    if (filters[x]) filtersAppend = filtersAppend + `&${x}=${filters[x]}`;
   });
 
   const end = start + size;

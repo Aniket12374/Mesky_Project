@@ -25,7 +25,7 @@ export const OrderDetails = ({ data, closeOrderModal, address }) => {
   const billKeys = Object.keys(billDetails);
 
   return (
-    <div className='mt-3 p-2'>
+    <div className='p-2'>
       <button
         onClick={closeOrderModal}
         className='rounded-full border-2 border-gray-400 w-8 h-8 flex justify-center items-center'

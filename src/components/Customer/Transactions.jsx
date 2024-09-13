@@ -61,6 +61,7 @@ function Transactions({
       .then((res) => {
         setDebitData(res?.data?.order_details[0]);
         setAddress(res?.data?.address_info);
+        setModalOpen(false);
       })
       .catch((err) => {
         console.log({ err });
@@ -170,8 +171,10 @@ function Transactions({
   };
 
   const trnxTileClassName = modalOpen
-    ? "h-[450px] overflow-y-auto transaction-list"
-    : "h-[500px] overflow-y-auto transaction-list";
+    ? "h-[200px] overflow-y-auto transaction-list"
+    : debitData
+    ? "h-[500px] overflow-y-auto transaction-list"
+    : "h-[400px] overflow-y-auto transaction-list";
 
   return (
     <div className={!showBorder ? "" : "w-1/3 border-2 border-gray-200"}>
@@ -200,17 +203,19 @@ function Transactions({
 
       {transactionId === null ? (
         debitData ? (
-          <OrderDetails
-            data={debitData}
-            address={address}
-            closeOrderModal={() => {
-              setTransactionId(null);
-              setDebitData(null);
-            }}
-          />
+          <div className={trnxTileClassName}>
+            <OrderDetails
+              data={debitData}
+              address={address}
+              closeOrderModal={() => {
+                setTransactionId(null);
+                setDebitData(null);
+              }}
+            />
+          </div>
         ) : (
           <>
-            <div className={trnxTileClassName}>
+            <div className={name ? "h-[80vh]" : trnxTileClassName}>
               <Table
                 columns={transactionHeaders}
                 dataSource={transactions}
@@ -227,6 +232,7 @@ function Transactions({
                 }}
                 showExport={false}
                 showHeader={false}
+                pagination={false}
               />
             </div>
             {showSearch && (
@@ -240,6 +246,7 @@ function Transactions({
                       {range[0]} - {range[1]} of {totalCount} items
                     </div>
                   )}
+                  showQuickJumper
                   onChange={handlePageChange}
                   showSizeChanger={true}
                   pageSizeOptions={pageSizeOptions}
@@ -251,10 +258,12 @@ function Transactions({
           </>
         )
       ) : (
-        <TransactionDetailTile
-          transactionId={transactionId}
-          setTransactionId={setTransactionId}
-        />
+        <div className={trnxTileClassName}>
+          <TransactionDetailTile
+            transactionId={transactionId}
+            setTransactionId={setTransactionId}
+          />
+        </div>
       )}
     </div>
   );

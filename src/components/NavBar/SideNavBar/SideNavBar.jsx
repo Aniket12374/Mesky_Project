@@ -29,13 +29,6 @@ const SidebarNavItems = [
     icon2: Images["Dashboard"],
   },
   {
-    id: 9,
-    name: "Customer Support",
-    path: "customer-support",
-    icon1: Images["DashboardColored"],
-    icon2: Images["Dashboard"],
-  },
-  {
     id: 2,
     name: "Subscription",
     path: "subscription",
@@ -108,7 +101,7 @@ const SideNavBar = () => {
     </li>
   );
 
-  const isCustomerAgent = getCookie("customerAgent");
+  const isCustomerAgent = getCookie("customerAgent") == "true";
   const sidebarItems = !isCustomerAgent ? SidebarNavItems : sideBarAgent;
 
   return (
@@ -120,7 +113,7 @@ const SideNavBar = () => {
         width: !close ? "100px" : "230px",
       }}
     >
-      <div className='h-full px-3 pb-4 w-max'>
+      <div className='h-full px-3 pb-4 w-max overflow-y-auto'>
         <div className='flex mt-2 justify-end'>
           <button onClick={() => setClose(!close)}>
             <FontAwesomeIcon

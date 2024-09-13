@@ -34,14 +34,13 @@ function App() {
     };
   }, []);
 
-  const isCustomerAgent = getCookie("customerAgent");
+  const isCustomerAgent = getCookie("customerAgent") == "true";
 
   return (
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <div className='relative'>
           <Routes>
-            <Route index path='/' element={<Navigate to='/login' />} />
             {isCustomerAgent ? (
               <Route
                 path='/customer-support'
@@ -101,9 +100,9 @@ function App() {
                     </PrivateRoute>
                   }
                 />
-                <Route path='/login' element={<Login />} />
               </>
             )}
+            <Route path='/login' element={<Login />} />
           </Routes>
         </div>
         <ReactQueryDevtools initialIsOpen={false} />

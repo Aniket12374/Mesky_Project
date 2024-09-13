@@ -34,7 +34,7 @@ function App() {
     };
   }, []);
 
-  const isCustomerAgent = getCookie("customerAgent");
+  const isCustomerAgent = getCookie("customerAgent") == "true";
 
   return (
     <BrowserRouter>

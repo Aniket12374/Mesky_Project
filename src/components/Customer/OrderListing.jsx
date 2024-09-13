@@ -92,6 +92,8 @@ const OrderListing = ({ token }) => {
 
   const orderTileClassName = filterModalOpen
     ? "h-[200px] overflow-y-auto"
+    : orderModal?.open
+    ? "h-[525px] overflow-y-auto"
     : "h-[400px] overflow-y-auto";
 
   return (
@@ -139,13 +141,14 @@ const OrderListing = ({ token }) => {
                 status={order?.status}
                 record={order}
                 setOrderModal={setOrderModal}
+                setFilterModalOpen={setFilterModalOpen}
               />
             ))
           )}
         </div>
 
         {!orderModal?.open ? (
-          <div className='flex justify-end px-4 py-2 order-listing'>
+          <div className='px-4 py-2 order-listing'>
             <Pagination
               current={currentPage}
               total={totalCount}

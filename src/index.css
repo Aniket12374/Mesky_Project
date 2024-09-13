@@ -202,13 +202,14 @@ body {
   text-align: center;
 }
 
-.transaction-pagination li.ant-pagination-options {
+/* .transaction-pagination li.ant-pagination-options {
   margin-top: 15px;
 }
 
 .order-listing li.ant-pagination-options {
   margin-top: 15px;
-}
+  display: block;
+} */
 
 /* .order-listing .ant-select-selector .ant-select-selection-item {
   background-color: #edc0a4;
@@ -252,4 +253,8 @@ span.ant-switch-inner {
 
 .gray-btn {
   @apply w-32 bg-gray-200 rounded-lg;
+}
+
+li.ant-pagination-options {
+  margin-top: 10px;
 }

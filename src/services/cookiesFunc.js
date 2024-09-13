@@ -28,8 +28,18 @@ export const getCustomerTokenFromCookie = () => {
 
 export const removeTokenFromCookie = () => {
   removeCookie("token");
+  removeCookie("customerAgent");
+  removeCookie("userName");
+  removeCookie("refundUser");
 };
 
 export const setTokenToCookie = (token) => {
   setCookie("token", token);
+};
+
+export const removeAllCookies = () => {
+  let cookiesStored = ["token", "customerAgent", "userName", "refundUser"];
+  cookiesStored.forEach((cookie) => {
+    removeCookie(cookie);
+  });
 };

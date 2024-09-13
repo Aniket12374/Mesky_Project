@@ -136,6 +136,7 @@ const ListingPage = () => {
         : "",
       City: listingData?.order?.city,
       State: listingData?.order?.state,
+      warehouse_code: listingData?.order?.warehouse_code,
       status: delStatus,
       delImg: listingData?.status?.del_img,
       not_del_reason: listingData?.status?.not_del_reason,
@@ -154,6 +155,14 @@ const ListingPage = () => {
     new Set(
       historyData
         .map((listingData) => listingData?.sectors)
+        .sort(customAlphNumericSort)
+    )
+  );
+
+  const uniqueWarehouse = Array.from(
+    new Set(
+      historyData
+        .map((listingData) => listingData?.warehouse_code)
         .sort(customAlphNumericSort)
     )
   );
@@ -402,6 +411,19 @@ const ListingPage = () => {
       key: "delivery",
       // ellipsis: true,
       width: 120,
+    },
+    {
+      title: "WARE HOUSE CODE",
+      dataIndex: "warehouse_code",
+      key: "warehouse_code",
+      // ellipsis: true,
+      width: 160,
+      filters: uniqueWarehouse.map((warehouse) => ({
+        text: warehouse,
+        value: warehouse,
+      })),
+      filterSearch: true,
+      onFilter: (value, record) => record.warehouse_code === value,
     },
     {
       title: "STATUS",

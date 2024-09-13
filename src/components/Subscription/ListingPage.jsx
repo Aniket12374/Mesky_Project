@@ -453,7 +453,7 @@ const ListingPage = () => {
               <div onClick={() => openImagePopup(record.delImg)}>
                 <img
                   src={record.delImg}
-                  alt="Delivery Image"
+                  alt='Delivery Image'
                   style={{ maxWidth: "100px", maxHeight: "100px" }}
                 />
               </div>
@@ -485,7 +485,7 @@ const ListingPage = () => {
       render: (item_uid, record) =>
         !record.del_time && (
           <button
-            className="bg-[#DF4584] rounded-2xl text-white p-2"
+            className='bg-[#DF4584] rounded-2xl text-white p-2'
             onClick={() => handlePause(item_uid)}
             // disabled={pausedItems.includes(item_uid)} // Disable button for paused items
           >
@@ -501,7 +501,7 @@ const ListingPage = () => {
       render: (quantity_change, record) =>
         !record.del_time && (
           <button
-            className="bg-[#DF4584] rounded-2xl text-white p-2"
+            className='bg-[#DF4584] rounded-2xl text-white p-2'
             onClick={() => handleModal(record)}
           >
             Qty Change
@@ -538,9 +538,9 @@ const ListingPage = () => {
       render: (refund, record) =>
         record.del_time &&
         record.status == "DELIVERED" && (
-          <div className="px-2">
+          <div className='px-2'>
             <button
-              className="bg-[#DF4584] rounded-2xl text-white p-2"
+              className='bg-[#DF4584] rounded-2xl text-white p-2'
               onClick={() => handleModalRef(record)}
             >
               Refund
@@ -628,14 +628,14 @@ const ListingPage = () => {
     downloadCsv()
       .then((res) => {
         setCsvLoader(false);
-        const pdfUrl = res?.data?.file_url;
-        const link = document.createElement("a");
-        link.href = pdfUrl;
-        link.download = "document.pdf"; // specify the filename
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        toast.success("Successfully downloaded!");
+        // const pdfUrl = res?.data?.file_url;
+        // const link = document.createElement("a");
+        // link.href = pdfUrl;
+        // link.download = "document.pdf"; // specify the filename
+        // document.body.appendChild(link);
+        // link.click();
+        // document.body.removeChild(link);
+        toast.success(res?.data?.message);
       })
       .catch((err) => {
         setCsvLoader(false);
@@ -686,11 +686,11 @@ const ListingPage = () => {
       `}
       </style>
       {/* <div>Total Data Count: {totalDataCount}</div> */}
-      <div className="float-right font-medium">
+      <div className='float-right font-medium'>
         Showing Results: {filteredDataCount}/{totalDataCount}
       </div>
       <button
-        className="bg-[#ff0000] text-white p-2 mr-2 rounded-lg relative top-2"
+        className='bg-[#ff0000] text-white p-2 mr-2 rounded-lg relative top-2'
         onClick={() => reAssignAgent()}
       >
         Re-Assign Agents
@@ -698,12 +698,12 @@ const ListingPage = () => {
       <button
         onClick={handleDownloadCsv}
         disabled={csvLoader}
-        className="bg-[#ff0000] text-white p-2 mr-2 rounded-lg relative top-2"
+        className='bg-[#ff0000] text-white p-2 mr-2 rounded-lg relative top-2'
       >
         {csvLoader ? "Downloading..." : "Download All Data"}
       </button>
       <button
-        className="bg-[#ff0000] text-white p-2 mr-2 rounded-lg relative top-2"
+        className='bg-[#ff0000] text-white p-2 mr-2 rounded-lg relative top-2'
         onClick={() => {
           setCsvModalOpen(true);
         }}
@@ -713,7 +713,7 @@ const ListingPage = () => {
       <DataTable
         data={historyData}
         loading={isSearchLoading || isLoading}
-        fileName="Subscription_Listing.csv"
+        fileName='Subscription_Listing.csv'
         columns={HistoryHeaders}
         onChange={handleChange}
         // pagination={paginationConfig}
@@ -727,7 +727,7 @@ const ListingPage = () => {
         setShowSearchData={setShowSearchData}
         handleSearch={handleSearch}
       />
-      <div className="flex justify-end px-4 py-2">
+      <div className='flex justify-end px-4 py-2'>
         <Pagination
           current={showSearchData ? searchPage : currentPage}
           total={tableData?.totalCount || searchTotalCount}
@@ -747,15 +747,15 @@ const ListingPage = () => {
         open={csvModalOpen}
         onCancel={() => setCsvModalOpen(false)}
         footer={null}
-        title="Upload Csv"
+        title='Upload Csv'
         centered
       >
         <form>
-          <div className="flex flex-col">
-            <input type="file" onChange={handleCsvUpload} />
+          <div className='flex flex-col'>
+            <input type='file' onChange={handleCsvUpload} />
             <button
               onClick={handleCsvSubmit}
-              className="bg-[#ff0000] text-white p-2 mr-2 rounded-lg relative top-2"
+              className='bg-[#ff0000] text-white p-2 mr-2 rounded-lg relative top-2'
             >
               Upload
             </button>
@@ -771,7 +771,7 @@ const ListingPage = () => {
         {selectedImage && (
           <img
             src={selectedImage}
-            alt="Delivery Image"
+            alt='Delivery Image'
             style={{ maxWidth: "100%" }}
           />
         )}
@@ -780,62 +780,62 @@ const ListingPage = () => {
         style={{
           fontFamily: "Fredoka, sans-serif",
         }}
-        title="Quantity Change Modal"
-        titleColor="#9c29c1"
+        title='Quantity Change Modal'
+        titleColor='#9c29c1'
         open={quantityModalOpen}
         onCancel={() => handleModal({}, "qty")}
         width={700}
         // height={700}
-        okText="Submit"
+        okText='Submit'
         onOk={() => handleSubmitChange("qty")}
         centered
       >
         <div>
           <span>Item uid:</span>
-          <span className="font-bold ml-2">{itemUid}</span>
+          <span className='font-bold ml-2'>{itemUid}</span>
         </div>
         <div>
           <span>Customer Name:</span>
-          <span className="font-bold ml-2">{custmerName}</span>
+          <span className='font-bold ml-2'>{custmerName}</span>
         </div>
         <div>
           <span>Customer Phone Number:</span>
-          <span className="font-bold ml-2">{phNumber}</span>
+          <span className='font-bold ml-2'>{phNumber}</span>
         </div>
-        <div className="font-bold text-lg mt-3 text-[#df4584]">
+        <div className='font-bold text-lg mt-3 text-[#df4584]'>
           Please select one option
         </div>
-        <div className="flex flex-col">
+        <div className='flex flex-col'>
           <label>
             <input
-              type="checkbox"
+              type='checkbox'
               onChange={() => handleQuantityOption(false)}
               checked={futureOrder === false}
-              value="Only for current order"
+              value='Only for current order'
             />
-            <span className="ml-3">Only for current order</span>
+            <span className='ml-3'>Only for current order</span>
           </label>
           <label>
             <input
-              type="checkbox"
+              type='checkbox'
               onChange={() => handleQuantityOption(true)}
               checked={futureOrder === true}
-              value="For all current and future orders"
+              value='For all current and future orders'
             />
-            <span className="ml-3">For all current and future orders</span>
+            <span className='ml-3'>For all current and future orders</span>
           </label>
         </div>
-        <div className="mt-3 flex space-x-5">
-          <div className="flex space-x-3">
+        <div className='mt-3 flex space-x-5'>
+          <div className='flex space-x-3'>
             <div>Current Quantity:</div>
-            <div className="border-2 w-36 text-center">{customerQty}</div>
+            <div className='border-2 w-36 text-center'>{customerQty}</div>
           </div>
-          <div className="flex space-x-3">
+          <div className='flex space-x-3'>
             <div>New Quantity:</div>
-            <div className="border-2  text-center">
+            <div className='border-2  text-center'>
               <input
-                type="number"
-                className="text-center"
+                type='number'
+                className='text-center'
                 value={changedQty}
                 min={1}
                 onChange={(e) =>

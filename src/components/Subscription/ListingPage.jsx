@@ -136,7 +136,7 @@ const ListingPage = () => {
         : "",
       City: listingData?.order?.city,
       State: listingData?.order?.state,
-      warehouse_code: listingData?.order?.warehouse_code,
+      // warehouse_code: listingData?.order?.warehouse_code,
       status: delStatus,
       delImg: listingData?.status?.del_img,
       not_del_reason: listingData?.status?.not_del_reason,
@@ -159,13 +159,13 @@ const ListingPage = () => {
     )
   );
 
-  const uniqueWarehouse = Array.from(
-    new Set(
-      historyData
-        .map((listingData) => listingData?.warehouse_code)
-        .sort(customAlphNumericSort)
-    )
-  );
+  // const uniqueWarehouse = Array.from(
+  //   new Set(
+  //     historyData
+  //       .map((listingData) => listingData?.warehouse_code)
+  //       .sort(customAlphNumericSort)
+  //   )
+  // );
 
   const uniqueProducts = Array.from(
     new Set(
@@ -412,19 +412,19 @@ const ListingPage = () => {
       // ellipsis: true,
       width: 120,
     },
-    {
-      title: "WARE HOUSE CODE",
-      dataIndex: "warehouse_code",
-      key: "warehouse_code",
-      // ellipsis: true,
-      width: 160,
-      filters: uniqueWarehouse.map((warehouse) => ({
-        text: warehouse,
-        value: warehouse,
-      })),
-      filterSearch: true,
-      onFilter: (value, record) => record.warehouse_code === value,
-    },
+    // {
+    //   title: "WARE HOUSE CODE",
+    //   dataIndex: "warehouse_code",
+    //   key: "warehouse_code",
+    //   // ellipsis: true,
+    //   width: 160,
+    //   filters: uniqueWarehouse.map((warehouse) => ({
+    //     text: warehouse,
+    //     value: warehouse,
+    //   })),
+    //   filterSearch: true,
+    //   onFilter: (value, record) => record.warehouse_code === value,
+    // },
     {
       title: "STATUS",
       dataIndex: "status",
@@ -628,14 +628,15 @@ const ListingPage = () => {
     downloadCsv()
       .then((res) => {
         setCsvLoader(false);
-        // const pdfUrl = res?.data?.file_url;
-        // const link = document.createElement("a");
-        // link.href = pdfUrl;
-        // link.download = "document.pdf"; // specify the filename
-        // document.body.appendChild(link);
-        // link.click();
-        // document.body.removeChild(link);
-        toast.success(res?.data?.message);
+        const pdfUrl = res?.data?.file_url;
+        const link = document.createElement("a");
+        link.href = pdfUrl;
+        link.download = "document.pdf"; // specify the filename
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        // toast.success(res?.data?.message);
+        toast.success("Successfully downloaded!");
       })
       .catch((err) => {
         setCsvLoader(false);

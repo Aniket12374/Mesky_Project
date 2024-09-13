@@ -35,7 +35,7 @@ export const getDayOfWeekAndAlternates = (dateString) => {
 export const showWarningToast = (message) => {
   toast(message, {
     icon: "⚠️",
-    duration: 1500,
+    duration: 2000,
     style: {
       border: "1px solid #ffcc00",
       padding: "16px",

@@ -16,14 +16,14 @@ import {
 } from "../../utility/common";
 
 const { RangePicker } = DatePicker;
-const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const weekDays = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 const dateFormat = "DD-MM-YYYY";
 const quantityOptions = Array.from({ length: 10 }, (_, i) => i + 1);
 const deliverySchedule = [
-  "Daily",
-  "Alternate days",
-  "No delivery on weekends",
-  "Weekly",
+  { Daily: "DAILY" },
+  { "Alternate days": "ALTERNATE" },
+  { "No delivery on weekends": "NO_WEEKENDS" },
+  { Weekly: "WEEKLY" },
 ];
 
 function DebounceSelect({ fetchOptions, debounceTimeout = 800, ...props }) {
@@ -90,15 +90,10 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
     product_id,
   } = data;
 
-  const capitalizeFirstLetter = (str) => {
-    if (!str) return "";
-    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-  };
-
   const [editData, setEditData] = useState({
     quantity: initialQty || 1,
-    type: capitalizeFirstLetter(subscription_type?.type) || deliverySchedule[0],
-    weekdays: subscription_type?.day || [],
+    type: subscription_type?.type || "DAILY",
+    weekdays: subscription_type?.days || [],
     datesRange: dates_range || [],
     startDate: start_date || null,
     newStartDate: null,
@@ -111,8 +106,9 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
     productImage: null,
     alternateDay: [],
     day: "",
-    dateRangePickerOpen: false,
+    dateRangePickerOpen: true,
   });
+  console.log("editData", editData);
 
   const addressId = localStorage.getItem("addressId");
 
@@ -128,9 +124,8 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
   useEffect(() => {
     setEditData({
       quantity: initialQty || 1,
-      type:
-        capitalizeFirstLetter(subscription_type?.type) || deliverySchedule[0],
-      weekdays: subscription_type?.day || [],
+      type: subscription_type?.type || "DAILY",
+      weekdays: subscription_type?.days || [],
       datesRange: dates_range || [],
       startDate: start_date || null,
       newStartDate: null,
@@ -140,7 +135,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
       day: alternateDays[0],
     });
 
-    if (editData?.type == "Alternate days") {
+    if (editData?.type == "ALTERNATE") {
       setEditData({
         ...editData,
         weekdays: getDayOfWeekAndAlternates(editData?.newStartDate),
@@ -150,13 +145,13 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
   }, [modalData]);
 
   const handleTypeChange = (e) => {
-    if (capitalizeFirstLetter(e.target.value) == "No delivery on weekends") {
+    if (e.target.value == "NO_WEEKENDS") {
       let days = ["Mon", "Tue", "Wed", "Thu", "Fri"];
       setEditData({
         ...editData,
         weekdays: days,
       });
-    } else if (capitalizeFirstLetter(e.target.value) == "Alternate days") {
+    } else if (e.target.value == "ALTERNATE") {
       setEditData({
         ...editData,
         weekdays: getDayOfWeekAndAlternates(editData?.newStartDate),
@@ -170,7 +165,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
     }
     setEditData((prev) => ({
       ...prev,
-      type: capitalizeFirstLetter(e.target.value),
+      type: e.target.value,
     }));
   };
 
@@ -217,9 +212,11 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
       return;
     }
 
-    if (!isCreateSubscription && editData?.type == deliverySchedule[1]) {
+    if (!isCreateSubscription && editData?.type == "ALTERNATE") {
       if (!editData?.newStartDate) {
-        toast.error("For Update Subscription Please add starting date !!");
+        toast.error(
+          "For Update Subscription Please add or Chnage the  Alternate date !!"
+        );
         return;
       }
     }
@@ -231,12 +228,14 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
         qty: editData?.quantity,
         del_schedule_type: {
           type: editData.type,
-          weekdays: editData.weekdays,
+          days: editData.weekdays,
         },
         pause_dates: editData?.datesRange,
         start_date: isCreateSubscription
           ? editData?.newStartDate
-          : editData?.newStartDate || editData?.startDate,
+          : editData?.type == "ALTERNATE"
+          ? editData?.newStartDate
+          : editData?.startDate,
         product_id: editData?.productId,
       };
 
@@ -286,7 +285,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
 
   useEffect(() => {
     if (iswarning && isCreateSubscription) {
-      if (editData?.type == deliverySchedule[2]) {
+      if (editData?.type == "NO_WEEKENDS") {
         if (alternateDays[0] == "Sun" || alternateDays[0] == "Sat") {
           showWarningToast(
             `Are you Sure ? , You Have Selected ${alternateDays[0]}day`
@@ -370,11 +369,15 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
               <div className="font-semibold">Delivery Schedule</div>
               <Radio.Group onChange={handleTypeChange} value={editData?.type}>
                 <Space direction="vertical">
-                  {deliverySchedule.map((schedule) => (
-                    <Radio key={schedule} value={schedule}>
-                      <p className="text-[#9DA49E]">{schedule}</p>
-                    </Radio>
-                  ))}
+                  {deliverySchedule.map((schedule) => {
+                    const label = Object.keys(schedule)[0];
+                    const value = schedule[label];
+                    return (
+                      <Radio key={label} value={value}>
+                        <p className="text-[#9DA49E]">{label}</p>
+                      </Radio>
+                    );
+                  })}
                 </Space>
               </Radio.Group>
             </div>
@@ -393,7 +396,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
                     format={dateFormat}
                     disabledDate={disabledPastDate}
                     onChange={(_, dateString) => {
-                      if (editData?.type == "Alternate days") {
+                      if (editData?.type == "ALTERNATE") {
                         setEditData((prev) => ({
                           ...prev,
                           newStartDate: dateString,
@@ -411,41 +414,40 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
                     disabled={!isCreateSubscription ? true : false}
                   />
                 </div>
-                {!isCreateSubscription &&
-                  editData?.type == "Alternate days" && (
-                    <div>
-                      <div className="text-[#9DA49E]">Alternate days</div>
-                      <DatePicker
-                        // value={
-                        //   editData?.startDate
-                        //     ? moment(editData.startDate, dateFormat)
-                        //     : null
-                        // }
-                        format={dateFormat}
-                        disabledDate={disabledPastDate}
-                        onChange={(_, dateString) => {
-                          if (editData?.type == "Alternate days") {
-                            setEditData((prev) => ({
-                              ...prev,
-                              newStartDate: dateString,
-                              weekdays: getDayOfWeekAndAlternates(dateString),
-                              day: alternateDays[0],
-                            }));
-                          } else {
-                            setEditData((prev) => ({
-                              ...prev,
-                              newStartDate: dateString,
-                              day: alternateDays[0],
-                            }));
-                          }
-                        }}
-                        placeholder="Select date"
-                      />
-                    </div>
-                  )}
+                {!isCreateSubscription && editData?.type == "ALTERNATE" && (
+                  <div>
+                    <div className="text-[#9DA49E]">Alternate days</div>
+                    <DatePicker
+                      // value={
+                      //   editData?.startDate
+                      //     ? moment(editData.startDate, dateFormat)
+                      //     : null
+                      // }
+                      format={dateFormat}
+                      disabledDate={disabledPastDate}
+                      onChange={(_, dateString) => {
+                        if (editData?.type == "ALTERNATE") {
+                          setEditData((prev) => ({
+                            ...prev,
+                            newStartDate: dateString,
+                            weekdays: getDayOfWeekAndAlternates(dateString),
+                            day: alternateDays[0],
+                          }));
+                        } else {
+                          setEditData((prev) => ({
+                            ...prev,
+                            newStartDate: dateString,
+                            day: alternateDays[0],
+                          }));
+                        }
+                      }}
+                      placeholder="Select date"
+                    />
+                  </div>
+                )}
               </div>
 
-              {!(editData?.type === "Daily") && (
+              {editData?.type === "WEEKLY" && (
                 <>
                   <div className="py-2 text-[#9DA49E]">Choose Day</div>
                   <div className="flex space-x-2">

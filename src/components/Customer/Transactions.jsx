@@ -215,7 +215,7 @@ function Transactions({
           </div>
         ) : (
           <>
-            <div className={trnxTileClassName}>
+            <div className={name ? "h-[80vh]" : trnxTileClassName}>
               <Table
                 columns={transactionHeaders}
                 dataSource={transactions}

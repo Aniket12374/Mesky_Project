@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Input, Modal, Select, DatePicker } from "antd";
 import moment from "moment";
 import { OrderOptions, TransactionsOptions } from "./CustomerConstants";
+import dayjs from "dayjs";
 
 function CustomerFilters({
   open,
@@ -21,7 +22,7 @@ function CustomerFilters({
     label: option,
     value: dropDownSelection[option],
   }));
-  const [filters, setFilters] = useState(finalFilters || {});
+  const [filters, setFilters] = useState();
   const [optionSelected, setOptionSelected] = useState();
 
   useEffect(() => {
@@ -42,7 +43,7 @@ function CustomerFilters({
     let value = "";
     if (key == "search_value") {
       value = e.target.value;
-    } else if (key !== "amount") {
+    } else if (key == "start_date" || key == "end_date") {
       value = e;
     } else value = !isTnlM ? e.target.value : Number(e.target.value);
 
@@ -89,13 +90,15 @@ function CustomerFilters({
                 name={date}
                 placeholder={date.replace("_", " ")}
                 format={dateFormat}
-                defaultValue={
-                  filters[date] ? moment(filters[date], dateFormat) : null
+                value={
+                  filters[date] ? dayjs(filters[date], "DD-MM-YYYY") : undefined
                 }
-                onChange={(val) => {
-                  let formattedDate = val.format(dateFormat);
-                  onChangeHandler(formattedDate, date);
-                }}
+                defaultValue={
+                  filters[date] ? dayjs(filters[date], "DD-MM-YYYY") : undefined
+                }
+                onChange={(val, dateString) =>
+                  onChangeHandler(dateString, date)
+                }
               />
             ))}
           </div>
@@ -107,6 +110,10 @@ function CustomerFilters({
               options={dropDownOptions}
               onChange={onChangeOption}
               placeholder='Select one option'
+              value={{
+                label: filters?.transaction_type || filters?.search_type || "",
+                value: filters?.transaction_type || filters?.search_type | "",
+              }}
               defaultValue={{
                 label: filters?.transaction_type || filters?.search_type || "",
                 value: filters?.transaction_type || filters?.search_type | "",
@@ -139,38 +146,58 @@ function CustomerFilters({
         finalFilters={appliedFilters}
         removeFilter={removeFilter}
         clear={clear}
+        open={open}
+        setFilters={setFilters}
       />
     </div>
   );
 }
 
-export const AppliedFilters = ({ finalFilters, removeFilter, clear }) => (
-  <div className='mt-5'>
-    {Object.keys(finalFilters).map((filter) =>
-      finalFilters[filter] !== null ? (
-        <div className='inline-flex bg-[#F3EBFE] m-1 p-1 rounded-md space-x-2 items-center font-bold'>
-          <div className=''>{filter.toUpperCase()}:</div>
-          <div>{finalFilters[filter]}</div>
-          <button
-            className='text-gray-400'
-            onClick={() => removeFilter(filter)}
+export const AppliedFilters = ({
+  finalFilters,
+  removeFilter,
+  clear,
+  open,
+  setFilters,
+}) => {
+  const valueFilters = Object.keys(finalFilters).filter(
+    (x) =>
+      finalFilters[x] !== null &&
+      finalFilters[x] !== "" &&
+      finalFilters[x] !== undefined
+  );
+
+  return (
+    <div className={open ? "mt-5" : ""}>
+      {valueFilters?.map((filter, index) =>
+        finalFilters[filter] ? (
+          <div
+            className='inline-flex bg-[#F3EBFE] m-1 p-1 rounded-md space-x-2 items-center font-bold'
+            key={index}
           >
-            x
-          </button>
-        </div>
-      ) : null
-    )}
-    <div>
-      {Object.keys(finalFilters).length > 0 && (
-        <button
-          onClick={clear}
-          className='bg-[#fc8172] p-1 rounded-lg font-bold text-white'
-        >
-          Clear All
-        </button>
+            <div className=''>{filter.toUpperCase()}:</div>
+            <div>{finalFilters[filter]}</div>
+            <button
+              className='text-gray-400'
+              onClick={() => removeFilter(filter)}
+            >
+              x
+            </button>
+          </div>
+        ) : null
       )}
+      <div>
+        {valueFilters.length > 0 && (
+          <button
+            onClick={clear}
+            className='bg-[#fc8172] p-2 rounded-lg font-bold text-white'
+          >
+            Clear All
+          </button>
+        )}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default CustomerFilters;

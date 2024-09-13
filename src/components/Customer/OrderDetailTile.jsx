@@ -10,6 +10,7 @@ const OrderDetailTile = ({
   status,
   record,
   setOrderModal,
+  setFilterModalOpen,
 }) => {
   const textColor =
     status === "Order Delivered"
@@ -18,12 +19,14 @@ const OrderDetailTile = ({
       ? "text-orange"
       : "tex-red-400";
 
-  const setOrderData = () =>
+  const setOrderData = () => {
+    setFilterModalOpen(false);
     setOrderModal((prev) => ({
       ...prev,
       open: true,
       data: record,
     }));
+  };
 
   const dateArr = date.replace(" GMT", "").split(" ");
   let time = dateArr[dateArr.length - 1];

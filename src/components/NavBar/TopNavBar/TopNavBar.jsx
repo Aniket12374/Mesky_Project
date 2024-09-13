@@ -6,14 +6,19 @@ import _, { debounce } from "lodash";
 import ProfileDropdown from "../../ProfileDropdown/ProfileDropdown";
 import logo from "../../../assets/mesky-logos/mesky_logo_dashboard.svg";
 import { getCustomers } from "../../../services/customerInfo/CustomerInfoService";
-import { setCustomerTokenCookie } from "../../../services/cookiesFunc";
+import {
+  getCookie,
+  setCustomerTokenCookie,
+} from "../../../services/cookiesFunc";
 import { useMainStore } from "../../../store/store";
 
 const TopNavBar = () => {
+  const customerAgent = getCookie("customerAgent") == "true";
+
   return (
     <nav className='fixed top-0 z-50 w-full bg-white'>
-      <div className='px-3 py-3 lg:px-5 lg:pl-3'>
-        <div className='flex items-center justify-between'>
+      <div className=''>
+        <div className='flex items-center justify-between bg-[#7F39FB]'>
           <div className='flex items-center justify-start'>
             <Link to='/' className='flex ml-2 md:mr-24'>
               <Image
@@ -24,7 +29,7 @@ const TopNavBar = () => {
               />
             </Link>
           </div>
-          <Search />
+          {customerAgent && <Search />}
           <div className='flex items-center'>
             <div className='flex justify-between items-center space-x-5'>
               <ProfileDropdown />
@@ -68,6 +73,7 @@ const Search = () => {
       <Select
         showSearch
         optionFilterProp='label'
+        placeholder='Search for phone number...'
         options={options}
         onSearch={debounceFetcher}
         onKeyDown={debounceFetcher}

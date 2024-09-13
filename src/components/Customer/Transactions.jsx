@@ -61,6 +61,7 @@ function Transactions({
       .then((res) => {
         setDebitData(res?.data?.order_details[0]);
         setAddress(res?.data?.address_info);
+        setModalOpen(false);
       })
       .catch((err) => {
         console.log({ err });
@@ -171,6 +172,8 @@ function Transactions({
 
   const trnxTileClassName = modalOpen
     ? "h-[200px] overflow-y-auto transaction-list"
+    : debitData
+    ? "h-[500px] overflow-y-auto transaction-list"
     : "h-[400px] overflow-y-auto transaction-list";
 
   return (
@@ -212,7 +215,7 @@ function Transactions({
           </div>
         ) : (
           <>
-            <div className={trnxTileClassName}>
+            <div className={name ? "h-[80vh]" : trnxTileClassName}>
               <Table
                 columns={transactionHeaders}
                 dataSource={transactions}
@@ -229,6 +232,7 @@ function Transactions({
                 }}
                 showExport={false}
                 showHeader={false}
+                pagination={false}
               />
             </div>
             {showSearch && (
@@ -241,6 +245,7 @@ function Transactions({
                       {range[0]} - {range[1]} of {totalCount} items
                     </div>
                   )}
+                  showQuickJumper
                   onChange={handlePageChange}
                   showSizeChanger={true}
                   pageSizeOptions={pageSizeOptions}

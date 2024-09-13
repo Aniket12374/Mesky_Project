@@ -3,7 +3,7 @@ import { getCookie } from "../services/cookiesFunc";
 const userInitialInfo = () => {
   const token = getCookie("token") ? getCookie("token") : "";
   const email = "";
-  const name = "";
+  const name = "" || getCookie("userName");
   const closeSidebar = "";
   return { token, email, name, closeSidebar };
 };

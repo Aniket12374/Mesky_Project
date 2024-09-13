@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { getCookie, setCookie } from "../services/cookiesFunc";
+import { useMainStore } from "../store/store";
 
 const Login = () => {
   const { register } = useForm();
@@ -15,6 +16,8 @@ const Login = () => {
   const [otpReq, setOtpReq] = useState(false);
   const [message, setMessage] = useState("");
   const [refundUser, setRefundUser] = useState(false);
+
+  const setName = useMainStore((state) => state.setName);
 
   const refundUsers = ["9958945515", "8799712505", "9654787711", "9862532722"];
 
@@ -50,8 +53,10 @@ const Login = () => {
       } else {
         await validateOtp({ otp, signin_type: userInput });
         setCookie("refundUser", refundUser);
-        const isCustomerAgent = getCookie("customerAgent");
+
+        const isCustomerAgent = getCookie("customerAgent") == "true";
         navigate(isCustomerAgent ? "/customer-support" : "/subscription");
+        navigate(0);
       }
     } catch {
       if (otpReq) {

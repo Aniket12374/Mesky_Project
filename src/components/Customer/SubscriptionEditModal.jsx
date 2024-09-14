@@ -108,7 +108,6 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
     day: "",
     dateRangePickerOpen: true,
   });
-  console.log("editData", editData);
 
   const addressId = localStorage.getItem("addressId");
 
@@ -135,34 +134,50 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
       day: alternateDays[0],
     });
 
-    if (editData?.type == "ALTERNATE") {
-      setEditData({
-        ...editData,
-        weekdays: getDayOfWeekAndAlternates(editData?.newStartDate),
+    // Handle alternate type
+    if (editData?.type === "ALTERNATE") {
+      setEditData((prevData) => ({
+        ...prevData,
+        weekdays: getDayOfWeekAndAlternates(prevData?.newStartDate),
         day: alternateDays[0],
-      });
+      }));
     }
-  }, [modalData]);
+
+    return () => {
+      setEditData({
+        quantity: 1,
+        type: "DAILY",
+        weekdays: [],
+        datesRange: [],
+        startDate: null,
+        newStartDate: null,
+        dateRangePicker: false,
+        subscriptionId: null,
+        productId: null,
+        day: null,
+      });
+    };
+  }, [modalData, open]);
 
   const handleTypeChange = (e) => {
-    if (e.target.value == "NO_WEEKENDS") {
-      let days = ["Mon", "Tue", "Wed", "Thu", "Fri"];
-      setEditData({
-        ...editData,
-        weekdays: days,
-      });
-    } else if (e.target.value == "ALTERNATE") {
-      setEditData({
-        ...editData,
-        weekdays: getDayOfWeekAndAlternates(editData?.newStartDate),
-        day: alternateDays[0],
-      });
-    } else {
-      setEditData({
-        ...editData,
-        weekdays: [],
-      });
-    }
+    // if (e.target.value == "NO_WEEKENDS") {
+    //   let days = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+    //   setEditData({
+    //     ...editData,
+    //     weekdays: days,
+    //   });
+    // } else if (e.target.value == "ALTERNATE") {
+    //   setEditData({
+    //     ...editData,
+    //     weekdays: getDayOfWeekAndAlternates(editData?.newStartDate),
+    //     day: alternateDays[0],
+    //   });
+    // } else {
+    //   setEditData({
+    //     ...editData,
+    //     weekdays: [],
+    //   });
+    // }
     setEditData((prev) => ({
       ...prev,
       type: e.target.value,
@@ -245,7 +260,24 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
       handleEdit();
       handleOpenClose();
       toast.success("Successfull");
-      setEditData({});
+      setEditData({
+        quantity: 1,
+        type: "DAILY",
+        weekdays: [],
+        datesRange: [],
+        startDate: null,
+        newStartDate: null,
+        dateRangePicker: false,
+        subscriptionId: null,
+        productId: null,
+        productName: "",
+        offerPrice: null,
+        sellingPrice: null,
+        productImage: null,
+        alternateDay: [],
+        day: "",
+        dateRangePickerOpen: true,
+      });
     } catch (error) {
       toast.error("Error updating subscription:", error.message);
     }
@@ -369,7 +401,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
               <div className="font-semibold">Delivery Schedule</div>
               <Radio.Group onChange={handleTypeChange} value={editData?.type}>
                 <Space direction="vertical">
-                  {deliverySchedule.map((schedule) => {
+                  {deliverySchedule?.map((schedule) => {
                     const label = Object.keys(schedule)[0];
                     const value = schedule[label];
                     return (
@@ -451,7 +483,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
                 <>
                   <div className="py-2 text-[#9DA49E]">Choose Day</div>
                   <div className="flex space-x-2">
-                    {weekDays.map((day) => (
+                    {weekDays?.map((day) => (
                       <div
                         key={day}
                         onClick={() => toggleDaySelection(day)}

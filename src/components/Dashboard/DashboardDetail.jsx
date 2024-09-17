@@ -222,12 +222,12 @@ const DashboardDetail = () => {
       key: "after7",
     },
     {
-      title: "Not Delivered ",
+      title: "Pending ",
       dataIndex: "acceptedCount",
       key: "acceptedCount",
     },
     {
-      title: " Pending ",
+      title: " Not Delivered ",
       dataIndex: "notDelivered",
       key: "notDelivered",
     },

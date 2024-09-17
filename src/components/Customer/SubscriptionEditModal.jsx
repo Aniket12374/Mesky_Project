@@ -266,12 +266,17 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
               "Already subscription created for this product"
             ) {
               toast.error("Already subscription created for this product");
+            } else {
+              toast.success("Successfull");
             }
           })
-        : await updateSubscriptionDeatils(payload);
+        : await updateSubscriptionDeatils(payload).then((res) => {
+            if (res?.status == "200") {
+              toast.success("Successfull");
+            }
+          });
       handleEdit();
       handleOpenClose();
-      toast.success("Successfull");
       setEditData({
         quantity: 1,
         type: "DAILY",
@@ -372,8 +377,8 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
         </div>
       )}
 
-      <div className="flex space-x-2 p-2">
-        <div className="m-1 p-2 border-2 border-gray-200">
+      <div className="flex space-x-2 p-2 shadow-md  rounded-sx">
+        <div className="m-1 p-2">
           <img
             src={product?.images_list?.[0] || createData?.default_image || null}
             width={100}
@@ -393,7 +398,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
             </span>
             <Select
               value={editData?.quantity}
-              className="w-16 ml-12"
+              className="w-16 ml-12 border-none"
               onSelect={handleQuantityChange}
               options={quantityOptions.map((option) => ({
                 label: option,
@@ -401,7 +406,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
               }))}
             />
             <span className="ml-10">
-              <span>₹ {offerPrice}</span>
+              <span className="font-bold">₹ {offerPrice}</span>
               <span className="line-through ml-3 text-[#9DA49E]">
                 ₹ {sellingPrice}
               </span>
@@ -410,7 +415,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
 
           <div className="flex py-4 space-x-4">
             <div>
-              <div className="font-semibold">Delivery Schedule</div>
+              <div className="font-semibold pb-2">Delivery Schedule</div>
               <Radio.Group onChange={handleTypeChange} value={editData?.type}>
                 <Space direction="vertical">
                   {deliverySchedule?.map((schedule) => {
@@ -429,7 +434,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
             <div>
               <div className="flex space-x-2">
                 <div>
-                  <div>Starting from</div>
+                  <div className="text-[#9DA49E]">Starting from</div>
 
                   <DatePicker
                     // {...(!isCreateSubscription
@@ -595,7 +600,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
 
       <div className="flex justify-end mt-4">
         <button
-          className="bg-[#FB8171] text-white px-4 py-2 rounded-md"
+          className="bg-[#FB8171] text-white py-2 rounded-md px-12"
           onClick={handleAttachTicket}
         >
           AttachTicket

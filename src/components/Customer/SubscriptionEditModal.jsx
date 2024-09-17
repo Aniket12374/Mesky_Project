@@ -12,8 +12,10 @@ import MagnifyingGlass from "../../assets/MagnifyingGlass.png";
 import toast from "react-hot-toast";
 import {
   getDayOfWeekAndAlternates,
+  getTomorrowDate,
   showWarningToast,
 } from "../../utility/common";
+import dayjs from "dayjs";
 
 const { RangePicker } = DatePicker;
 const weekDays = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
@@ -90,13 +92,15 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
     product_id,
   } = data;
 
+  const defaultDate = getTomorrowDate();
+
   const [editData, setEditData] = useState({
     quantity: initialQty || 1,
     type: subscription_type?.type || "DAILY",
     weekdays: subscription_type?.days || [],
     datesRange: dates_range || [],
     startDate: start_date || null,
-    newStartDate: null,
+    newStartDate: defaultDate,
     dateRangePicker: false,
     subscriptionId: id || null,
     productId: product_id || null,
@@ -121,13 +125,14 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
   const alternateDays = getDayOfWeekAndAlternates(editData?.newStartDate);
 
   useEffect(() => {
+    editData?.weekdays;
     setEditData({
       quantity: initialQty || 1,
       type: subscription_type?.type || "DAILY",
       weekdays: subscription_type?.days || [],
       datesRange: dates_range || [],
       startDate: start_date || null,
-      newStartDate: null,
+      newStartDate: defaultDate || null,
       dateRangePicker: false,
       subscriptionId: id || null,
       productId: product_id || null,
@@ -255,7 +260,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
       };
 
       isCreateSubscription
-        ? await createSubscriptionDeatils(payload).then((res) => {   
+        ? await createSubscriptionDeatils(payload).then((res) => {
             if (
               res?.data?.message ==
               "Already subscription created for this product"
@@ -427,16 +432,21 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
                   <div>Starting from</div>
 
                   <DatePicker
-                    {...(!isCreateSubscription
-                      ? {
-                          value: moment(editData.startDate, dateFormat),
-                        }
-                      : {})}
+                    // {...(!isCreateSubscription
+                    //   ? {
+                    //       value: moment(editData.startDate, dateFormat),
+                    //     }
+                    //   : {})}
                     // defaultValue={
                     //   !isCreateSubscription
-                    //     ? moment(editData.startDate, dateFormat)
-                    //     : undefined
+                    //     ? dayjs(editData.startDate, dateFormat)
+                    //     : dayjs(defaultDate, dateFormat)
                     // }
+                    value={
+                      !isCreateSubscription
+                        ? dayjs(editData.startDate, dateFormat)
+                        : dayjs(editData?.newStartDate, dateFormat)
+                    }
                     format={dateFormat}
                     disabledDate={disabledPastDate}
                     onChange={(_, dateString) => {
@@ -465,7 +475,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
                       // value={
                       //   editData?.startDate
                       //     ? moment(editData.startDate, dateFormat)
-                      //     : null
+                      //     : undefined
                       // }
                       format={dateFormat}
                       disabledDate={disabledPastDate}

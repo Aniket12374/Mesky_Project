@@ -43,3 +43,17 @@ export const showWarningToast = (message) => {
     },
   });
 };
+
+export const getTomorrowDate = () => {
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+
+  const day = String(tomorrow.getDate()).padStart(2, "0"); // Get day and pad with 0 if necessary
+  const month = String(tomorrow.getMonth() + 1).padStart(2, "0"); // Get month (0-based index, so add 1)
+  const year = tomorrow.getFullYear(); // Get year
+
+  return `${day}-${month}-${year}`; // Return in DD-MM-YYYY format
+};
+
+console.log(getTomorrowDate()); // e.g. 18-09-2024

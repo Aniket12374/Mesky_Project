@@ -28,10 +28,14 @@ const DashboardDetail = () => {
   useEffect(() => {
     const after7 = cityWise?.city_wise_count_after_7 || {};
     const before7 = cityWise?.city_wise_count_before_7 || {};
+    const acceptedCount = cityWise?.accepted_city_wise_before_count || {};
+    const notDelivered = cityWise?.not_delivered_city_wise_before_count || {};
 
     const combinedKeys = new Set([
       ...Object.keys(before7),
       ...Object.keys(after7),
+      ...Object.keys(acceptedCount),
+      ...Object.keys(notDelivered),
     ]);
 
     const parsedData = Array.from(combinedKeys).map((key) => {
@@ -40,6 +44,8 @@ const DashboardDetail = () => {
         "City, State": `${city}, ${state}`,
         before7: before7[key] || 0,
         after7: after7[key] || 0,
+        acceptedCount: acceptedCount[key] || 0,
+        notDelivered: notDelivered[key] || 0,
       };
     });
 
@@ -203,6 +209,7 @@ const DashboardDetail = () => {
       title: "City, State",
       dataIndex: "City, State",
       key: "City, State",
+      width : 100
     },
     {
       title: " Before 7",
@@ -213,6 +220,16 @@ const DashboardDetail = () => {
       title: " After 7",
       dataIndex: "after7",
       key: "after7",
+    },
+    {
+      title: "Not Delivered ",
+      dataIndex: "acceptedCount",
+      key: "acceptedCount",
+    },
+    {
+      title: " Pending ",
+      dataIndex: "notDelivered",
+      key: "notDelivered",
     },
   ];
 

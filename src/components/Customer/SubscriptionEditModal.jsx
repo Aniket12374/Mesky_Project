@@ -255,7 +255,14 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
       };
 
       isCreateSubscription
-        ? await createSubscriptionDeatils(payload)
+        ? await createSubscriptionDeatils(payload).then((res) => {   
+            if (
+              res?.data?.message ==
+              "Already subscription created for this product"
+            ) {
+              toast.error("Already subscription created for this product");
+            }
+          })
         : await updateSubscriptionDeatils(payload);
       handleEdit();
       handleOpenClose();
@@ -425,6 +432,11 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
                           value: moment(editData.startDate, dateFormat),
                         }
                       : {})}
+                    // defaultValue={
+                    //   !isCreateSubscription
+                    //     ? moment(editData.startDate, dateFormat)
+                    //     : undefined
+                    // }
                     format={dateFormat}
                     disabledDate={disabledPastDate}
                     onChange={(_, dateString) => {

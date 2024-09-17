@@ -108,11 +108,11 @@ const SubscriptionData = ({ tab, modalData, setModalData }) => {
               </div>
               <div className="flex-1">
                 <div>{product?.product_sn}</div>
-                <div className="">
+                <div className="flex justify-between">
                   <span>
                     {product?.dprod_unit_qty} x {quantity}
                   </span>
-                  <span className="ml-10">
+                  <span className="ml-10 w-[50%]">
                     <span>₹ {product?.offer_price}</span>
                     <span className="line-through ml-3">
                       ₹ {product?.selling_price}

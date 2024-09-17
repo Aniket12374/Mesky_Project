@@ -70,7 +70,7 @@ function DebounceSelect({ fetchOptions, debounceTimeout = 800, ...props }) {
               />
               <span>{option.label}</span>
             </div>
-            {/* <div>₹{option.price}</div> */}
+            <div>₹{option.price}</div>
           </div>
         </Option>
       ))}

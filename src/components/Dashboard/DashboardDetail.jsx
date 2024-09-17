@@ -222,7 +222,7 @@ const DashboardDetail = () => {
       key: "after7",
     },
     {
-      title: " Delivered ",
+      title: "Not Delivered ",
       dataIndex: "acceptedCount",
       key: "acceptedCount",
     },

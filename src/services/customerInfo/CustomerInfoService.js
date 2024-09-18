@@ -1,4 +1,5 @@
 import { httpVendor, httpCustomerAgent } from "../api-client";
+import { getCustomerTokenFromCookie } from "../cookiesFunc";
 
 export const getCustomers = (searchTerm, _start = 0, _end = 20) => {
   return httpVendor.get(
@@ -21,20 +22,28 @@ export const customerInfo = (
 
 export const getSubscriptions = (activeType) => {
   return httpVendor.get(
-    `api/subscription/list?subscription_type=${activeType}`
+    `api/subscription/list?subscription_type=${activeType}`,
+    {
+      headers: {
+        Authorization: getCustomerTokenFromCookie(),
+      },
+    }
   );
 };
 
 export const updateSubscriptionDeatils = (payload) => {
-  return httpVendor.put(`api/support_dash/update_subscription`, payload);
+  return httpCustomerAgent.put(`api/support_dash/update_subscription`, payload);
 };
 
 export const createSubscriptionDeatils = (payload) => {
-  return httpVendor.post(`api/support_dash/create_subscription`, payload);
+  return httpCustomerAgent.post(
+    `api/support_dash/create_subscription`,
+    payload
+  );
 };
 
 export const searchProductList = (search) => {
-  return httpVendor.get(`api/support_dash/search-product?q=${search}`);
+  return httpCustomerAgent.get(`api/support_dash/search-product?q=${search}`);
 };
 
 export const updateInfo = (payload) => {

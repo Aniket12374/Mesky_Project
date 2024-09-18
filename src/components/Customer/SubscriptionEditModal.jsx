@@ -1,4 +1,13 @@
-import { Checkbox, Modal, Radio, Select, Space, DatePicker, Spin } from "antd";
+import {
+  Checkbox,
+  Modal,
+  Radio,
+  Select,
+  Space,
+  DatePicker,
+  Spin,
+  Button,
+} from "antd";
 import React, { useEffect, useState, useMemo, useRef } from "react";
 import trashBin from "../../assets/delt-bin.png";
 import moment from "moment";
@@ -93,13 +102,14 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
   } = data;
 
   const defaultDate = getTomorrowDate();
-
+  // const [pauseDate, setPauseDate] = useState([]);
   const [editData, setEditData] = useState({
     quantity: initialQty || 1,
     type: subscription_type?.type || "DAILY",
     weekdays: subscription_type?.days || [],
     datesRange: dates_range || [],
     startDate: start_date || null,
+    pauseDate: [] || null,
     newStartDate: defaultDate,
     dateRangePicker: false,
     subscriptionId: id || null,
@@ -204,12 +214,13 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
     if (dateStrings[0] && dateStrings[1]) {
       setEditData((prev) => ({
         ...prev,
-        datesRange: [
-          ...prev.datesRange,
-          { start_date: dateStrings[0], end_date: dateStrings[1] },
-        ],
+        pauseDateRange: {
+          start_date: dateStrings[0],
+          end_date: dateStrings[1],
+        },
+
         dateRangePickerOpen: false,
-        dateRangePicker: false,
+        // dateRangePicker: false,
       }));
     }
   };
@@ -217,6 +228,15 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
     setEditData((prev) => ({
       ...prev,
       dateRangePickerOpen: open,
+    }));
+  };
+
+  const handleOk = () => {
+    setEditData((prev) => ({
+      ...prev,
+      datesRange: [...prev.datesRange, editData?.pauseDateRange],
+      dateRangePickerOpen: false,
+      dateRangePicker: false,
     }));
   };
 
@@ -397,8 +417,8 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
               {product?.dprod_unit_qty || createData?.dprod_unit_qty}
             </span>
             <Select
-              value={editData?.quantity}
-              className="subscription-edit-modal w-16 ml-12"
+              value={`Qty ${editData?.quantity}`}
+              className="subscription-edit-modal w-16 ml-12 w-[80px]"
               onSelect={handleQuantityChange}
               options={quantityOptions.map((option) => ({
                 label: option,
@@ -414,7 +434,9 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
           </div>
           <div className="flex py-4 space-x-4">
             <div>
-              <div className="font-semibold pb-2 font-roboto">Delivery Schedule</div>
+              <div className="font-semibold pb-2 font-roboto">
+                Delivery Schedule
+              </div>
               <Radio.Group
                 onChange={handleTypeChange}
                 value={editData?.type}
@@ -543,7 +565,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
         <div className="flex justify-end space-x-2">
           <div>
             {editData?.dateRangePicker && (
-              <div className="flex py-2">
+              <div className=" px-2 py-2">
                 <RangePicker
                   format={dateFormat}
                   id={{
@@ -557,6 +579,17 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
                   open={editData?.dateRangePickerOpen}
                   onOpenChange={handleOpenChange}
                 />
+                <div className="py-1 flex justify-center">
+                  <Button
+                    key="ok"
+                    type="primary"
+                    onClick={handleOk}
+                    disabled={editData?.pauseDateRange == null}
+                    // onChange={handlePauseDateChange}
+                  >
+                    Set Pause Date
+                  </Button>
+                </div>
               </div>
             )}
           </div>
@@ -570,6 +603,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
               setEditData((prev) => ({
                 ...prev,
                 dateRangePicker: !prev.dateRangePicker,
+                pauseDateRange: null,
               }))
             }
           >

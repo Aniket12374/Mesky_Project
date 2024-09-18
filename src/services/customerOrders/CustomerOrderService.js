@@ -25,7 +25,7 @@ export const getOrders = (page = 1, size = 5, filters = {}) => {
 
   const end = start + size;
   return httpVendor.get(
-    `api/order/subscription/delivery/history?_start=${start}&_end=${end}${filtersAppend}&is_csd=true&filter_by_status=DELIVERED`,
+    `api/order/subscription/delivery/history?_start=${start}&_end=${end}${filtersAppend}&is_csd=true`,
     {
       headers: {
         Authorization: getCustomerTokenFromCookie(),

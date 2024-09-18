@@ -16,7 +16,7 @@ const OrderDetailTile = ({
     status === "Order Delivered"
       ? "text-[#27AE60]"
       : status !== "Paused"
-      ? "text-orange"
+      ? "text-[#FB8171]"
       : "tex-red-400";
 
   const setOrderData = () => {
@@ -42,7 +42,9 @@ const OrderDetailTile = ({
       <div className='card flex justify-between  m-2'>
         <div className='flex justify-between items-center'>
           <div className={`border-b-2 border-gray-200 text-xs ${textColor}`}>
-            Delivered on {finalDate}
+            {status === "ACCEPTED"
+              ? "To be delivered today/tomorrow between 5 to 8 am"
+              : `Delivered on ${finalDate}`}
           </div>
           <div className='text-[#DF4584] font-bold text-lg'>₹ {price}</div>
         </div>

@@ -71,7 +71,7 @@ function CustomerPopup({
 
   return (
     <Modal
-      className='fredoka-400'
+      className='roboto400'
       centered
       width={700}
       open={open}

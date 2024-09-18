@@ -1,21 +1,21 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap");
 
-.fredoka-400 {
+.roboto-400 {
   font-family: "Roboto", sans-serif;
   font-weight: 400;
 }
 
-.fredoka-500 {
+.roboto-500 {
   font-family: "Roboto", sans-serif;
   font-weight: 500;
 }
 
-.fredoka-600 {
+.roboto-600 {
   font-family: "Roboto", sans-serif;
   font-weight: 600;
 }
 
-.fredoka-700 {
+.roboto-700 {
   font-family: "Roboto", sans-serif;
   font-weight: 700;
 }
@@ -234,13 +234,18 @@ body {
 }
 
 span.ant-switch-inner {
-  border: 1px solid gray;
-  background-color: gray;
+  border: 1px solid rgb(139, 138, 138);
+  background-color: #9a9f9b69;
 }
 
 .ant-switch-checked span.ant-switch-inner {
   border: 1px solid gray;
   background-color: #1677ff;
+}
+
+.return-switch .ant-switch-checked span.ant-switch-inner {
+  border: 1px solid gray;
+  background-color: #4d0a8c;
 }
 
 .gray-color {
@@ -257,4 +262,15 @@ span.ant-switch-inner {
 
 li.ant-pagination-options {
   margin-top: 10px;
+}
+
+.trns-70 {
+  transform: translateX(-140px);
+  width: 140px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+}
+
+.ant-dropdown-menu-item {
+  background-color: #fc8172 !important;
+  color: white !important;
 }

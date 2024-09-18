@@ -23,6 +23,10 @@ const OrderListing = ({ token }) => {
   const [address, setAddress] = useState({});
   const [totalCount, setTotalCount] = useState(2000);
   const [shouldFetch, setShouldFetch] = useState(true);
+  const [createOrderModal, setCreateOrderModal] = useState({
+    open: false,
+    data: "",
+  });
 
   const closeModal = () => setFilterModalOpen((prev) => !prev);
   const closeOrderModal = () =>
@@ -35,15 +39,15 @@ const OrderListing = ({ token }) => {
     [`getOrders_${token}`, currentPage, size, finalFilters, token],
     () => getOrders(currentPage, size, finalFilters),
     {
-      enabled: shouldFetch, // Only fetch when shouldFetch is true
-      keepPreviousData: true, // This keeps the old data until the new one arrives
+      enabled: shouldFetch,
+      keepPreviousData: true,
       onSuccess: (res) => {
         setShouldFetch(false);
         setAddress(res?.data?.address_info);
-        const finalOrders = res?.data?.order_details.filter(
-          (x) => x?.status === "Order Delivered"
-        );
-        setOrders(finalOrders);
+        // const finalOrders = res?.data?.order_details.filter(
+        //   (x) => x?.status === "Order Delivered"
+        // );
+        setOrders(res?.data?.order_details);
         setTotalCount(res?.data?.totalcount || 0);
       },
       onError: () => {

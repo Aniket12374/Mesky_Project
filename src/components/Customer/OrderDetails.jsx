@@ -1,8 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import { ProductCard } from "../../utils";
+import EditExistingDeliveredOrder from "./EditExistingDeliveredOrder";
 
 export const OrderDetails = ({ data, closeOrderModal, address }) => {
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [showdropDown, setShowDropDown] = useState(false);
+  const editModal = () => setEditModalOpen((prev) => !prev);
   const { order_id, date, orderitem_info, delivery_images = [] } = data;
+
+  const handleDropDown = (e) => {
+    setShowDropDown(true);
+    e.stopPropagation();
+  };
 
   const billDetails = {
     "Sub Total": <span className='flex'>₹ {orderitem_info?.total_price}</span>,
@@ -24,14 +33,33 @@ export const OrderDetails = ({ data, closeOrderModal, address }) => {
 
   const billKeys = Object.keys(billDetails);
 
+  console.log({ showdropDown });
+
   return (
-    <div className='p-2'>
-      <button
-        onClick={closeOrderModal}
-        className='rounded-full border-2 border-gray-400 w-8 h-8 flex justify-center items-center'
-      >
-        <i class='fa-sharp fa-solid fa-arrow-left text-2xl'></i>
-      </button>
+    <div className='p-2' onClick={() => setShowDropDown(false)}>
+      <div className='flex justify-between'>
+        <button
+          onClick={closeOrderModal}
+          className='rounded-full border-2 border-gray-400 w-8 h-8 flex justify-center items-center'
+        >
+          <i class='fa-sharp fa-solid fa-arrow-left text-2xl'></i>
+        </button>
+        <div className='relative'>
+          <button onClick={handleDropDown}>
+            <i class='fa fa-ellipsis-v' aria-hidden='true'></i>
+          </button>
+          {showdropDown && (
+            <div className='dropdown-options z-40 shadow-md bg-gray-300  w-full'>
+              <div
+                className='option p-2 hover:bg-[#FB8171] hover:text-white absolute trns-70 bg-gray-200  cursor-pointer'
+                onClick={editModal}
+              >
+                Update Order
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
       {!orderId ? (
         <div className='text-lg text-red-500 text-center'>Paused Order</div>
       ) : null}
@@ -86,13 +114,22 @@ export const OrderDetails = ({ data, closeOrderModal, address }) => {
         </div>
         <div className='flex justify-center mt-2'>
           <img
-            src={delivery_images.length > 0 ? delivery_images[0] : null}
+            src={delivery_images?.length > 0 ? delivery_images[0] : null}
             alt='delivered-img'
             height={200}
             width={200}
           />
         </div>
       </div>
+      <EditExistingDeliveredOrder
+        data={data}
+        open={editModalOpen}
+        setOpen={setEditModalOpen}
+        product={orderitem_info}
+        orderId={orderId}
+        deliveredDate={date}
+        isTmrOrder={data?.status === "ACCEPTED"}
+      />
     </div>
   );
 };

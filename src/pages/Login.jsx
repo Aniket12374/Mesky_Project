@@ -71,7 +71,7 @@ const Login = () => {
       <div className='w-96 bg-base-100 shadow-2xl rounded-xl border-2'>
         <div className='my-8 flex flex-col items-center space-y-2'>
           <img src={meskyLogo} alt='mesky logo' style={{ height: "50px" }} />
-          <div className='fredoka-600 text-4xl '>MESKY Delivery</div>
+          <div className='roboto600 text-4xl '>MESKY Delivery</div>
         </div>
         <div>
           <div className='flex flex-col justify-center items-center space-y-4'>

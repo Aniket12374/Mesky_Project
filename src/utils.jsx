@@ -113,8 +113,16 @@ export const ProductCard = ({ product, quantity, children }) => (
             </span> */}
           </span>
         </div>
+        <div>{children}</div>
       </div>
-      {children}
     </div>
   </div>
 );
+
+// export const getDetails = async (lat, lng) => {
+//   const response = await fetch(
+//     `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyDxlOnemM9mgMZDcjI5BVHtbiSwuM7A2KE`
+//   );
+
+//   return response.json();
+// };

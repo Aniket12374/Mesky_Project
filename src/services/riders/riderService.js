@@ -23,3 +23,7 @@ export const modifyRider = (data) => {
 export const getRiderHistory = (id) => {
   return httpVendor.get(`/api/delivery/portal/rider/history?rider_id=${id}`);
 };
+
+export const getRiderData = (riderId) => {
+  return httpVendor.get(`api/delivery/portal/rider?rider_id=${riderId}`);
+};

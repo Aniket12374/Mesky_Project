@@ -3,6 +3,7 @@ import Button from "../Common/Button";
 import DataTable from "../Common/DataTable/DataTable";
 import { useEffect, useState } from "react";
 import {
+  getRiderData,
   getRiderHistory,
   getSocieties,
   modifyRider,
@@ -27,6 +28,13 @@ const AgentDetail = ({
   const [agent, setAgent] = useState({});
   const [historyData, setHistoryData] = useState([]);
   const [editable, setEditable] = useState(false);
+  const [documents, setDocuments] = useState({
+    "Pollution Chalan": "",
+    "Vehicle Insurance": "",
+    "Vehicle No Plate Image": "",
+    "Vehicle RC": "",
+    "Driver License": "",
+  });
 
   useEffect(() => {
     getSocieties().then((res) => {
@@ -71,6 +79,22 @@ const AgentDetail = ({
 
       setHistoryData(list);
     });
+  }, []);
+
+  useEffect(() => {
+    getRiderData(rowData?.s_no)
+      .then((res) => {
+        const data = res?.data;
+        const { poll_ch, veh_ins, veh_n_pl_im, veh_rc, dl } = data;
+        setDocuments({
+          "Pollution Chalan": poll_ch,
+          "Vehicle Insurance": veh_ins,
+          "Vehicle No Plate Image": veh_n_pl_im,
+          "Vehicle RC": veh_rc,
+          "Driver License": dl,
+        });
+      })
+      .catch((err) => console.log({ err }));
   }, []);
 
   const handleChange = (key, value) => {
@@ -221,27 +245,27 @@ const AgentDetail = ({
 
   return (
     <div>
-      <div className="text-3xl font-semibold">{rowData?.agent_name}</div>
-      <div className="flex justify-end">
+      <div className='text-3xl font-semibold'>{rowData?.agent_name}</div>
+      <div className='flex justify-end'>
         {!editable && (
           <Button
             btnName={"Edit"}
             onClick={() => setEditable(true)}
-            className="w-32"
+            className='w-32'
           />
         )}
         {editable && (
-          <Button btnName={"Save"} onClick={handleEditAgent} className="w-32" />
+          <Button btnName={"Save"} onClick={handleEditAgent} className='w-32' />
         )}
-        <Button btnName={"Cancel"} onClick={handleCancel} className="w-32" />
+        <Button btnName={"Cancel"} onClick={handleCancel} className='w-32' />
       </div>
-      <div className="flex space-x-5 w-full justify-start">
-        <div className="w-[40%] space-y-2">
-          <div className="">
+      <div className='flex space-x-5 w-full justify-start'>
+        <div className='w-[40%] space-y-2'>
+          <div className=''>
             <label>Phone Number</label>
             <input
-              type="text"
-              className="w-full h-12 rounded-lg border-select__control  p-2"
+              type='text'
+              className='w-full h-12 rounded-lg border-select__control  p-2'
               value={agent?.phone_number}
               disabled={!editable}
               onChange={handleChangePhoneNum}
@@ -251,22 +275,22 @@ const AgentDetail = ({
           <label>Status</label>
           <Select
             options={statusOptions}
-            className="w-full"
+            className='w-full'
             value={{ label: agent?.status, value: agent?.status }}
             onChange={(option) => handleOptionChange(option, "status")}
-            classNamePrefix="border-select"
+            classNamePrefix='border-select'
             isDisabled={!editable}
           />
         </div>
-        <div className="w-[40%]">
+        <div className='w-[40%]'>
           <label>Assigned Area</label>
           <Select
             options={socitiesList}
             isMulti={true}
-            placeholder="Please select areas"
+            placeholder='Please select areas'
             onChange={handleSelectOption}
-            className="w-full"
-            classNamePrefix="border-select"
+            className='w-full'
+            classNamePrefix='border-select'
             value={socitiesList.filter((society) =>
               agent?.assigned_area.includes(society.label)
             )}
@@ -274,7 +298,24 @@ const AgentDetail = ({
           />
         </div>
       </div>
-      <div className="font-bold text-2xl pt-5">Delivery History</div>
+      <div className='font-bold text-2xl pt-5'>Agent Documents</div>
+      <div>
+        {Object.entries(documents)?.map(([documentName, documentVal]) => (
+          <div className='flex space-x-2 my-3'>
+            <div>{documentName} :</div>
+            {documentVal ? (
+              <a href={documentVal} download>
+                <button className='bg-red-400 text-white p-2 rounded-md'>
+                  Download
+                </button>
+              </a>
+            ) : (
+              <div className='text-red-300 ml-3'>No Document Present</div>
+            )}
+          </div>
+        ))}
+      </div>
+      <div className='font-bold text-2xl pt-5'>Delivery History</div>
       <div>
         <DataTable
           data={historyData}

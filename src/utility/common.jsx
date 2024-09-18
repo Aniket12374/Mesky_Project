@@ -56,4 +56,4 @@ export const getTomorrowDate = () => {
   return `${day}-${month}-${year}`; // Return in DD-MM-YYYY format
 };
 
-console.log(getTomorrowDate()); // e.g. 18-09-2024
+

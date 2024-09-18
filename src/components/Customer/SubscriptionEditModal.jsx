@@ -355,7 +355,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
       }}
     >
       {isCreateSubscription && (
-        <div className="pb-3 flex justify-center">
+        <div className="pb-3 flex justify-center ">
           <DebounceSelect
             mode="single"
             value={value}
@@ -389,7 +389,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
         </div>
 
         <div>
-          <div className="font-semibold">
+          <div className="font-semibold font-roboto">
             {product?.product_sn || editData?.productName}
           </div>
           <div className="flex items-center">
@@ -398,7 +398,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
             </span>
             <Select
               value={editData?.quantity}
-              className="w-16 ml-12 border-none"
+              className="subscription-edit-modal w-16 ml-12"
               onSelect={handleQuantityChange}
               options={quantityOptions.map((option) => ({
                 label: option,
@@ -406,23 +406,30 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
               }))}
             />
             <span className="ml-10">
-              <span className="font-bold">₹ {offerPrice}</span>
-              <span className="line-through ml-3 text-[#9DA49E]">
+              <span className="font-semibold">₹ {offerPrice}</span>
+              <span className="line-through px-2 text-[#9DA49E]">
                 ₹ {sellingPrice}
               </span>
             </span>
           </div>
-
           <div className="flex py-4 space-x-4">
             <div>
-              <div className="font-semibold pb-2">Delivery Schedule</div>
-              <Radio.Group onChange={handleTypeChange} value={editData?.type}>
+              <div className="font-semibold pb-2 font-roboto">Delivery Schedule</div>
+              <Radio.Group
+                onChange={handleTypeChange}
+                value={editData?.type}
+                className="custom-radio-group"
+              >
                 <Space direction="vertical">
                   {deliverySchedule?.map((schedule) => {
                     const label = Object.keys(schedule)[0];
                     const value = schedule[label];
                     return (
-                      <Radio key={label} value={value}>
+                      <Radio
+                        key={label}
+                        value={value}
+                        className="subscription-selector"
+                      >
                         <p className="text-[#9DA49E]">{label}</p>
                       </Radio>
                     );

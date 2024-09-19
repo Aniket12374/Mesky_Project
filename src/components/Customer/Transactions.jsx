@@ -246,7 +246,6 @@ function Transactions({
                       {range[0]} - {range[1]} of {totalCount} items
                     </div>
                   )}
-                  showQuickJumper
                   onChange={handlePageChange}
                   showSizeChanger={true}
                   pageSizeOptions={pageSizeOptions}

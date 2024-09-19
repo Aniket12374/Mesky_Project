@@ -1,14 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../components/Layout/Layout";
-import { useMainStore } from "../store/store";
-import { getDetails, Header } from "../utils";
 import Cookies from "js-cookie";
-import DashboardDetail from "../components/Dashboard/DashboardDetail";
 import dayjs from "dayjs";
 import CustomerDashboard from "../components/Customer/CustomerDashboard";
-import { Button } from "antd";
-import Address from "../components/Customer/AddressMap";
 
 const CustomerDashboardMain = () => {
   const navigate = useNavigate();

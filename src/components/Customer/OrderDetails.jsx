@@ -83,11 +83,10 @@ export const OrderDetails = ({ data, closeOrderModal, address }) => {
         <ProductCard
           product={orderitem_info}
           quantity={orderitem_info?.quantity}
-        >
-          <div></div>
-        </ProductCard>
+          className='mt-2 customer-shadow'
+        ></ProductCard>
       </div>
-      <div className='bill-details shadow-md p-4'>
+      <div className='bill-details customer-shadow p-4'>
         <div className='font-bold text-sm'>Bill Details</div>
         <div className='mt-2 text-sm'>
           {billKeys.map((x, index) => (

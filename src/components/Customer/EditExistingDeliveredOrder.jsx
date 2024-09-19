@@ -104,9 +104,14 @@ function EditExistingDeliveredOrder({
                 ? "Select the products and their quantities to be updated"
                 : "Edit Existing Product"}
             </div>
-            <ProductCard product={product} quantity={quantity}>
+            <ProductCard
+              product={product}
+              quantity={quantity}
+              showQty={false}
+              className='customer-shadow mt-2 p-2 rounded-md'
+            >
               {!isTmrOrder ? (
-                <div className='flex flex-wrap'>
+                <div className='flex flex-wrap mt-1'>
                   <div className='qty'>
                     <div className='gray-color'>Qty</div>
                     <div>{product?.quantity}</div>
@@ -231,9 +236,14 @@ function EditExistingDeliveredOrder({
                 ? "Verify your return/refund products and amount below"
                 : "Verify your final product and amount below"}
             </div>
-            <ProductCard product={product} quantity={quantity}>
+            <ProductCard
+              product={product}
+              quantity={quantity}
+              showQty={false}
+              className='customer-shadow mt-2 p-2 rounded-md'
+            >
               {!isTmrOrder ? (
-                <div className='flex space-x-3'>
+                <div className='flex space-x-3 mt-1'>
                   <div className='price text-center'>
                     <div className='gray-color'>Price</div>
                     <div className='flex space-x-2'>
@@ -324,7 +334,7 @@ const Summary = ({
   const summaryTotal = isTmrOrder ? newOrderSummary : refundSummary;
   return (
     <React.Fragment>
-      <div className='p-2 shadow-md roboto-400'>
+      <div className='p-2 customer-shadow my-5 roboto-400'>
         <div className='font-semibold mb-3 mt-1'>
           {isTmrOrder ? "New Order Details" : "Refund Details"}
         </div>
@@ -344,7 +354,7 @@ const Summary = ({
           </div>
         )}
       </div>
-      <div className='order-summary mt-3 shadow-md p-2 mb-5'>
+      <div className='order-summary customer-shadow p-2 mb-5'>
         <div className='font-semibold mb-3'>Order Summary</div>
         {Object.entries(summaryTotal).map(([summaryKey, summaryVal], index) => (
           <div

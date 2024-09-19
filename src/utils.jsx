@@ -82,26 +82,32 @@ export const transactionName = (record) => {
     : `Refund for Order ID:  ${orderId}`;
 };
 
-export const ProductCard = ({ product, quantity, children }) => (
-  <div>
-    <div className='flex justify-between space-x-2 p-2 shadow-md'>
-      <div className='m-1 p-2 border-2 border-gray-200 text-sm'>
-        <img
-          src={
-            product?.default_image
-              ? product?.default_image
-              : product?.images_list.length > 0
-              ? product?.images_list[0]
-              : null
-          }
-          width={50}
-          height={50}
-          className='rounded-lg'
-          alt='sub_img'
-        />
-      </div>
-      <div className='flex-1'>
-        <div>{product?.product_sn}</div>
+export const ProductCard = ({
+  product,
+  quantity,
+  showQty = true,
+  className = "",
+  children,
+}) => (
+  <div className={`product-card flex justify-between space-x-2 ${className}`}>
+    <div className='m-1 p-2 border border-gray-200 rounded-md text-sm'>
+      <img
+        src={
+          product?.default_image
+            ? product.default_image
+            : product?.images_list?.length > 0
+            ? product?.images_list[0]
+            : null
+        }
+        width={50}
+        height={50}
+        className='rounded-lg'
+        alt='sub_img'
+      />
+    </div>
+    <div className='flex-1'>
+      <div className='roboto-500'>{product?.product_sn}</div>
+      {showQty && (
         <div className='flex justify-between mt-2 text-xs'>
           <span className='gray-color'>
             {product?.dprod_unit_qty} x {quantity}
@@ -113,8 +119,8 @@ export const ProductCard = ({ product, quantity, children }) => (
             </span> */}
           </span>
         </div>
-        <div>{children}</div>
-      </div>
+      )}
+      <div>{children}</div>
     </div>
   </div>
 );

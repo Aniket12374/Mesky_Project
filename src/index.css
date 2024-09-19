@@ -274,3 +274,8 @@ li.ant-pagination-options {
   background-color: #fc8172 !important;
   color: white !important;
 }
+
+.customer-shadow {
+  box-shadow: 1px 1px 6px 1px #dadada;
+  border-radius: 7px;
+}

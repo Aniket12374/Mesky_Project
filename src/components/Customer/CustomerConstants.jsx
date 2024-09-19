@@ -20,32 +20,20 @@ export const OrderOptions = {
   "Item Id": "item_id",
 };
 
-const items = [
-  {
-    key: "1",
-    label: (
-      <a
-        target='_blank'
-        rel='noopener noreferrer'
-        href='https://www.antgroup.com'
-      >
-        1st menu item
-      </a>
-    ),
-  },
-];
-
 export const OrderTnxHeader = ({
   setModalOpen,
   name,
   showSearch,
   placeholder,
+  handleOC,
 }) => {
   return (
-    <div className='flex flex-wrap items-center'>
-      <Header text={name || "Transactions"} className='m-2 mr-3' />
+    <div className='flex flex-wrap space-x-2 items-center'>
+      <div className='font-semibold m-2 mr-3 text-xl'>
+        {name || "Transactions"}
+      </div>
       {showSearch && (
-        <div className='mt-2 mr-1 cursor-pointer'>
+        <div className='mt-2 mr-2 cursor-pointer'>
           <button
             className='border border-gray-200 text-xs text-gray-300 p-1 rounded-md'
             onClick={() => setModalOpen(true)}
@@ -64,7 +52,7 @@ export const OrderTnxHeader = ({
             items: [
               {
                 key: "1",
-                label: <div>Create Order</div>,
+                label: <div onClick={handleOC}>Create Order</div>,
               },
             ],
           }}

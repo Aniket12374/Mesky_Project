@@ -6,6 +6,7 @@ import CustomerFilters from "./CustomerFilters";
 import OrderDetailTile from "./OrderDetailTile";
 import { OrderTnxHeader } from "./CustomerConstants";
 import { getOrders } from "../../services/customerOrders/CustomerOrderService";
+import NewOrderCreation from "./NewOrderCreation";
 
 const OrderListing = ({ token }) => {
   const [orders, setOrders] = useState([]);
@@ -23,10 +24,9 @@ const OrderListing = ({ token }) => {
   const [address, setAddress] = useState({});
   const [totalCount, setTotalCount] = useState(2000);
   const [shouldFetch, setShouldFetch] = useState(true);
-  const [createOrderModal, setCreateOrderModal] = useState({
-    open: false,
-    data: "",
-  });
+  const [createOrderModalOpen, setCreateOrderModalOpen] = useState(false);
+
+  const handleCloseOC = () => setCreateOrderModalOpen((prev) => !prev);
 
   const closeModal = () => setFilterModalOpen((prev) => !prev);
   const closeOrderModal = () =>
@@ -107,6 +107,7 @@ const OrderListing = ({ token }) => {
         name={"Order History"}
         setModalOpen={setFilterModalOpen}
         placeholder={"Search by Order Id, product name.."}
+        handleOC={handleCloseOC}
       />
 
       <CustomerFilters
@@ -168,6 +169,7 @@ const OrderListing = ({ token }) => {
             />
           </div>
         ) : null}
+        <NewOrderCreation open={createOrderModalOpen} onClose={handleCloseOC} />
       </div>
     </div>
   );

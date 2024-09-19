@@ -9,6 +9,7 @@ import Transactions from "./Transactions";
 import AddressForm from "./AddressForm";
 // import Address from "./AddressMap";
 import toast from "react-hot-toast";
+import { setCookie } from "../../services/cookiesFunc";
 
 const CustomerInformation = ({ token }) => {
   const [details, setDetails] = useState({});
@@ -186,6 +187,10 @@ const DeliveryInstruction = ({ address }) => {
 const WalletBalanceTransaction = ({ walletData }) => {
   const { current_balance, recharges = [] } = walletData;
   const [api, contextHolder] = notification.useNotification();
+
+  useEffect(() => {
+    setCookie("walletBalance", current_balance);
+  }, [walletData]);
 
   const openNotification = (filters = {}, name) => {
     api.open({

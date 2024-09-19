@@ -65,3 +65,23 @@ export const OrderTnxHeader = ({
     </div>
   );
 };
+
+export const refundReasons = [
+  "Qty Change Error on App",
+  "Delivery Rider Error",
+  "Item Delivered in Bad Condition (Dairy)",
+  "Item Delivered in Bad Condition (Non-Dairy)",
+  "Poor Product Quality",
+  "Marked Delivered But Not Received",
+  "Short Qty received",
+  "Leakage",
+  "Spoilt",
+  "Expired Received",
+];
+
+export const OrderUpdateReasons = [
+  "Don't want to use the app",
+  "Using app is cumbersome",
+  "App not accessible",
+  "Order frozen for tomorrow's delivery",
+];

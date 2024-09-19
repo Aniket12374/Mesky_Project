@@ -33,3 +33,25 @@ export const getOrders = (page = 1, size = 5, filters = {}) => {
     }
   );
 };
+
+export const createOrder = (payload) => {
+  return httpCustomerAgent.post("api/support_dash/add_cartitem_csd", payload);
+};
+
+export const updateOrder = (payload) => {
+  return httpCustomerAgent.post(
+    "api/support_dash/update_cartitem_csd",
+    payload
+  );
+};
+
+export const updateRefundOrder = (payload) => {
+  return httpCustomerAgent.post("api/support_dash/refund_csd", payload);
+};
+
+export const getCartItems = (payload) => {
+  return httpCustomerAgent.post(
+    "api/support_dash/get-cartitems_csd?for_app=true",
+    payload
+  );
+};

@@ -103,6 +103,7 @@ function App() {
               </>
             )}
             <Route path='/login' element={<Login />} />
+            <Route path='/' element={<Navigate to='/login' />} />
           </Routes>
         </div>
         <ReactQueryDevtools initialIsOpen={false} />

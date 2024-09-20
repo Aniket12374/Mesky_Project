@@ -462,7 +462,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
 
             <div>
               <div className="flex space-x-2">
-                <div>
+               {isCreateSubscription && <div>
                   <div className="text-[#9DA49E]">Starting from</div>
 
                   <DatePicker
@@ -499,11 +499,11 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
                       }
                     }}
                     placeholder="Select date"
-                    disabled={!isCreateSubscription ? true : false}
+                    // disabled={!isCreateSubscription ? true : false}
                   />
-                </div>
+                </div>}
                 {!isCreateSubscription && editData?.type == "ALTERNATE" && (
-                  <div>
+                  <div className="hidden">
                     <div className="text-[#9DA49E]">Alternate days</div>
                     <DatePicker
                       // value={

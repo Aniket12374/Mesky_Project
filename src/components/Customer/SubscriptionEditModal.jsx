@@ -63,29 +63,31 @@ function DebounceSelect({ fetchOptions, debounceTimeout = 800, ...props }) {
 
   return (
     <Select
-      showSearch
-      labelInValue
-      filterOption={false}
-      onSearch={debounceFetcher}
-      notFoundContent={fetching ? <Spin size="small" /> : null}
-      {...props}
-    >
-      {options?.map((option) => (
-        <Option key={option.value} value={option.value} label={option.label}>
-          <div className="flex items-center justify-between">
-            <div className="flex">
-              <img
-                src={option.img}
-                alt={option.label}
-                style={{ width: 30, height: 30, marginRight: 10 }}
-              />
-              <span>{option.label}</span>
-            </div>
-            <div>₹{option.price}</div>
+    showSearch
+    labelInValue
+    filterOption={false}
+    onSearch={debounceFetcher}
+    notFoundContent={fetching ? <Spin size="small" /> : null}
+    optionLabelProp="label" 
+    {...props}
+  >
+    {options?.map((option) => (
+      <Option key={option.value} value={option.value} label={option.label}>
+        <div className="flex items-center justify-between">
+          <div className="flex">
+            <img
+              src={option.img}
+              alt={option.label}
+              style={{ width: 30, height: 30, marginRight: 10 }}
+            />
+            <span>{option.label}</span>
           </div>
-        </Option>
-      ))}
-    </Select>
+          <div>₹{option.price}</div>
+        </div>
+      </Option>
+    ))}
+  </Select>
+  
   );
 }
 

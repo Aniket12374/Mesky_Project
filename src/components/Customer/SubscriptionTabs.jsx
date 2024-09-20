@@ -130,7 +130,7 @@ const SubscriptionData = ({ tab, modalData, setModalData }) => {
             <div
               className={` ${
                 activeTab ? "bg-[#fc8172]" : "bg-gray-400"
-              }  text-white rounded-b-md`}
+              }  text-white rounded-b-md flex justify-center`}
               style={{ fontSize: "12px", padding: "4px" }}
             >
               <span>Daily Subscription</span>
@@ -141,13 +141,13 @@ const SubscriptionData = ({ tab, modalData, setModalData }) => {
                   <span className="ml-1">{start_date}</span>
                 </span>
               </span>
-              <span className="inline-flex items-center">
+              {/* <span className="inline-flex items-center">
                 <Dotted />
                 <span className="break-word">
                   Ending
                   <span className="ml-1">{end_date}</span>
                 </span>
-              </span>
+              </span> */}
             </div>
           </div>
         );

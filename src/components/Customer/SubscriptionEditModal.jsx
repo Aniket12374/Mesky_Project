@@ -63,31 +63,30 @@ function DebounceSelect({ fetchOptions, debounceTimeout = 800, ...props }) {
 
   return (
     <Select
-    showSearch
-    labelInValue
-    filterOption={false}
-    onSearch={debounceFetcher}
-    notFoundContent={fetching ? <Spin size="small" /> : null}
-    optionLabelProp="label" 
-    {...props}
-  >
-    {options?.map((option) => (
-      <Option key={option.value} value={option.value} label={option.label}>
-        <div className="flex items-center justify-between">
-          <div className="flex">
-            <img
-              src={option.img}
-              alt={option.label}
-              style={{ width: 30, height: 30, marginRight: 10 }}
-            />
-            <span>{option.label}</span>
+      showSearch
+      labelInValue
+      filterOption={false}
+      onSearch={debounceFetcher}
+      notFoundContent={fetching ? <Spin size="small" /> : null}
+      optionLabelProp="label"
+      {...props}
+    >
+      {options?.map((option) => (
+        <Option key={option.value} value={option.value} label={option.label}>
+          <div className="flex items-center justify-between">
+            <div className="flex">
+              <img
+                src={option.img}
+                alt={option.label}
+                style={{ width: 30, height: 30, marginRight: 10 }}
+              />
+              <span>{option.label}</span>
+            </div>
+            <div>₹{option.price}</div>
           </div>
-          <div>₹{option.price}</div>
-        </div>
-      </Option>
-    ))}
-  </Select>
-  
+        </Option>
+      ))}
+    </Select>
   );
 }
 
@@ -464,48 +463,50 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
 
             <div>
               <div className="flex space-x-2">
-               {isCreateSubscription && <div>
-                  <div className="text-[#9DA49E]">Starting from</div>
+                {
+                  <div>
+                    <div className="text-[#9DA49E]">Starting from</div>
 
-                  <DatePicker
-                    // {...(!isCreateSubscription
-                    //   ? {
-                    //       value: moment(editData.startDate, dateFormat),
-                    //     }
-                    //   : {})}
-                    // defaultValue={
-                    //   !isCreateSubscription
-                    //     ? dayjs(editData.startDate, dateFormat)
-                    //     : dayjs(defaultDate, dateFormat)
-                    // }
-                    value={
-                      !isCreateSubscription
-                        ? dayjs(editData.startDate, dateFormat)
-                        : dayjs(editData?.newStartDate, dateFormat)
-                    }
-                    format={dateFormat}
-                    disabledDate={disabledPastDate}
-                    onChange={(_, dateString) => {
-                      if (editData?.type == "ALTERNATE") {
-                        setEditData((prev) => ({
-                          ...prev,
-                          newStartDate: dateString,
-                          weekdays: getDayOfWeekAndAlternates(dateString),
-                          day: alternateDays[0],
-                        }));
-                      } else {
-                        setEditData((prev) => ({
-                          ...prev,
-                          newStartDate: dateString,
-                        }));
+                    <DatePicker
+                      // {...(!isCreateSubscription
+                      //   ? {
+                      //       value: moment(editData.startDate, dateFormat),
+                      //     }
+                      //   : {})}
+                      // defaultValue={
+                      //   !isCreateSubscription
+                      //     ? dayjs(editData.startDate, dateFormat)
+                      //     : dayjs(defaultDate, dateFormat)
+                      // }
+                      value={
+                        !isCreateSubscription
+                          ? dayjs(editData.startDate, dateFormat)
+                          : dayjs(editData?.newStartDate, dateFormat)
                       }
-                    }}
-                    placeholder="Select date"
-                    // disabled={!isCreateSubscription ? true : false}
-                  />
-                </div>}
+                      format={dateFormat}
+                      disabledDate={disabledPastDate}
+                      onChange={(_, dateString) => {
+                        if (editData?.type == "ALTERNATE") {
+                          setEditData((prev) => ({
+                            ...prev,
+                            newStartDate: dateString,
+                            weekdays: getDayOfWeekAndAlternates(dateString),
+                            day: alternateDays[0],
+                          }));
+                        } else {
+                          setEditData((prev) => ({
+                            ...prev,
+                            newStartDate: dateString,
+                          }));
+                        }
+                      }}
+                      placeholder="Select date"
+                      disabled={!isCreateSubscription ? true : false}
+                    />
+                  </div>
+                }
                 {!isCreateSubscription && editData?.type == "ALTERNATE" && (
-                  <div className="hidden">
+                  <div className="">
                     <div className="text-[#9DA49E]">Alternate days</div>
                     <DatePicker
                       // value={

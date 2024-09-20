@@ -300,7 +300,7 @@ const ListingPage = () => {
       title: "ORDER ID",
       dataIndex: "order_id",
       key: "order_id",
-      // width: 100,
+      width: 100,
       render: (text) => text.substring(5), // Truncate the first 5 digits
     },
     {
@@ -320,7 +320,7 @@ const ListingPage = () => {
       title: "SOCIETY NAME",
       dataIndex: "society_name",
       key: "society_name",
-      // width: 120,
+      width: 100,
       filters: uniqueSocietyNames.map((societyName) => ({
         text: societyName,
         value: societyName,
@@ -348,7 +348,7 @@ const ListingPage = () => {
       title: "PHONE NUMBER",
       dataIndex: "phone_number",
       key: "phone_number",
-
+      width:100,
       filters: uniquePhoneNumbers.map((phoneNumber) => ({
         text: phoneNumber,
         value: phoneNumber,
@@ -361,6 +361,7 @@ const ListingPage = () => {
       title: "SECTOR",
       dataIndex: "sectors",
       key: "sectors",
+      width:100,
       filters: uniqueSectors.map((sector) => ({ text: sector, value: sector })),
       filterSearch: true,
       onFilter: (value, record) => record.sectors === value,
@@ -381,6 +382,7 @@ const ListingPage = () => {
       title: "UNIT QUANTITY",
       dataIndex: "unit_qty",
       key: "unit_qty",
+      width:90,
     },
     {
       title: "QTY",
@@ -396,7 +398,7 @@ const ListingPage = () => {
         text: agentName === "" ? "" : agentName,
         value: agentName,
       })),
-      // width: 120,
+      width: 120,
       filterSearch: true,
       onFilter: (value, record) => {
         if (value === "") {
@@ -443,7 +445,7 @@ const ListingPage = () => {
           value: "PENDING",
         },
       ],
-      // width: 90,
+      width: 90,
       onFilter: (value, record) => record.status == value,
       filterSearch: true,
       render: (text, record) => {
@@ -481,7 +483,7 @@ const ListingPage = () => {
       title: "PAUSE ITEM",
       key: "item_uid",
       dataIndex: "item_uid",
-      // width: 60,
+      width: 60,
       render: (item_uid, record) =>
         !record.del_time && (
           <button
@@ -498,6 +500,7 @@ const ListingPage = () => {
       title: "QTY CHANGE",
       key: "quantity_change",
       dataIndex: "quantity_change",
+      width:100,
       render: (quantity_change, record) =>
         !record.del_time && (
           <button
@@ -535,6 +538,7 @@ const ListingPage = () => {
       title: "Refund",
       key: "refund",
       dataIndex: "refund",
+      width:100,
       render: (refund, record) =>
         record.del_time &&
         record.status == "DELIVERED" && (
@@ -720,6 +724,7 @@ const ListingPage = () => {
         // pagination={paginationConfig}
         onFilteredDataChange={handleFilteredDataCount}
         scroll={{
+          x: "calc(200vh - 700px)",
           y: "calc(100vh - 350px)",
         }}
         setSearch={setSearch}

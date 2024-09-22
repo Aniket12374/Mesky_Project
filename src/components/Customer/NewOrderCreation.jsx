@@ -5,6 +5,8 @@ import { DebounceSelect } from "./SubscriptionEditModal";
 import { searchProductList } from "../../services/customerInfo/CustomerInfoService";
 import { ProductCard } from "../../utils";
 import { getCookie } from "../../services/cookiesFunc";
+import { createOrder } from "../../services/customerOrders/CustomerOrderService";
+import toast from "react-hot-toast";
 
 function NewOrderCreation({ open, onClose }) {
   const [orderData, setOrderData] = useState({
@@ -102,10 +104,45 @@ function NewOrderCreation({ open, onClose }) {
   const currentBalance = getCookie("walletBalance");
   const negBalance = currentBalance - subTotal < 0;
 
+  const resetData = () => {
+    setSelectedProducts([]);
+    setOrderData({
+      qty: 1,
+      start_date: "",
+    });
+  };
+
+  const handleSubmitCreation = () => {
+    const orderCreationPayload = {
+      order_creation_date: orderData.start_date,
+      products: selectedProducts.map((selProd) => ({
+        product_id: selProd?.product_id,
+        qty: selProd?.quantity,
+      })),
+    };
+
+    console.log({ orderCreationPayload });
+
+    createOrder(orderCreationPayload)
+      .then((res) => {
+        console.log({ res });
+        toast.success("Succesfully created");
+        onClose();
+        resetData();
+      })
+      .catch((err) => {
+        toast.error(err?.response?.data?.message?.message);
+        console.log({ err });
+      });
+  };
+
   return (
     <Modal
       open={open}
-      onCancel={onClose}
+      onCancel={() => {
+        onClose();
+        resetData();
+      }}
       width={1200}
       className='roboto-400'
       footer={null}
@@ -227,6 +264,7 @@ function NewOrderCreation({ open, onClose }) {
                 negBalance || !productsPresent ? "bg-[#ACACAC]" : "bg-[#FB8171]"
               }`}
               disabled={negBalance || !productsPresent}
+              onClick={handleSubmitCreation}
             >
               Create New Order
             </button>

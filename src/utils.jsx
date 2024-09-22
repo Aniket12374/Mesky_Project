@@ -76,7 +76,9 @@ export const transactionName = (record) => {
     : null;
 
   return !isCreditTransaction
-    ? `Paid for Order ID: ${orderId}`
+    ? type == "REFUNDED"
+      ? `Refund for Order ID: ${orderId}`
+      : `Paid for Order ID: ${orderId}`
     : isCreditType
     ? `Recharged wallet with ₹${record?.transaction_amount}`
     : `Refund for Order ID:  ${orderId}`;
@@ -125,10 +127,33 @@ export const ProductCard = ({
   </div>
 );
 
-// export const getDetails = async (lat, lng) => {
-//   const response = await fetch(
-//     `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyDxlOnemM9mgMZDcjI5BVHtbiSwuM7A2KE`
-//   );
+export const getDetails = async (lat, lng) => {
+  const response = await fetch(
+    `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyDxlOnemM9mgMZDcjI5BVHtbiSwuM7A2KE`
+  );
 
-//   return response.json();
-// };
+  return response.json();
+};
+
+export const getPlaceIdDetails = async (placeId) => {
+  const response = await fetch(
+    // `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=name%2Crating%2Cformatted_phone_numbere&key=${
+    //   import.meta.env.VITE_REACT_APP_GOOGLE_API_KEY
+    // }`
+
+    `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=name%2Crating%2Cformatted_phone_number&key=${
+      import.meta.env.VITE_REACT_APP_GOOGLE_API_KEY
+    }`
+  );
+
+  console.log({ response });
+  return response.json();
+};
+
+export const extractSectorValue = (line) => {
+  if (typeof line !== "string") return "";
+
+  const sectorPattern = /sector\s*[^,]*/i; // Match 'sector' followed by any number of spaces and then any characters except a comma
+  const result = line.match(sectorPattern);
+  return result ? result[0].trim() : "";
+};

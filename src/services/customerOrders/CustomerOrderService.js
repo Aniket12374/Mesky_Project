@@ -35,12 +35,12 @@ export const getOrders = (page = 1, size = 5, filters = {}) => {
 };
 
 export const createOrder = (payload) => {
-  return httpCustomerAgent.post("api/support_dash/add_cartitem_csd", payload);
+  return httpCustomerAgent.post("api/support_dash/create_order_csd", payload);
 };
 
 export const updateOrder = (payload) => {
-  return httpCustomerAgent.post(
-    "api/support_dash/update_cartitem_csd",
+  return httpCustomerAgent.put(
+    "api/support_dash/update_orderitem_csd",
     payload
   );
 };

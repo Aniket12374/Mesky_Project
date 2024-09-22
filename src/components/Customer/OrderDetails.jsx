@@ -6,7 +6,8 @@ export const OrderDetails = ({ data, closeOrderModal, address }) => {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [showdropDown, setShowDropDown] = useState(false);
   const editModal = () => setEditModalOpen((prev) => !prev);
-  const { order_id, date, orderitem_info, delivery_images = [] } = data;
+  const { order_id, date, status, orderitem_info, delivery_images = [] } = data;
+  const tmrOrder = status === "ACCEPTED";
 
   const handleDropDown = (e) => {
     setShowDropDown(true);
@@ -32,8 +33,6 @@ export const OrderDetails = ({ data, closeOrderModal, address }) => {
   );
 
   const billKeys = Object.keys(billDetails);
-
-  console.log({ showdropDown });
 
   return (
     <div className='p-2' onClick={() => setShowDropDown(false)}>
@@ -69,7 +68,9 @@ export const OrderDetails = ({ data, closeOrderModal, address }) => {
             <span className='font-bold gray-color'>Order ID :</span>{" "}
             <span className='font-semibold'>{orderId}</span>
           </div>
-          <div className='text-[12px]'>Delivered on {date}</div>
+          <div className='text-[12px]'>
+            {tmrOrder ? "Will be delivered" : "Delivered"} on {date}
+          </div>
         </div>
         <div className='flex flex-col space-x-3 flex-1 items-end'>
           <div className='font-semibold text-sm'>Delivery Address</div>
@@ -79,11 +80,13 @@ export const OrderDetails = ({ data, closeOrderModal, address }) => {
         </div>
       </div>
       <div className='delivered-items my-5'>
-        <div className='text-sm font-bold'>Delivered Items</div>
+        <div className='text-sm font-bold'>
+          {tmrOrder ? "Items to be Delivered" : "Delivered Items"}
+        </div>
         <ProductCard
           product={orderitem_info}
           quantity={orderitem_info?.quantity}
-          className='mt-2 customer-shadow'
+          className='mt-2 customer-shadow p-2'
         ></ProductCard>
       </div>
       <div className='bill-details customer-shadow p-4'>

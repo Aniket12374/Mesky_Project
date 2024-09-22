@@ -19,21 +19,6 @@ import { getCookie } from "./services/cookiesFunc";
 const queryClient = new QueryClient();
 
 function App() {
-  useEffect(() => {
-    const head = document.querySelector("head");
-    const script = document.createElement("script");
-
-    script.setAttribute(
-      "src",
-      "https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&libraries=places"
-    );
-    head.appendChild(script);
-
-    return () => {
-      head.removeChild(script);
-    };
-  }, []);
-
   const isCustomerAgent = getCookie("customerAgent") == "true";
 
   return (

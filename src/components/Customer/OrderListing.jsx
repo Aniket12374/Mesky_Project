@@ -7,6 +7,7 @@ import OrderDetailTile from "./OrderDetailTile";
 import { OrderTnxHeader } from "./CustomerConstants";
 import { getOrders } from "../../services/customerOrders/CustomerOrderService";
 import NewOrderCreation from "./NewOrderCreation";
+import { setCookie } from "../../services/cookiesFunc";
 
 const OrderListing = ({ token }) => {
   const [orders, setOrders] = useState([]);
@@ -43,11 +44,19 @@ const OrderListing = ({ token }) => {
       keepPreviousData: true,
       onSuccess: (res) => {
         setShouldFetch(false);
+        let tmrOrders = res?.data?.order_details.filter(
+          (x) => x?.status == "ACCEPTED"
+        );
+        let orderVal = 0;
+        tmrOrders.forEach((order) => {
+          orderVal = orderVal + order.orderitem_info.total_price;
+        });
+
+        setCookie("currentOrderVal", orderVal);
+        console.log({ orderVal });
         setAddress(res?.data?.address_info);
-        // const finalOrders = res?.data?.order_details.filter(
-        //   (x) => x?.status === "Order Delivered"
-        // );
-        setOrders(res?.data?.order_details);
+        const finalOrders = res?.data?.order_details.filter((x) => x?.status);
+        setOrders(finalOrders);
         setTotalCount(res?.data?.totalcount || 0);
       },
       onError: () => {
@@ -137,7 +146,7 @@ const OrderListing = ({ token }) => {
                 productName={order?.orderitem_info?.product_sn}
                 quantity={order?.orderitem_info?.quantity}
                 date={order?.date}
-                price={order?.total_price}
+                price={order?.orderitem_info?.total_price}
                 unitQuantity={order?.orderitem_info?.dprod_unit_qty}
                 orderId={order?.orderitem_info?.uid?.slice(
                   0,

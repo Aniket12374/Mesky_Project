@@ -234,17 +234,17 @@ body {
 }
 
 span.ant-switch-inner {
-  border: 1px solid rgb(139, 138, 138);
+  /* border: 1px solid rgb(139, 138, 138); */
   background-color: #9a9f9b69;
 }
 
 .ant-switch-checked span.ant-switch-inner {
-  border: 1px solid gray;
+  /* border: 1px solid gray; */
   background-color: #1677ff;
 }
 
 .return-switch .ant-switch-checked span.ant-switch-inner {
-  border: 1px solid gray;
+  /* border: 1px solid gray; */
   background-color: #4d0a8c;
 }
 
@@ -278,4 +278,21 @@ li.ant-pagination-options {
 .customer-shadow {
   box-shadow: 1px 1px 6px 1px #dadada;
   border-radius: 7px;
+}
+
+img.edit-delivered-order {
+  width: 100px;
+  height: 100px;
+  object-fit: fill;
+  border-radius: 4px;
+}
+
+.map-container {
+  height: 300px;
+  width: 500px;
+}
+
+.App {
+  height: 300px;
+  width: 500px;
 }

@@ -31,6 +31,7 @@ export const removeTokenFromCookie = () => {
   removeCookie("customerAgent");
   removeCookie("userName");
   removeCookie("refundUser");
+  removeCookie("walletBalance");
 };
 
 export const setTokenToCookie = (token) => {

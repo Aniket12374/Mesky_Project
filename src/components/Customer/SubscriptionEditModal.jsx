@@ -28,7 +28,11 @@ const deliverySchedule = [
   { Weekly: "WEEKLY" },
 ];
 
-function DebounceSelect({ fetchOptions, debounceTimeout = 800, ...props }) {
+export function DebounceSelect({
+  fetchOptions,
+  debounceTimeout = 800,
+  ...props
+}) {
   const [fetching, setFetching] = useState(false);
   const [options, setOptions] = useState([]);
   const fetchRef = useRef(0);
@@ -58,13 +62,13 @@ function DebounceSelect({ fetchOptions, debounceTimeout = 800, ...props }) {
       labelInValue
       filterOption={false}
       onSearch={debounceFetcher}
-      notFoundContent={fetching ? <Spin size="small" /> : null}
+      notFoundContent={fetching ? <Spin size='small' /> : null}
       {...props}
     >
       {options?.map((option) => (
         <Option key={option.value} value={option.value} label={option.label}>
-          <div className="flex items-center justify-between">
-            <div className="flex">
+          <div className='flex items-center justify-between'>
+            <div className='flex'>
               <img
                 src={option.img}
                 alt={option.label}
@@ -350,11 +354,11 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
       }}
     >
       {isCreateSubscription && (
-        <div className="pb-3 flex justify-center">
+        <div className='pb-3 flex justify-center'>
           <DebounceSelect
-            mode="single"
+            mode='single'
             value={value}
-            placeholder="Search product to add..."
+            placeholder='Search product to add...'
             fetchOptions={fetchProductOptions}
             onChange={(newValue) => {
               // setValue(newValue); // Update the selected value
@@ -372,53 +376,53 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
         </div>
       )}
 
-      <div className="flex space-x-2 p-2">
-        <div className="m-1 p-2 border-2 border-gray-200">
+      <div className='flex space-x-2 p-2'>
+        <div className='m-1 p-2 border-2 border-gray-200'>
           <img
             src={product?.images_list?.[0] || createData?.default_image || null}
             width={100}
             height={100}
-            className="rounded-lg"
-            alt="sub_img"
+            className='rounded-lg'
+            alt='sub_img'
           />
         </div>
 
         <div>
-          <div className="font-semibold">
+          <div className='font-semibold'>
             {product?.product_sn || editData?.productName}
           </div>
-          <div className="flex items-center">
-            <span className="text-[#9DA49E]">
+          <div className='flex items-center'>
+            <span className='text-[#9DA49E]'>
               {product?.dprod_unit_qty || createData?.dprod_unit_qty}
             </span>
             <Select
               value={editData?.quantity}
-              className="w-16 ml-12"
+              className='w-16 ml-12'
               onSelect={handleQuantityChange}
               options={quantityOptions.map((option) => ({
                 label: option,
                 value: option,
               }))}
             />
-            <span className="ml-10">
+            <span className='ml-10'>
               <span>₹ {offerPrice}</span>
-              <span className="line-through ml-3 text-[#9DA49E]">
+              <span className='line-through ml-3 text-[#9DA49E]'>
                 ₹ {sellingPrice}
               </span>
             </span>
           </div>
 
-          <div className="flex py-4 space-x-4">
+          <div className='flex py-4 space-x-4'>
             <div>
-              <div className="font-semibold">Delivery Schedule</div>
+              <div className='font-semibold'>Delivery Schedule</div>
               <Radio.Group onChange={handleTypeChange} value={editData?.type}>
-                <Space direction="vertical">
+                <Space direction='vertical'>
                   {deliverySchedule?.map((schedule) => {
                     const label = Object.keys(schedule)[0];
                     const value = schedule[label];
                     return (
                       <Radio key={label} value={value}>
-                        <p className="text-[#9DA49E]">{label}</p>
+                        <p className='text-[#9DA49E]'>{label}</p>
                       </Radio>
                     );
                   })}
@@ -427,7 +431,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
             </div>
 
             <div>
-              <div className="flex space-x-2">
+              <div className='flex space-x-2'>
                 <div>
                   <div>Starting from</div>
 
@@ -464,13 +468,13 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
                         }));
                       }
                     }}
-                    placeholder="Select date"
+                    placeholder='Select date'
                     disabled={!isCreateSubscription ? true : false}
                   />
                 </div>
                 {!isCreateSubscription && editData?.type == "ALTERNATE" && (
                   <div>
-                    <div className="text-[#9DA49E]">Alternate days</div>
+                    <div className='text-[#9DA49E]'>Alternate days</div>
                     <DatePicker
                       // value={
                       //   editData?.startDate
@@ -495,7 +499,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
                           }));
                         }
                       }}
-                      placeholder="Select date"
+                      placeholder='Select date'
                     />
                   </div>
                 )}
@@ -503,8 +507,8 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
 
               {editData?.type === "WEEKLY" && (
                 <>
-                  <div className="py-2 text-[#9DA49E]">Choose Day</div>
-                  <div className="flex space-x-2">
+                  <div className='py-2 text-[#9DA49E]'>Choose Day</div>
+                  <div className='flex space-x-2'>
                     {weekDays?.map((day) => (
                       <div
                         key={day}
@@ -526,12 +530,12 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
         </div>
       </div>
 
-      <div className="shadow-md py-4 rounded-lg px-2">
-        <div className="font-medium">Pause Schedule</div>
-        <div className="flex justify-end space-x-2">
+      <div className='shadow-md py-4 rounded-lg px-2'>
+        <div className='font-medium'>Pause Schedule</div>
+        <div className='flex justify-end space-x-2'>
           <div>
             {editData?.dateRangePicker && (
-              <div className="flex py-2">
+              <div className='flex py-2'>
                 <RangePicker
                   format={dateFormat}
                   id={{
@@ -565,23 +569,23 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
           </div>
         </div>
 
-        <div className="flex space-x-2">
+        <div className='flex space-x-2'>
           {editData?.datesRange?.map((item, index) => (
             <>
               {item.start_date && (
                 <div
                   key={index}
-                  className="border border-gray-300 rounded-lg p-2 w-[127px] flex relative"
+                  className='border border-gray-300 rounded-lg p-2 w-[127px] flex relative'
                 >
                   <img
                     src={trashBin}
                     width={15}
                     height={15}
-                    alt="delete-bin"
+                    alt='delete-bin'
                     onClick={() => handleDeletePauseDate(index)}
-                    className="absolute top-1 right-1 cursor-pointer"
+                    className='absolute top-1 right-1 cursor-pointer'
                   />
-                  <div className="text-center ml-2">
+                  <div className='text-center ml-2'>
                     <p>{item.start_date}</p>
                     <p>to</p>
                     <p>{item.end_date}</p>
@@ -593,9 +597,9 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
         </div>
       </div>
 
-      <div className="flex justify-end mt-4">
+      <div className='flex justify-end mt-4'>
         <button
-          className="bg-[#FB8171] text-white px-4 py-2 rounded-md"
+          className='bg-[#FB8171] text-white px-4 py-2 rounded-md'
           onClick={handleAttachTicket}
         >
           AttachTicket

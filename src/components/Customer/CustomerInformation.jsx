@@ -6,15 +6,14 @@ import {
 import { Modal, Switch, notification } from "antd";
 import moment from "moment";
 import Transactions from "./Transactions";
-import AddressForm from "./AddressForm";
-// import Address from "./AddressMap";
 import toast from "react-hot-toast";
 import { setCookie } from "../../services/cookiesFunc";
+import Address2 from "./Address2";
 
 const CustomerInformation = ({ token }) => {
   const [details, setDetails] = useState({});
   const [modalOpen, setModalOpen] = useState(false);
-  // const [showNext, setShowNext] = useState(false);
+  const [showNext, setShowNext] = useState(false);
 
   const closeModal = () => {
     setModalOpen(false);
@@ -37,6 +36,11 @@ const CustomerInformation = ({ token }) => {
     address_id: addressData?.id,
   };
 
+  const closeAddressModal = () => {
+    closeModal();
+    setShowNext(false);
+  };
+
   const { customer_info: csrInfo = {}, wallet_info: walletInfo = {} } = details;
 
   return (
@@ -51,19 +55,17 @@ const CustomerInformation = ({ token }) => {
       <Modal
         open={modalOpen}
         onOk={null}
-        onCancel={closeModal}
-        width={580}
+        className='roboto-400'
+        onCancel={closeAddressModal}
+        width={1000}
         footer={null}
       >
-        {/* <Address
-            url={
-              "https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&callback=initMap&libraries=places&v=weekly"
-            }
-            data={addressPayload}
-            showNext={showNext}
-            setShowNext={setShowNext}
-          /> */}
-        <AddressForm data={addressPayload} closeModal={closeModal} />
+        <Address2
+          data={addressPayload}
+          showNext={showNext}
+          setShowNext={setShowNext}
+          closeModal={closeAddressModal}
+        />
       </Modal>
     </div>
   );
@@ -189,7 +191,10 @@ const WalletBalanceTransaction = ({ walletData }) => {
   const [api, contextHolder] = notification.useNotification();
 
   useEffect(() => {
-    setCookie("walletBalance", current_balance);
+    setCookie(
+      "walletBalance",
+      isNaN(Number(current_balance)) ? 0 : Number(current_balance)
+    );
   }, [walletData]);
 
   const openNotification = (filters = {}, name) => {
@@ -219,7 +224,9 @@ const WalletBalanceTransaction = ({ walletData }) => {
     <div className='w-1/3'>
       <div className='customer-current-balance bg-[#EAF6FE] p-3 mb-5 rounded-lg'>
         <div className='flex justify-between'>
-          <div className='font-semibold text-lg'>₹ {current_balance}</div>
+          <div className='font-semibold text-lg'>
+            ₹ {isNaN(Number(current_balance)) ? 0 : Number(current_balance)}
+          </div>
           {contextHolder}
           <div
             className='text-[#7F39FB] text-sm font-semibold cursor-pointer'

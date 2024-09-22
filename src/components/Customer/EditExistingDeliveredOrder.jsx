@@ -1,9 +1,15 @@
 import { Modal, Switch, Input } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import _ from "lodash";
 import { ProductCard } from "../../utils";
 import { OrderUpdateReasons, refundReasons } from "./CustomerConstants";
-import { getCookie } from "../../services/cookiesFunc";
+import { getCookie, setCookie } from "../../services/cookiesFunc";
+import { httpVendorUpload } from "../../services/api-client";
+import {
+  updateOrder,
+  updateRefundOrder,
+} from "../../services/customerOrders/CustomerOrderService";
+import toast from "react-hot-toast";
 
 function EditExistingDeliveredOrder({
   data,
@@ -25,21 +31,51 @@ function EditExistingDeliveredOrder({
   //   qty: 0,
   // });
   const [reason, setReason] = useState("");
-  const [reasonDropDown, setReasonDropdown] = useState();
+  const [reasonDropDown, setReasonDropdown] = useState("");
   const [images, setImages] = useState([]);
-  const [Imagefiles, setImageFiles] = useState([]);
   const [tmrOrderQty, setTmrOrderQty] = useState(quantity);
   const [errors, setErrors] = useState([]);
   const closeModal = () => setOpen(false);
 
-  const handleUploadFiles = (files) => {
-    setImageFiles(files);
-    console.log({ files });
-    console.log(URL.createObjectURL(files[0]), "files image");
-    files?.map((file) => {
-      const img = URL.createObjectURL(file);
-      console.log({ img });
+  const resetData = () => {
+    setReason("");
+    setReasonDropdown("");
+    setImages([]);
+    setTmrOrderQty(quantity);
+    setErrors([]);
+  };
+
+  const errorAmountText = `Refund amount shouldn't be greater than amount paid`;
+
+  const handleUpload = (event, key) => {
+    let files = event.target.files;
+
+    if (files.length === 0) {
+      return;
+    }
+
+    const formData = new FormData();
+
+    Array.from(files).forEach((file) => {
+      formData.append("files", file, file.name);
     });
+
+    httpVendorUpload
+      .post("/api/upload/multiple-image", formData)
+      .then((res) => {
+        const links = res.data.links;
+        setImages((prev) => [...prev, ...links]);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const handleRemoveImg = (index) => {
+    setImages((prev) => [
+      ...images.slice(0, index),
+      ...images.slice(index + 1, images.length),
+    ]);
   };
 
   // const handleReturn = (key, value) => {
@@ -62,18 +98,8 @@ function EditExistingDeliveredOrder({
 
     if (key == "amount") {
       value > refundData?.qty * product?.offer_price
-        ? setErrors((prev) =>
-            _.uniq([
-              ...prev,
-              `Refund amount shouldn't be greater than amount paid`,
-            ])
-          )
-        : setErrors((prev) =>
-            _.filter(
-              (prev) =>
-                prev == `Refund amount shouldn't be greater than amount paid`
-            )
-          );
+        ? setErrors((prev) => _.uniq([...prev, errorAmountText]))
+        : setErrors((prev) => _.filter((prev) => prev == errorAmountText));
     }
   };
 
@@ -82,27 +108,60 @@ function EditExistingDeliveredOrder({
     (_, index) => index + 1
   );
 
-  const totalQtyOptions = Array.from({ length: 10 }, (_, index) => index + 1);
+  const totalQtyOptions = Array.from({ length: 11 }, (_, index) => index);
 
   const selectReasonOptions = isTmrOrder ? OrderUpdateReasons : refundReasons;
 
-  const Refundpayload = {
+  useEffect(() => {
+    setReasonDropdown(selectReasonOptions[1]);
+  }, [data]);
+
+  const refundpayload = {
     amount: Number(refundData?.amount),
-    reason: `${reason}_${reasonDropDown}`,
-    item_uid: `${orderId}000`,
+    reason: `${reason}_${reasonDropDown?.label}`,
+    item_uid: Number(`${orderId}000`),
   };
 
   const newOrderPayload = {
-    qty: tmrOrderQty,
-    product_id: product?.product_id,
-    cartitem_id: `${orderId}000`,
+    qty: Number(tmrOrderQty),
+    orderitem_id: Number(product?.id),
+    reason: `${reason}-${reasonDropDown?.label}`,
   };
 
   const walletBalance = getCookie("walletBalance");
-  const negBalance = tmrOrderQty * product?.offer_price > Number(walletBalance);
+  const currentOrderVal = Number(getCookie("currentOrderVal"));
+  const diffOrderVal = (tmrOrderQty - quantity) * product?.offer_price;
+  console.log(
+    { currentOrderVal, diffOrderVal },
+    currentOrderVal + diffOrderVal
+  );
+
+  const presentOrderVal = currentOrderVal + diffOrderVal;
+  // const negBalance = tmrOrderQty * product?.offer_price > Number(walletBalance);
+  const negBalance = presentOrderVal > Number(walletBalance);
   const disableNewOrder = negBalance || quantity == tmrOrderQty;
   const disableRefund = errors.length > 0;
   const disableBtn = isTmrOrder ? disableNewOrder : disableRefund;
+
+  const handleSubmit = () => {
+    const payload = isTmrOrder ? newOrderPayload : refundpayload;
+    const api = isTmrOrder ? updateOrder : updateRefundOrder;
+
+    api(payload)
+      .then((res) => {
+        toast.success("Updated Successfully!");
+        console.log({ res });
+        resetData();
+        console.log({ presentOrderVal, currentOrderVal });
+        setCookie("currentOrderVal", presentOrderVal);
+      })
+      .catch((err) => {
+        toast.error("Updated Successfully!");
+        console.log({ err });
+      });
+  };
+
+  console.log({ disableBtn }, quantity == tmrOrderQty, negBalance);
 
   return (
     <Modal
@@ -258,7 +317,10 @@ function EditExistingDeliveredOrder({
                 accept='image/png, image/jpeg'
                 multiple
                 id='images_upload'
-                onChange={(e) => handleUploadFiles(e.target.files)}
+                onChange={(e) => {
+                  // handleUploadFiles(e.target.files);
+                  handleUpload(e, "uploadfile");
+                }}
               />
 
               <div className='text-sm font-medium'>
@@ -266,7 +328,36 @@ function EditExistingDeliveredOrder({
               </div>
             </div>
           </div>
-          <div className='preview-images'></div>
+          <div className='preview-images flex space-x-3 overflow-auto'>
+            {images.map((x, index) => (
+              <div
+                className='relative'
+                style={{ width: "100px", height: "90px" }}
+              >
+                <p
+                  className='flex justify-end absolute'
+                  style={{
+                    zIndex: "110",
+                    width: "100px",
+                  }}
+                >
+                  <div
+                    className='bg-red-500 cursor-pointer rounded-full flex items-center justify-center text-white p-2 w-2 h-2'
+                    onClick={() => handleRemoveImg(index)}
+                  >
+                    x
+                  </div>
+                </p>
+                <div className='absolute'>
+                  <img
+                    src={x}
+                    alt={`${x}_${index}`}
+                    className='edit-delivered-order'
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
         <div className='second-part w-[40%]'>
           <div className='roboto-500'>
@@ -334,12 +425,19 @@ function EditExistingDeliveredOrder({
               tmrOrderQty * product?.offer_price
             }
           />
-          <div className='submit-btn mt-5'>
+          {negBalance && (
+            <div className='text-red-500 border-2 border-gray-200 p-1 mt-2'>
+              Present order value : ₹{presentOrderVal} is greater than Wallet
+              Balance: ₹{walletBalance}
+            </div>
+          )}
+          <div className='submit-btn mt-5 flex justify-end'>
             <button
               className={`mt-5 w-64 text-white p-2 float-right rounded-md ${
                 disableBtn ? "bg-[#ACACAC]" : "bg-[#FB8171]"
               }`}
               disabled={disableBtn}
+              onClick={handleSubmit}
             >
               Create New Order
             </button>

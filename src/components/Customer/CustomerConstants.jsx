@@ -58,7 +58,7 @@ export const OrderTnxHeader = ({
           }}
         >
           <button>
-            <i className='fa fa-ellipsis-v' aria-hidden={true} />
+            <i className='fa fa-ellipsis-v ml-2 mt-3' aria-hidden={true} />
           </button>
         </Dropdown>
       )}

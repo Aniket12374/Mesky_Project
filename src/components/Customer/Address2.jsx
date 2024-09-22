@@ -19,7 +19,7 @@ const containerStyle = {
 const inputStyle = {
   boxSizing: `border-box`,
   border: `1px solid transparent`,
-  width: `90%`,
+  width: `39%`,
   height: `32px`,
   padding: `0 12px`,
   borderRadius: `3px`,
@@ -27,6 +27,9 @@ const inputStyle = {
   fontSize: `14px`,
   outline: `none`,
   textOverflow: `ellipses`,
+  position: "absolute",
+  top: "25px",
+  margin: "10px",
   //   position: "absolute",
   //   left: "10px",
   //   margin: "10px",
@@ -178,14 +181,15 @@ export default function Address2({
             onClick={() => setZoom(20)}
           />
         </GoogleMap>
-        <div className='roboto-500 mt-2'>Customer Current Location: </div>
+        <div className='roboto-600 mt-2'>Customer Address: </div>
+        <div className='text-sm'>{address?.line_2}</div>
         <StandaloneSearchBox
           onLoad={(ref) => (searchBoxRef.current = ref)}
           onPlacesChanged={onPlacesChanged}
         >
           <input
             type='text'
-            placeholder='Customized your placeholder'
+            placeholder='Search your location'
             style={inputStyle}
             name='line_2'
             onChange={(e) => onChange("line_2", e.target.value)}

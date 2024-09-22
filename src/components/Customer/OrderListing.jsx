@@ -67,8 +67,8 @@ const OrderListing = ({ token }) => {
   );
 
   useEffect(() => {
-    refetch();
-  }, [token]);
+    (!createOrderModalOpen || !orderModal.open) && refetch();
+  }, [token, createOrderModalOpen, orderModal]);
 
   const removeFilter = (key) => {
     let modifiedFilters = {};

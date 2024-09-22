@@ -5,7 +5,6 @@ import {
 } from "../../services/customerInfo/CustomerInfoService";
 import toast from "react-hot-toast";
 import _ from "lodash";
-import { extractSectorValue } from "../../utils";
 
 function EditableAddressForm({ data, closeModal, errors }) {
   const [formData, setFormData] = useState(data || {});
@@ -76,12 +75,28 @@ function EditableAddressForm({ data, closeModal, errors }) {
   // }, []);
 
   const updateAddressInfo = () => {
-    updateInfo(formData)
-      .then((res) => {
-        toast.success("Address Updated Successfully!");
-        closeModal();
-      })
-      .catch((err) => toast.error("Not Updated!"));
+    let requiredFields = [
+      "line_1",
+      "pincode",
+      "sector_name",
+      "first_name",
+      "last_name",
+    ];
+    let emptyFields = [];
+    requiredFields.map((field) => {
+      if (!formData[field]) {
+        let capField = field.replace("_", " ");
+        emptyFields.push(field);
+        return toast.error(`${capField} is required Field`);
+      }
+    });
+    emptyFields.length < 1 &&
+      updateInfo(formData)
+        .then((res) => {
+          toast.success("Address Updated Successfully!");
+          closeModal();
+        })
+        .catch((err) => toast.error("Not Updated!"));
   };
 
   return (

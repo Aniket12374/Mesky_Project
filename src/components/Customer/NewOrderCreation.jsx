@@ -7,6 +7,7 @@ import { ProductCard } from "../../utils";
 import { getCookie } from "../../services/cookiesFunc";
 import { createOrder } from "../../services/customerOrders/CustomerOrderService";
 import toast from "react-hot-toast";
+import moment from "moment";
 
 function NewOrderCreation({ open, onClose }) {
   const [orderData, setOrderData] = useState({
@@ -24,6 +25,9 @@ function NewOrderCreation({ open, onClose }) {
     }));
   };
   const dateFormat = "DD-MM-YYYY";
+  const disableYesterday = (current) => {
+    return current && current < moment().subtract(1, "days").endOf("day");
+  };
 
   const fetchProductOptions = async (search) => {
     try {
@@ -181,6 +185,7 @@ function NewOrderCreation({ open, onClose }) {
                 name={"start_date"}
                 placeholder={"Place select the date"}
                 format={dateFormat}
+                disabledDate={disableYesterday}
                 className='border-2 border-gray-300'
                 onChange={(val, dateString) =>
                   handleOrderData("start_date", dateString)
@@ -230,7 +235,7 @@ function NewOrderCreation({ open, onClose }) {
               <div className='roboto-500'>Order Summary</div>
               <div className={`grid grid-cols-2 mt-3`}>
                 <div className={negBalance ? "text-red-400" : ""}>
-                  Current Wallet Balance
+                  Available Wallet Balance
                 </div>
                 <div
                   className={`grid place-items-end ${

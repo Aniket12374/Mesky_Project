@@ -134,10 +134,12 @@ const CustomerDetails = ({ info, address, setModalOpen }) => {
 };
 
 const DeliveryInstruction = ({ address }) => {
-  const [checked, setChecked] = useState(
-    address?.misc_info?.address_preferences?.via_ring_the_bell
-  );
+  const [checked, setChecked] = useState(false);
   const [btnHl, setBtnHl] = useState(false);
+
+  useEffect(() => {
+    setChecked(address?.misc_info?.address_preferences?.via_ring_the_bell);
+  }, [address]);
 
   const payload = {
     is_only_misc: true,

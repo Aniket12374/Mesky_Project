@@ -13,6 +13,7 @@ import toast from "react-hot-toast";
 
 function EditExistingDeliveredOrder({
   data,
+  fetching,
   open,
   setOpen,
   product,
@@ -114,18 +115,19 @@ function EditExistingDeliveredOrder({
 
   useEffect(() => {
     setReasonDropdown(selectReasonOptions[1]);
+    setTmrOrderQty(quantity);
   }, [data]);
 
   const refundpayload = {
     amount: Number(refundData?.amount),
-    reason: `${reason}_${reasonDropDown?.label}`,
+    reason: `${reason}_${reasonDropDown}`,
     item_uid: Number(`${orderId}000`),
   };
 
   const newOrderPayload = {
     qty: Number(tmrOrderQty),
     orderitem_id: Number(product?.id),
-    reason: `${reason}-${reasonDropDown?.label}`,
+    reason: `${reason}-${reasonDropDown}`,
   };
 
   const walletBalance = getCookie("walletBalance");
@@ -137,9 +139,13 @@ function EditExistingDeliveredOrder({
   );
 
   const presentOrderVal = currentOrderVal + diffOrderVal;
+  const zeroQty = Number(tmrOrderQty) !== 0;
+
   // const negBalance = tmrOrderQty * product?.offer_price > Number(walletBalance);
-  const negBalance = presentOrderVal > Number(walletBalance);
-  const disableNewOrder = negBalance || quantity == tmrOrderQty;
+  const negBalance = zeroQty ? presentOrderVal > Number(walletBalance) : false;
+  const disableNewOrder = zeroQty
+    ? negBalance || quantity == tmrOrderQty
+    : false;
   const disableRefund = errors.length > 0;
   const disableBtn = isTmrOrder ? disableNewOrder : disableRefund;
 
@@ -147,16 +153,21 @@ function EditExistingDeliveredOrder({
     const payload = isTmrOrder ? newOrderPayload : refundpayload;
     const api = isTmrOrder ? updateOrder : updateRefundOrder;
 
+    if (!reason) {
+      return toast.error("Please write the reason!");
+    }
+
     api(payload)
       .then((res) => {
         toast.success("Updated Successfully!");
         console.log({ res });
         resetData();
-        console.log({ presentOrderVal, currentOrderVal });
+
         setCookie("currentOrderVal", presentOrderVal);
+        closeModal();
       })
       .catch((err) => {
-        toast.error("Updated Successfully!");
+        toast.error("Update not successfully!");
         console.log({ err });
       });
   };
@@ -171,65 +182,68 @@ function EditExistingDeliveredOrder({
       footer={null}
       className='roboto-400'
     >
-      <div className='flex space-x-10 mt-5'>
-        <div className='w-[60%]'>
-          <div>
-            <span className='font-bold gray-color text-sm'>Order ID: </span>
-            <span className='font-medium'>{orderId}</span>
-          </div>
-          <div className='text-xs font-bold'>
-            <span className='gray-color'>Delivery Date: </span>
-            <span>{deliveredDate}</span>
-          </div>
-          <div className='my-5 font-medium'>
-            {!isTmrOrder
-              ? "Select the products and their quantities to be updated"
-              : "Edit Existing Product"}
-          </div>
-          <ProductCard
-            product={product}
-            quantity={quantity}
-            showQty={false}
-            className='customer-shadow mt-2 p-2 rounded-md'
-          >
-            {!isTmrOrder ? (
-              <div className='flex flex-wrap mt-1'>
-                <div className='qty'>
-                  <div className='gray-color'>Qty</div>
-                  <div>{product?.quantity}</div>
-                </div>
-                <div className='price text-center mx-3'>
-                  <div className='gray-color'>Price</div>
-                  <div className='flex space-x-2'>
-                    <span>{product?.offer_price * quantity}</span>
-                    <span className='line-through'>
-                      {product?.selling_price * quantity}
-                    </span>
+      {fetching ? (
+        <>Loading</>
+      ) : (
+        <div className='flex space-x-10 mt-5'>
+          <div className='w-[60%]'>
+            <div>
+              <span className='font-bold gray-color text-sm'>Order ID: </span>
+              <span className='font-medium'>{orderId}</span>
+            </div>
+            <div className='text-xs font-bold'>
+              <span className='gray-color'>Delivery Date: </span>
+              <span>{deliveredDate}</span>
+            </div>
+            <div className='my-5 font-medium'>
+              {!isTmrOrder
+                ? "Select the products and their quantities to be updated"
+                : "Edit Existing Product"}
+            </div>
+            <ProductCard
+              product={product}
+              quantity={quantity}
+              showQty={false}
+              className='customer-shadow mt-2 p-2 rounded-md'
+            >
+              {!isTmrOrder ? (
+                <div className='flex flex-wrap mt-1'>
+                  <div className='qty'>
+                    <div className='gray-color'>Qty</div>
+                    <div>{product?.quantity}</div>
                   </div>
-                </div>
-                <div className='grid grid-cols-3 place-items-center'>
-                  <div className='refund-selection'>
-                    <select
-                      value={refundData?.qty}
-                      onChange={(e) => handleRefund("qty", e.target.value)}
-                      className='border border-gray-200 rounded-md p-1'
-                    >
-                      {refundQtyOptions?.map((x) => (
-                        <option value={x}>Refund Qty {x}</option>
-                      ))}
-                    </select>
+                  <div className='price text-center mx-3'>
+                    <div className='gray-color'>Price</div>
+                    <div className='flex space-x-2'>
+                      <span>{product?.offer_price * quantity}</span>
+                      <span className='line-through'>
+                        {product?.selling_price * quantity}
+                      </span>
+                    </div>
                   </div>
+                  <div className='grid grid-cols-3 place-items-center'>
+                    <div className='refund-selection'>
+                      <select
+                        value={refundData?.qty}
+                        onChange={(e) => handleRefund("qty", e.target.value)}
+                        className='border border-gray-200 rounded-md p-1'
+                      >
+                        {refundQtyOptions?.map((x) => (
+                          <option value={x}>Refund Qty {x}</option>
+                        ))}
+                      </select>
+                    </div>
 
-                  <div className='refund-input'>
-                    <input
-                      type='text'
-                      placeholder='Refund amount'
-                      value={refundData?.amount}
-                      onChange={(e) => handleRefund("amount", e.target.value)}
-                      className='border border-gray-200 rounded-md w-32 p-1 foucs:border-gray-200 focus:outline-none'
-                    />
-                  </div>
-                  {/* <div className='return-switch m-1'>
+                    <div className='refund-input'>
+                      <input
+                        type='text'
+                        placeholder='Refund amount'
+                        value={refundData?.amount}
+                        onChange={(e) => handleRefund("amount", e.target.value)}
+                        className='border border-gray-200 rounded-md w-32 p-1 foucs:border-gray-200 focus:outline-none'
+                      />
+                    </div>
+                    {/* <div className='return-switch m-1'>
                       Needs Return
                       <Switch
                         size='small'
@@ -250,200 +264,201 @@ function EditExistingDeliveredOrder({
                         </select>
                       </div>
                     </div> */}
-                </div>
-              </div>
-            ) : (
-              <div className='flex items-center space-x-3'>
-                <div className='quantity-change'>
-                  <select
-                    value={tmrOrderQty}
-                    onChange={(e) => setTmrOrderQty(e.target.value)}
-                    className='border border-gray-200 rounded-md p-2'
-                  >
-                    {totalQtyOptions?.map((qtyOption) => (
-                      <option value={qtyOption}>{qtyOption}</option>
-                    ))}
-                  </select>
-                </div>
-                <div className='price text-center mx-2'>
-                  <div className='gray-color'>Price</div>
-                  <div className='flex space-x-2'>
-                    <span>{product?.offer_price * tmrOrderQty}</span>
-                    <span className='line-through'>
-                      {product?.selling_price * tmrOrderQty}
-                    </span>
                   </div>
                 </div>
-              </div>
-            )}
-            {errors?.map((error) => (
-              <div className='text-red-400'>{error}</div>
-            ))}
-          </ProductCard>
-          <div className='mt-5 font-medium'>Update Comments *</div>
-          <div className='comment-dropdown'>
-            <select
-              value={reasonDropDown}
-              onChange={(e) => setReasonDropdown(e.target.value)}
-              placeholder={
-                isTmrOrder
-                  ? "Please Select the refund Reason"
-                  : "Please Select the Order Edit Reason"
-              }
-              className='w-full border-2 border-gray-200 p-1 focus:outline-none rounded-md mb-2'
-            >
-              {selectReasonOptions.map((reasonOption) => (
-                <option>{reasonOption}</option>
+              ) : (
+                <div className='flex items-center space-x-3'>
+                  <div className='quantity-change'>
+                    <select
+                      value={tmrOrderQty}
+                      onChange={(e) => setTmrOrderQty(e.target.value)}
+                      className='border border-gray-200 rounded-md p-2'
+                    >
+                      {totalQtyOptions?.map((qtyOption) => (
+                        <option value={qtyOption}>{qtyOption}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className='price text-center mx-2'>
+                    <div className='gray-color'>Price</div>
+                    <div className='flex space-x-2'>
+                      <span>{product?.offer_price * tmrOrderQty}</span>
+                      <span className='line-through'>
+                        {product?.selling_price * tmrOrderQty}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {errors?.map((error) => (
+                <div className='text-red-400'>{error}</div>
               ))}
-            </select>
-          </div>
-          <Input
-            type='text'
-            value={reason}
-            className='mb-5'
-            onChange={(e) => setReason(e.target.value)}
-          />
-          <div className='upload-btn'>
-            <div className='bg-[#EEEEEE] flex flex-col justify-center items-center p-2 my-2'>
-              <label
-                className='p-2 border-dashed border-2 bg-white text-center w-10 h-10 mb-3'
-                for='images_upload'
+            </ProductCard>
+            <div className='mt-5 font-medium'>Update Comments *</div>
+            <div className='comment-dropdown'>
+              <select
+                value={reasonDropDown}
+                onChange={(e) => setReasonDropdown(e.target.value)}
+                placeholder={
+                  isTmrOrder
+                    ? "Please Select the refund Reason"
+                    : "Please Select the Order Edit Reason"
+                }
+                className='w-full border-2 border-gray-200 p-1 focus:outline-none rounded-md mb-2'
               >
-                +
-              </label>
-              <input
-                type='file'
-                className='border-1 border-gray-300 hidden'
-                accept='image/png, image/jpeg'
-                multiple
-                id='images_upload'
-                onChange={(e) => {
-                  // handleUploadFiles(e.target.files);
-                  handleUpload(e, "uploadfile");
-                }}
-              />
+                {selectReasonOptions.map((reasonOption) => (
+                  <option>{reasonOption}</option>
+                ))}
+              </select>
+            </div>
+            <Input
+              type='text'
+              value={reason}
+              className='mb-5'
+              onChange={(e) => setReason(e.target.value)}
+            />
+            <div className='upload-btn'>
+              <div className='bg-[#EEEEEE] flex flex-col justify-center items-center p-2 my-2'>
+                <label
+                  className='p-2 border-dashed border-2 bg-white text-center w-10 h-10 mb-3'
+                  for='images_upload'
+                >
+                  +
+                </label>
+                <input
+                  type='file'
+                  className='border-1 border-gray-300 hidden'
+                  accept='image/png, image/jpeg'
+                  multiple
+                  id='images_upload'
+                  onChange={(e) => {
+                    // handleUploadFiles(e.target.files);
+                    handleUpload(e, "uploadfile");
+                  }}
+                />
 
-              <div className='text-sm font-medium'>
-                Upload or Drag & Drag Supporting Images *
+                <div className='text-sm font-medium'>
+                  Upload or Drag & Drag Supporting Images *
+                </div>
               </div>
             </div>
-          </div>
-          <div className='preview-images flex space-x-3 overflow-auto'>
-            {images.map((x, index) => (
-              <div
-                className='relative'
-                style={{ width: "100px", height: "90px" }}
-              >
-                <p
-                  className='flex justify-end absolute'
-                  style={{
-                    zIndex: "110",
-                    width: "100px",
-                  }}
+            <div className='preview-images flex space-x-3 overflow-auto'>
+              {images.map((x, index) => (
+                <div
+                  className='relative'
+                  style={{ width: "100px", height: "90px" }}
                 >
-                  <div
-                    className='bg-red-500 cursor-pointer rounded-full flex items-center justify-center text-white p-2 w-2 h-2'
-                    onClick={() => handleRemoveImg(index)}
+                  <p
+                    className='flex justify-end absolute'
+                    style={{
+                      zIndex: "110",
+                      width: "100px",
+                    }}
                   >
-                    x
-                  </div>
-                </p>
-                <div className='absolute'>
-                  <img
-                    src={x}
-                    alt={`${x}_${index}`}
-                    className='edit-delivered-order'
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className='second-part w-[40%]'>
-          <div className='roboto-500'>
-            {isTmrOrder
-              ? "Verify your return/refund products and amount below"
-              : "Verify your final product and amount below"}
-          </div>
-          <ProductCard
-            product={product}
-            quantity={quantity}
-            showQty={false}
-            className='customer-shadow mt-2 p-2 rounded-md'
-          >
-            {!isTmrOrder ? (
-              <div className='flex space-x-3 mt-1'>
-                <div className='price text-center'>
-                  <div className='gray-color'>Price</div>
-                  <div className='flex space-x-2'>
-                    <span>{product?.offer_price * quantity}</span>
-                    <span className='line-through'>
-                      {product?.selling_price * quantity}
-                    </span>
+                    <div
+                      className='bg-red-500 cursor-pointer rounded-full flex items-center justify-center text-white p-2 w-2 h-2'
+                      onClick={() => handleRemoveImg(index)}
+                    >
+                      x
+                    </div>
+                  </p>
+                  <div className='absolute'>
+                    <img
+                      src={x}
+                      alt={`${x}_${index}`}
+                      className='edit-delivered-order'
+                    />
                   </div>
                 </div>
-                <div>
-                  <div className='gray-color'>Refund Qty</div>
-                  <div className='text-center'>{refundData?.qty}</div>
-                </div>
-                <div>
-                  <div className='gray-color'>Refund Amount</div>
-                  <div className='text-center'>{refundData?.amount}</div>
-                </div>
-                {/* <div>
+              ))}
+            </div>
+          </div>
+          <div className='second-part w-[40%]'>
+            <div className='roboto-500'>
+              {isTmrOrder
+                ? "Verify your return/refund products and amount below"
+                : "Verify your final product and amount below"}
+            </div>
+            <ProductCard
+              product={product}
+              quantity={quantity}
+              showQty={false}
+              className='customer-shadow mt-2 p-2 rounded-md'
+            >
+              {!isTmrOrder ? (
+                <div className='flex space-x-3 mt-1'>
+                  <div className='price text-center'>
+                    <div className='gray-color'>Price</div>
+                    <div className='flex space-x-2'>
+                      <span>{product?.offer_price * quantity}</span>
+                      <span className='line-through'>
+                        {product?.selling_price * quantity}
+                      </span>
+                    </div>
+                  </div>
+                  <div>
+                    <div className='gray-color'>Refund Qty</div>
+                    <div className='text-center'>{refundData?.qty}</div>
+                  </div>
+                  <div>
+                    <div className='gray-color'>Refund Amount</div>
+                    <div className='text-center'>{refundData?.amount}</div>
+                  </div>
+                  {/* <div>
                     <div className='gray-color'>Return Qty</div>
                     <div className='text-center'>{returnData?.qty}</div>
                   </div> */}
-              </div>
-            ) : (
-              <div className='flex space-x-3'>
-                <div className='quantity'>
-                  <div className='gray-color'>Quantity</div>
-                  <div>{tmrOrderQty}</div>
                 </div>
-                <div className='price text-center mx-2'>
-                  <div className='gray-color'>Price</div>
-                  <div className='flex space-x-2'>
-                    <span>{product?.offer_price * tmrOrderQty}</span>
-                    <span className='line-through'>
-                      {product?.selling_price * tmrOrderQty}
-                    </span>
+              ) : (
+                <div className='flex space-x-3'>
+                  <div className='quantity'>
+                    <div className='gray-color'>Quantity</div>
+                    <div>{tmrOrderQty}</div>
+                  </div>
+                  <div className='price text-center mx-2'>
+                    <div className='gray-color'>Price</div>
+                    <div className='flex space-x-2'>
+                      <span>{product?.offer_price * tmrOrderQty}</span>
+                      <span className='line-through'>
+                        {product?.selling_price * tmrOrderQty}
+                      </span>
+                    </div>
                   </div>
                 </div>
+              )}
+            </ProductCard>
+            <Summary
+              isTmrOrder={isTmrOrder}
+              currentOrderVal={currentOrderVal}
+              amountPaid={quantity * product?.offer_price}
+              refundAmount={refundData?.amount}
+              refundTotal={quantity * product?.offer_price - refundData?.amount}
+              tmrPrice={tmrOrderQty * product?.offer_price}
+              tmrOrderPaid={quantity * product?.offer_price}
+              tmrTotal={
+                quantity * product?.offer_price -
+                tmrOrderQty * product?.offer_price
+              }
+            />
+            {negBalance && (
+              <div className='text-red-500 border-2 border-gray-200 p-1 mt-2'>
+                Order value is greater than Available Wallet Balance
               </div>
             )}
-          </ProductCard>
-          <Summary
-            isTmrOrder={isTmrOrder}
-            amountPaid={quantity * product?.offer_price}
-            refundAmount={refundData?.amount}
-            refundTotal={quantity * product?.offer_price - refundData?.amount}
-            tmrPrice={tmrOrderQty * product?.offer_price}
-            tmrOrderPaid={quantity * product?.offer_price}
-            tmrTotal={
-              quantity * product?.offer_price -
-              tmrOrderQty * product?.offer_price
-            }
-          />
-          {negBalance && (
-            <div className='text-red-500 border-2 border-gray-200 p-1 mt-2'>
-              Present order value : ₹{presentOrderVal} is greater than Wallet
-              Balance: ₹{walletBalance}
+            <div className='submit-btn mt-5 flex justify-end'>
+              <button
+                className={`mt-5 w-64 text-white p-2 float-right rounded-md ${
+                  disableBtn ? "bg-[#ACACAC]" : "bg-[#FB8171]"
+                }`}
+                disabled={disableBtn}
+                onClick={handleSubmit}
+              >
+                Create New Order
+              </button>
             </div>
-          )}
-          <div className='submit-btn mt-5 flex justify-end'>
-            <button
-              className={`mt-5 w-64 text-white p-2 float-right rounded-md ${
-                disableBtn ? "bg-[#ACACAC]" : "bg-[#FB8171]"
-              }`}
-              disabled={disableBtn}
-              onClick={handleSubmit}
-            >
-              Create New Order
-            </button>
           </div>
         </div>
-      </div>
+      )}
     </Modal>
   );
 }
@@ -452,6 +467,7 @@ const Summary = ({
   isTmrOrder,
   amountPaid,
   refundAmount,
+  currentOrderVal,
   tmrPrice,
   tmrOrderPaid,
 }) => {
@@ -480,7 +496,7 @@ const Summary = ({
   };
 
   const newOrderSummary = {
-    "Current Wallet Balance": walletBalance,
+    "Available Wallet Balance": walletBalance - currentOrderVal,
     ...(negPriceDiff && {
       "To Deduct from Wallet": Math.abs(tmrOrderPaid - tmrPrice),
     }),

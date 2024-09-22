@@ -10,13 +10,17 @@ import toast from "react-hot-toast";
 import moment from "moment";
 
 function NewOrderCreation({ open, onClose }) {
+  const dateFormat = "DD-MM-YYYY";
   const [orderData, setOrderData] = useState({
-    start_date: "",
+    start_date: moment().add(1, "days").endOf("day").format(dateFormat),
     qty: 0,
   });
+
   const [value, setValue] = useState([]);
   const [productOptions, setProductOptions] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]);
+  const currentOrderVal = Number(getCookie("currentOrderVal"));
+  const walletBalance = getCookie("walletBalance");
 
   const handleOrderData = (key, value) => {
     setOrderData((prev) => ({
@@ -24,10 +28,12 @@ function NewOrderCreation({ open, onClose }) {
       [key]: value,
     }));
   };
-  const dateFormat = "DD-MM-YYYY";
+
   const disableYesterday = (current) => {
     return current && current < moment().subtract(1, "days").endOf("day");
   };
+
+  const tmrDate = moment().add(1, "days").endOf("day").format(dateFormat);
 
   const fetchProductOptions = async (search) => {
     try {
@@ -105,8 +111,7 @@ function NewOrderCreation({ open, onClose }) {
         .reduce((acc, curr) => acc + curr)
     : 0;
 
-  const currentBalance = getCookie("walletBalance");
-  const negBalance = currentBalance - subTotal < 0;
+  const negBalance = walletBalance - currentOrderVal - subTotal < 0;
 
   const resetData = () => {
     setSelectedProducts([]);
@@ -118,14 +123,17 @@ function NewOrderCreation({ open, onClose }) {
 
   const handleSubmitCreation = () => {
     const orderCreationPayload = {
-      order_creation_date: orderData.start_date,
+      order_creation_date: orderData.start_date || tmrDate,
       products: selectedProducts.map((selProd) => ({
         product_id: selProd?.product_id,
         qty: selProd?.quantity,
       })),
     };
 
-    console.log({ orderCreationPayload });
+    if (walletBalance - currentOrderVal - subTotal < 0) {
+      toast.error(`Can't create order because of low Balance`);
+      return;
+    }
 
     createOrder(orderCreationPayload)
       .then((res) => {
@@ -242,7 +250,7 @@ function NewOrderCreation({ open, onClose }) {
                     negBalance ? "text-red-400" : ""
                   }`}
                 >
-                  ₹{currentBalance}
+                  ₹{walletBalance - currentOrderVal}
                 </div>
                 <div className='my-1'>Total New Order Amount</div>
                 <div className='grid place-items-end my-1 text-[#16753E]'>
@@ -254,7 +262,8 @@ function NewOrderCreation({ open, onClose }) {
                     negBalance ? "text-red-500 font-semibold" : "font-semibold"
                   }`}
                 >
-                  {negBalance ? "-" : ""} ₹{Math.abs(currentBalance - subTotal)}
+                  {negBalance ? "-" : ""} ₹
+                  {Math.abs(walletBalance - currentOrderVal - subTotal)}
                 </div>
               </div>
               {negBalance && (

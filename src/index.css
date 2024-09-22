@@ -264,6 +264,17 @@ li.ant-pagination-options {
   margin-top: 10px;
 }
 
+.custom-radio-group .ant-radio-wrapper .ant-radio-checked .ant-radio-inner {
+  border-color: #fb8171;
+  background-color: #fb8171;
+}
+
+.subscription-edit-modal .ant-select-selector {
+  border: none !important; 
+  border-bottom: 1px solid gray !important; 
+  border-radius: 0 !important; 
+}
+
 .trns-70 {
   transform: translateX(-140px);
   width: 140px;

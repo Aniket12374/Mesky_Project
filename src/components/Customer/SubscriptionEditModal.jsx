@@ -1,4 +1,13 @@
-import { Checkbox, Modal, Radio, Select, Space, DatePicker, Spin } from "antd";
+import {
+  Checkbox,
+  Modal,
+  Radio,
+  Select,
+  Space,
+  DatePicker,
+  Spin,
+  Button,
+} from "antd";
 import React, { useEffect, useState, useMemo, useRef } from "react";
 import trashBin from "../../assets/delt-bin.png";
 import moment from "moment";
@@ -63,6 +72,7 @@ export function DebounceSelect({
       filterOption={false}
       onSearch={debounceFetcher}
       notFoundContent={fetching ? <Spin size='small' /> : null}
+      optionLabelProp='label'
       {...props}
     >
       {options?.map((option) => (
@@ -97,13 +107,14 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
   } = data;
 
   const defaultDate = getTomorrowDate();
-
+  // const [pauseDate, setPauseDate] = useState([]);
   const [editData, setEditData] = useState({
     quantity: initialQty || 1,
     type: subscription_type?.type || "DAILY",
     weekdays: subscription_type?.days || [],
     datesRange: dates_range || [],
     startDate: start_date || null,
+    pauseDate: [] || null,
     newStartDate: defaultDate,
     dateRangePicker: false,
     subscriptionId: id || null,
@@ -208,12 +219,13 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
     if (dateStrings[0] && dateStrings[1]) {
       setEditData((prev) => ({
         ...prev,
-        datesRange: [
-          ...prev.datesRange,
-          { start_date: dateStrings[0], end_date: dateStrings[1] },
-        ],
+        pauseDateRange: {
+          start_date: dateStrings[0],
+          end_date: dateStrings[1],
+        },
+
         dateRangePickerOpen: false,
-        dateRangePicker: false,
+        // dateRangePicker: false,
       }));
     }
   };
@@ -221,6 +233,15 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
     setEditData((prev) => ({
       ...prev,
       dateRangePickerOpen: open,
+    }));
+  };
+
+  const handleOk = () => {
+    setEditData((prev) => ({
+      ...prev,
+      datesRange: [...prev.datesRange, editData?.pauseDateRange],
+      dateRangePickerOpen: false,
+      dateRangePicker: false,
     }));
   };
 
@@ -270,12 +291,17 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
               "Already subscription created for this product"
             ) {
               toast.error("Already subscription created for this product");
+            } else {
+              toast.success("Successfull");
             }
           })
-        : await updateSubscriptionDeatils(payload);
+        : await updateSubscriptionDeatils(payload).then((res) => {
+            if (res?.status == "200") {
+              toast.success("Successfull");
+            }
+          });
       handleEdit();
       handleOpenClose();
-      toast.success("Successfull");
       setEditData({
         quantity: 1,
         type: "DAILY",
@@ -354,7 +380,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
       }}
     >
       {isCreateSubscription && (
-        <div className='pb-3 flex justify-center'>
+        <div className='pb-3 flex justify-center '>
           <DebounceSelect
             mode='single'
             value={value}
@@ -376,8 +402,8 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
         </div>
       )}
 
-      <div className='flex space-x-2 p-2'>
-        <div className='m-1 p-2 border-2 border-gray-200'>
+      <div className='flex space-x-2 p-2 shadow-md  rounded-sx'>
+        <div className='m-1 p-2'>
           <img
             src={product?.images_list?.[0] || createData?.default_image || null}
             width={100}
@@ -388,7 +414,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
         </div>
 
         <div>
-          <div className='font-semibold'>
+          <div className='font-semibold font-roboto'>
             {product?.product_sn || editData?.productName}
           </div>
           <div className='flex items-center'>
@@ -396,8 +422,8 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
               {product?.dprod_unit_qty || createData?.dprod_unit_qty}
             </span>
             <Select
-              value={editData?.quantity}
-              className='w-16 ml-12'
+              value={`Qty ${editData?.quantity}`}
+              className='subscription-edit-modal w-16 ml-12 w-[80px]'
               onSelect={handleQuantityChange}
               options={quantityOptions.map((option) => ({
                 label: option,
@@ -405,23 +431,32 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
               }))}
             />
             <span className='ml-10'>
-              <span>₹ {offerPrice}</span>
-              <span className='line-through ml-3 text-[#9DA49E]'>
+              <span className='font-semibold'>₹ {offerPrice}</span>
+              <span className='line-through px-2 text-[#9DA49E]'>
                 ₹ {sellingPrice}
               </span>
             </span>
           </div>
-
           <div className='flex py-4 space-x-4'>
             <div>
-              <div className='font-semibold'>Delivery Schedule</div>
-              <Radio.Group onChange={handleTypeChange} value={editData?.type}>
+              <div className='font-semibold pb-2 font-roboto'>
+                Delivery Schedule
+              </div>
+              <Radio.Group
+                onChange={handleTypeChange}
+                value={editData?.type}
+                className='custom-radio-group'
+              >
                 <Space direction='vertical'>
                   {deliverySchedule?.map((schedule) => {
                     const label = Object.keys(schedule)[0];
                     const value = schedule[label];
                     return (
-                      <Radio key={label} value={value}>
+                      <Radio
+                        key={label}
+                        value={value}
+                        className='subscription-selector'
+                      >
                         <p className='text-[#9DA49E]'>{label}</p>
                       </Radio>
                     );
@@ -432,48 +467,50 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
 
             <div>
               <div className='flex space-x-2'>
-                <div>
-                  <div>Starting from</div>
-
-                  <DatePicker
-                    // {...(!isCreateSubscription
-                    //   ? {
-                    //       value: moment(editData.startDate, dateFormat),
-                    //     }
-                    //   : {})}
-                    // defaultValue={
-                    //   !isCreateSubscription
-                    //     ? dayjs(editData.startDate, dateFormat)
-                    //     : dayjs(defaultDate, dateFormat)
-                    // }
-                    value={
-                      !isCreateSubscription
-                        ? dayjs(editData.startDate, dateFormat)
-                        : dayjs(editData?.newStartDate, dateFormat)
-                    }
-                    format={dateFormat}
-                    disabledDate={disabledPastDate}
-                    onChange={(_, dateString) => {
-                      if (editData?.type == "ALTERNATE") {
-                        setEditData((prev) => ({
-                          ...prev,
-                          newStartDate: dateString,
-                          weekdays: getDayOfWeekAndAlternates(dateString),
-                          day: alternateDays[0],
-                        }));
-                      } else {
-                        setEditData((prev) => ({
-                          ...prev,
-                          newStartDate: dateString,
-                        }));
-                      }
-                    }}
-                    placeholder='Select date'
-                    disabled={!isCreateSubscription ? true : false}
-                  />
-                </div>
-                {!isCreateSubscription && editData?.type == "ALTERNATE" && (
+                {
                   <div>
+                    <div className='text-[#9DA49E]'>Starting from</div>
+
+                    <DatePicker
+                      // {...(!isCreateSubscription
+                      //   ? {
+                      //       value: moment(editData.startDate, dateFormat),
+                      //     }
+                      //   : {})}
+                      // defaultValue={
+                      //   !isCreateSubscription
+                      //     ? dayjs(editData.startDate, dateFormat)
+                      //     : dayjs(defaultDate, dateFormat)
+                      // }
+                      value={
+                        !isCreateSubscription
+                          ? dayjs(editData.startDate, dateFormat)
+                          : dayjs(editData?.newStartDate, dateFormat)
+                      }
+                      format={dateFormat}
+                      disabledDate={disabledPastDate}
+                      onChange={(_, dateString) => {
+                        if (editData?.type == "ALTERNATE") {
+                          setEditData((prev) => ({
+                            ...prev,
+                            newStartDate: dateString,
+                            weekdays: getDayOfWeekAndAlternates(dateString),
+                            day: alternateDays[0],
+                          }));
+                        } else {
+                          setEditData((prev) => ({
+                            ...prev,
+                            newStartDate: dateString,
+                          }));
+                        }
+                      }}
+                      placeholder='Select date'
+                      disabled={!isCreateSubscription ? true : false}
+                    />
+                  </div>
+                }
+                {!isCreateSubscription && editData?.type == "ALTERNATE" && (
+                  <div className=''>
                     <div className='text-[#9DA49E]'>Alternate days</div>
                     <DatePicker
                       // value={
@@ -535,7 +572,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
         <div className='flex justify-end space-x-2'>
           <div>
             {editData?.dateRangePicker && (
-              <div className='flex py-2'>
+              <div className=' px-2 py-2'>
                 <RangePicker
                   format={dateFormat}
                   id={{
@@ -549,6 +586,17 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
                   open={editData?.dateRangePickerOpen}
                   onOpenChange={handleOpenChange}
                 />
+                <div className='py-1 flex justify-center'>
+                  <Button
+                    key='ok'
+                    type='primary'
+                    onClick={handleOk}
+                    disabled={editData?.pauseDateRange == null}
+                    // onChange={handlePauseDateChange}
+                  >
+                    Set Pause Date
+                  </Button>
+                </div>
               </div>
             )}
           </div>
@@ -562,6 +610,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
               setEditData((prev) => ({
                 ...prev,
                 dateRangePicker: !prev.dateRangePicker,
+                pauseDateRange: null,
               }))
             }
           >
@@ -569,37 +618,39 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
           </div>
         </div>
 
-        <div className='flex space-x-2'>
-          {editData?.datesRange?.map((item, index) => (
-            <>
-              {item.start_date && (
-                <div
-                  key={index}
-                  className='border border-gray-300 rounded-lg p-2 w-[127px] flex relative'
-                >
-                  <img
-                    src={trashBin}
-                    width={15}
-                    height={15}
-                    alt='delete-bin'
-                    onClick={() => handleDeletePauseDate(index)}
-                    className='absolute top-1 right-1 cursor-pointer'
-                  />
-                  <div className='text-center ml-2'>
-                    <p>{item.start_date}</p>
-                    <p>to</p>
-                    <p>{item.end_date}</p>
+        <div className='w-full overflow-x-auto scrollbar-hide pt-1'>
+          <div className='flex space-x-2 min-w-max'>
+            {editData?.datesRange?.map((item, index) => (
+              <>
+                {item.start_date && (
+                  <div
+                    key={index}
+                    className='border border-gray-300 rounded-lg p-2 w-[127px] flex relative'
+                  >
+                    <img
+                      src={trashBin}
+                      width={15}
+                      height={15}
+                      alt='delete-bin'
+                      onClick={() => handleDeletePauseDate(index)}
+                      className='absolute top-1 right-1 cursor-pointer'
+                    />
+                    <div className='text-center ml-2'>
+                      <p>{item.start_date}</p>
+                      <p>to</p>
+                      <p>{item.end_date}</p>
+                    </div>
                   </div>
-                </div>
-              )}
-            </>
-          ))}
+                )}
+              </>
+            ))}
+          </div>
         </div>
       </div>
 
       <div className='flex justify-end mt-4'>
         <button
-          className='bg-[#FB8171] text-white px-4 py-2 rounded-md'
+          className='bg-[#FB8171] text-white py-2 rounded-md px-12'
           onClick={handleAttachTicket}
         >
           AttachTicket

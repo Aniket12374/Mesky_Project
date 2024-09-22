@@ -87,11 +87,11 @@ const SubscriptionData = ({ tab, modalData, setModalData }) => {
   const activeTab = tab === 1;
 
   return (
-    <div className='h-[400px] overflow-y-auto'>
+    <div className='h-[400px] overflow-y-auto space-y-2'>
       {tabData.map((record, index) => {
         const { product, quantity, dates_range, start_date, end_date } = record;
         return (
-          <div className="m-1 shadow-lg rounded-lg">
+          <div className="m-1 shadow-lg rounded-lg border border-gray-300 ">
             <div className="flex justify-between space-x-2 p-2">
               <div className="m-1 p-2 border-2 border-gray-200">
                 <img
@@ -106,15 +106,15 @@ const SubscriptionData = ({ tab, modalData, setModalData }) => {
                   alt="sub_img"
                 />
               </div>
-              <div className="flex-1">
+              <div className="flex-1 pt-1">
                 <div>{product?.product_sn}</div>
                 <div className="flex justify-between">
-                  <span>
+                  <span className="text-[#9DA49E] text-[12px]">
                     {product?.dprod_unit_qty} x {quantity}
                   </span>
-                  <span className="ml-10 w-[50%]">
-                    <span>₹ {product?.offer_price}</span>
-                    <span className="line-through ml-3">
+                  <span className="ml-10 flex justify-end w-[45%]">
+                    <span className="text-[12px] ">₹ {product?.offer_price}</span>
+                    <span className="line-through px-2 text-[#9DA49E] text-[12px]">
                       ₹ {product?.selling_price}
                     </span>
                   </span>
@@ -130,7 +130,7 @@ const SubscriptionData = ({ tab, modalData, setModalData }) => {
             <div
               className={` ${
                 activeTab ? "bg-[#fc8172]" : "bg-gray-400"
-              }  text-white`}
+              }  text-white rounded-b-md flex justify-center`}
               style={{ fontSize: "12px", padding: "4px" }}
             >
               <span>Daily Subscription</span>
@@ -141,13 +141,13 @@ const SubscriptionData = ({ tab, modalData, setModalData }) => {
                   <span className="ml-1">{start_date}</span>
                 </span>
               </span>
-              <span className="inline-flex items-center">
+              {/* <span className="inline-flex items-center">
                 <Dotted />
                 <span className="break-word">
                   Ending
                   <span className="ml-1">{end_date}</span>
                 </span>
-              </span>
+              </span> */}
             </div>
           </div>
         );

@@ -172,8 +172,6 @@ function EditExistingDeliveredOrder({
       });
   };
 
-  console.log({ disableBtn }, quantity == tmrOrderQty, negBalance);
-
   return (
     <Modal
       open={open}

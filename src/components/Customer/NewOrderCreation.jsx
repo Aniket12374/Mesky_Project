@@ -137,7 +137,6 @@ function NewOrderCreation({ open, onClose }) {
 
     createOrder(orderCreationPayload)
       .then((res) => {
-        console.log({ res });
         toast.success("Succesfully created");
         onClose();
         resetData();

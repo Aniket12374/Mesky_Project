@@ -53,7 +53,6 @@ const OrderListing = ({ token }) => {
         });
 
         setCookie("currentOrderVal", orderVal);
-        console.log({ orderVal });
         setAddress(res?.data?.address_info);
         const finalOrders = res?.data?.order_details.filter((x) => x?.status);
         setOrders(finalOrders);

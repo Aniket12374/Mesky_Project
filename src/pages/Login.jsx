@@ -5,7 +5,8 @@ import { toast } from "react-hot-toast";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import { setCookie } from "../services/cookiesFunc";
+import { getCookie, setCookie } from "../services/cookiesFunc";
+import { useMainStore } from "../store/store";
 
 const Login = () => {
   const { register } = useForm();
@@ -72,8 +73,11 @@ const Login = () => {
       } else {
         await validateOtp({ otp, signin_type: userInput });
         setCookie("refundUser", refundUser);
+
+        const isCustomerAgent = getCookie("customerAgent") == "true";
         setCookie("creditUser", creditUser);
-        navigate("/subscription");
+        navigate(isCustomerAgent ? "/customer-support" : "/subscription");
+        navigate(0);
       }
     } catch {
       if (otpReq) {
@@ -84,30 +88,30 @@ const Login = () => {
   };
 
   return (
-    <div className="flex justify-center h-screen items-center">
-      <div className="w-96 bg-base-100 shadow-2xl rounded-xl border-2">
-        <div className="my-8 flex flex-col items-center space-y-2">
-          <img src={meskyLogo} alt="mesky logo" style={{ height: "50px" }} />
-          <div className="fredoka-600 text-4xl ">MESKY Delivery</div>
+    <div className='flex justify-center h-screen items-center'>
+      <div className='w-96 bg-base-100 shadow-2xl rounded-xl border-2'>
+        <div className='my-8 flex flex-col items-center space-y-2'>
+          <img src={meskyLogo} alt='mesky logo' style={{ height: "50px" }} />
+          <div className='roboto600 text-4xl '>MESKY Delivery</div>
         </div>
         <div>
-          <div className="flex flex-col justify-center items-center space-y-4">
+          <div className='flex flex-col justify-center items-center space-y-4'>
             <input
               {...register("email", { required: true })}
               type={otpReq ? "text" : "email"}
-              name="email"
+              name='email'
               placeholder={
                 otpReq ? "Please enter OTP" : "Enter email/phone number"
               }
-              className="input input-bordered w-full max-w-xs"
+              className='input input-bordered w-full max-w-xs'
               value={otpReq ? otp : userInput}
               onChange={handleInputChange}
             />
 
-            <p className="text-[#FF3131] opacity-70 ml-4 sm:ml-6">{message}</p>
-            <div className="card-body items-center text-center">
-              <div className="card-actions" onClick={handleLogin}>
-                <button className="btn btn-primary" type="submit">
+            <p className='text-[#FF3131] opacity-70 ml-4 sm:ml-6'>{message}</p>
+            <div className='card-body items-center text-center'>
+              <div className='card-actions' onClick={handleLogin}>
+                <button className='btn btn-primary' type='submit'>
                   {otpReq ? "Submit" : "OTP Request"}
                 </button>
               </div>

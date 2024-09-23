@@ -3,14 +3,22 @@ import { getCookie } from "../services/cookiesFunc";
 const userInitialInfo = () => {
   const token = getCookie("token") ? getCookie("token") : "";
   const email = "";
-  const name = "";
+  const name = "" || getCookie("userName");
   const closeSidebar = "";
   return { token, email, name, closeSidebar };
 };
 
 export const createAuthSlice = (set) => ({
   user: { ...userInitialInfo() },
+  customerTokenChanged: false,
   sidebarOpen: true,
+
+  setCustomerTokenChanged: () => {
+    set((state) => {
+      state.customerTokenChanged = !state.customerTokenChanged;
+    });
+  },
+
   setSideBarOpen: () => {
     set((state) => {
       state.sidebarOpen = !state.sidebarOpen;

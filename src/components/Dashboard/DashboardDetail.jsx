@@ -209,7 +209,7 @@ const DashboardDetail = () => {
       title: "City, State",
       dataIndex: "City, State",
       key: "City, State",
-      width : 100
+      width: 100,
     },
     {
       title: " Before 7",
@@ -247,30 +247,30 @@ const DashboardDetail = () => {
   ];
 
   return (
-    <div className="flex justify-between mt-12">
-      <div className="w-[45%] space-y-7">
-        <div className="grid grid-cols-5 gap-4">
+    <div className='flex justify-between mt-12'>
+      <div className='w-[45%] space-y-7'>
+        <div className='grid grid-cols-5 gap-4'>
           {stats &&
             statItems.map((item, index) => (
               <div
                 key={index}
-                className="rounded-lg text-center text-white px-1 py-5"
+                className='rounded-lg text-center text-white px-1 py-5'
                 style={{ backgroundColor: item.color }}
               >
-                <div className="text-3xl font-medium">{item.value}</div>
-                <div className="text-sm">{item.label}</div>
+                <div className='text-3xl font-medium'>{item.value}</div>
+                <div className='text-sm'>{item.label}</div>
               </div>
             ))}
         </div>
-        <div className="grid grid-cols-5 gap-4">
+        <div className='grid grid-cols-5 gap-4'>
           {otherProducts?.map((product, index) => (
             <div
               key={index}
-              className="rounded-lg text-center text-white px-1 py-5"
+              className='rounded-lg text-center text-white px-1 py-5'
               style={{ backgroundColor: colors[index % colors.length] }}
             >
-              <div className="text-3xl font-medium">{product.count}</div>
-              <div className="text-sm">{product.name}</div>
+              <div className='text-3xl font-medium'>{product.count}</div>
+              <div className='text-sm'>{product.name}</div>
             </div>
           ))}
         </div>
@@ -284,13 +284,13 @@ const DashboardDetail = () => {
           />
         </div>
       </div>
-      <div className="w-[45%] space-y-5">
+      <div className='w-[45%] space-y-5'>
         <div>
           <Select
             style={selectStyle}
             showSearch
-            placeholder="Orders by Rider"
-            optionFilterProp="children"
+            placeholder='Orders by Rider'
+            optionFilterProp='children'
             onChange={onChange}
             onSearch={handleSearch}
             filterOption={filterOption}
@@ -304,11 +304,11 @@ const DashboardDetail = () => {
         {selectedRider && sectorData.length > 0
           ? sectorData.map((sector, index) => (
               <div
-                className="rounded-xl bg-[#AA00FF] flex w-3/5 mt-3 justify-center p-2 text-white"
+                className='rounded-xl bg-[#AA00FF] flex w-3/5 mt-3 justify-center p-2 text-white'
                 key={index}
               >
-                <div className="flex flex-col">
-                  <p className="font-medium text-xl">
+                <div className='flex flex-col'>
+                  <p className='font-medium text-xl'>
                     {sector.sector_name} - {sector.count} Orders
                   </p>
                 </div>
@@ -316,7 +316,7 @@ const DashboardDetail = () => {
             ))
           : selectedRider &&
             sectorData.length === 0 && (
-              <p className="rounded-xl bg-[#AA00FF] flex w-3/5 mt-3 justify-center p-2 text-white">
+              <p className='rounded-xl bg-[#AA00FF] flex w-3/5 mt-3 justify-center p-2 text-white'>
                 No sectors assigned
               </p>
             )}
@@ -325,11 +325,11 @@ const DashboardDetail = () => {
           <Table
             columns={columns}
             dataSource={[deliveryStatss]}
-            size="small"
+            size='small'
             pagination={false}
           />
         </div>
-        <div className="flex space-x-4 ">
+        <div className='flex space-x-4 '>
           <div>Pending Deliveries : {deliveryStatss?.pendingDeliveryies}</div>
           <div>Not delivered : {deliveryStatss?.notDeliveredCount}</div>
           <div>delivered : {deliveryStatss?.total}</div>
@@ -338,7 +338,7 @@ const DashboardDetail = () => {
           <Table
             columns={cityWiseColumns}
             dataSource={tableDataCitywise}
-            size="small"
+            size='small'
             pagination={false}
           />
         </div>

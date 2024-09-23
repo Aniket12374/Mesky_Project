@@ -63,7 +63,7 @@ const ProfileSection = () => {
 
   return (
     <section>
-      <div className="flex md:flex-row flex-col items-center md:items-start space-x-10">
+      <div className='flex md:flex-row flex-col items-center md:items-start space-x-10'>
         {/* <div className="flex-none w-36 h-36">
           {brand && (
             <ProfilePic
@@ -73,12 +73,12 @@ const ProfileSection = () => {
             />
           )}
         </div> */}
-        <div className="flex-1 md:w-64">
-          <div className="flex flex-col space-y-6 my-6 md:my-0">
-            <div className="flex justify-between items-start">
-              <div className="text-2xl fredoka-600">{brand?.brand_name}</div>
+        <div className='flex-1 md:w-64'>
+          <div className='flex flex-col space-y-6 my-6 md:my-0'>
+            <div className='flex justify-between items-start'>
+              <div className='text-2xl roboto600'>{brand?.brand_name}</div>
               {/* <button
-                className="py-2 px-20 rounded-3xl drop-shadow-lg text-white fredoka-600 bg-pink-600"
+                className="py-2 px-20 rounded-3xl drop-shadow-lg text-white roboto600 bg-pink-600"
                 onClick={() => {
                   editing && handleDescriptionSubmit();
                   setEditing(!editing);
@@ -109,26 +109,26 @@ const ProfileSection = () => {
               ></textarea>
             </div> */}
 
-            <div className="space-y-5">
-              <div className="text-2xl fredoka-600">
+            <div className='space-y-5'>
+              <div className='text-2xl roboto600'>
                 Primary contact information
               </div>
             </div>
 
             {/*  */}
-            <div className="w-3/4 grid  gap-5">
-              <div className="flex flex-col md:flex-row md:space-x-4 w-full">
+            <div className='w-3/4 grid  gap-5'>
+              <div className='flex flex-col md:flex-row md:space-x-4 w-full'>
                 <InputComponent
                   register={registerProfile}
-                  label="First Name"
-                  fieldName="firstName"
-                  className="w-1/2"
+                  label='First Name'
+                  fieldName='firstName'
+                  className='w-1/2'
                 />
                 <InputComponent
                   register={registerProfile}
-                  label="Last Name"
-                  fieldName="lastName"
-                  className="w-1/2"
+                  label='Last Name'
+                  fieldName='lastName'
+                  className='w-1/2'
                 />
               </div>
 
@@ -137,27 +137,27 @@ const ProfileSection = () => {
                 label="Registered Name"
                 fieldName="registeredName"
               /> */}
-              <div className="flex flex-col md:flex-row space-x-4 w-full">
-                <div className="w-1/2">
+              <div className='flex flex-col md:flex-row space-x-4 w-full'>
+                <div className='w-1/2'>
                   <InputComponent
                     register={registerProfile}
-                    label="Email"
-                    fieldName="email"
+                    label='Email'
+                    fieldName='email'
                   />
                 </div>
 
-                <div className=" w-1/2 flex flex-row space-x-4">
+                <div className=' w-1/2 flex flex-row space-x-4'>
                   <InputComponent
                     register={registerProfile}
-                    label="Phone number"
-                    fieldName="phoneNumber"
-                    className="w-1/2"
+                    label='Phone number'
+                    fieldName='phoneNumber'
+                    className='w-1/2'
                   />
                   <InputComponent
                     register={registerProfile}
-                    label="Alternate Phone number"
-                    fieldName="alTphoneNumber"
-                    className="w-1/2"
+                    label='Alternate Phone number'
+                    fieldName='alTphoneNumber'
+                    className='w-1/2'
                   />
                 </div>
               </div>
@@ -222,7 +222,7 @@ const ProfileSection = () => {
               </div> */}
             </div>
             {/* <div className="space-y-5">
-              <div className="text-2xl fredoka-600">Delivery Information</div>
+              <div className="text-2xl roboto600">Delivery Information</div>
               <DeliverSection paidBy={brand?.delivery_pay_by} />
             </div> */}
           </div>

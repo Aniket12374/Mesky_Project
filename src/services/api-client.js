@@ -1,18 +1,35 @@
 import axios from "axios";
-import { getTokenFromCookie } from "./cookiesFunc";
+import { getCustomerTokenFromCookie, getTokenFromCookie } from "./cookiesFunc";
 
 export const httpVendor = axios.create({
   baseURL: `${import.meta.env.VITE_VENDOR_API_URL}`,
 });
 
 httpVendor.interceptors.request.use((conf) => {
-  // have add token
   const token = getTokenFromCookie();
+
+  if (token) {
+    conf.headers = {
+      Authorization: token,
+      ...conf.headers,
+    };
+  }
+  return conf;
+});
+
+export const httpCustomerAgent = axios.create({
+  baseURL: `${import.meta.env.VITE_VENDOR_API_URL}`,
+});
+
+httpCustomerAgent.interceptors.request.use((conf) => {
+  const token = getTokenFromCookie();
+  const customerToken = getCustomerTokenFromCookie();
 
   if (token) {
     conf.headers = {
       ...conf.headers,
       Authorization: token,
+      Customertoken: customerToken,
     };
   }
   return conf;

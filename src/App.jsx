@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { QueryClient, QueryClientProvider } from "react-query";
@@ -13,79 +14,92 @@ import PrivateRoute from "./components/Auth/PrivateRoute";
 import AreaMapping from "./pages/AreaMapping";
 import Routing from "./pages/Routing";
 import Dashboard from "./pages/Dashboard";
+import CustomerDashboardMain from "./pages/CustomerDashboard";
+import { getCookie } from "./services/cookiesFunc";
 
 const queryClient = new QueryClient();
 
 function App() {
+  const isCustomerAgent = getCookie("customerAgent") == "true";
+
   return (
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
-        <Routes>
-          <Route index path="/" element={<Navigate to="/login" />} />
+        <div className='relative'>
+          <Routes>
+            {isCustomerAgent && (
+              <Route
+                path='/customer-support'
+                element={
+                  <PrivateRoute>
+                    <CustomerDashboardMain />
+                  </PrivateRoute>
+                }
+              />
+            )}
+            <>
+              <Route
+                path='/dashboard'
+                element={
+                  <PrivateRoute>
+                    <Dashboard />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path='/subscription'
+                element={
+                  <PrivateRoute>
+                    <Subscription />
+                  </PrivateRoute>
+                }
+              />
 
-          <Route
-            path="/dashboard"
-            element={
-              <PrivateRoute>
-                <Dashboard />
-              </PrivateRoute>
-            }
-          />
-
-          <Route
-            path="/subscription"
-            element={
-              <PrivateRoute>
-                <Subscription />
-              </PrivateRoute>
-            }
-          />
-
-          <Route
-            path="/customer/credit"
-            element={
-              <PrivateRoute>
-                <Customer />
-              </PrivateRoute>
-            }
-          />
-
-          <Route
-            path="/routing"
-            element={
-              <PrivateRoute>
-                <Routing />
-              </PrivateRoute>
-            }
-          />
-
-          <Route
-            path="/history"
-            element={
-              <PrivateRoute>
-                <History />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/agents"
-            element={
-              <PrivateRoute>
-                <Agents />
-              </PrivateRoute>
-            }
-          />
-
-          <Route
-            path="/AreaMapping"
-            element={
-              <PrivateRoute>
-                <AreaMapping />
-              </PrivateRoute>
-            }
-          />
-          <Route path="/login" element={<Login />} />
-        </Routes>
+              <Route
+                path='/customer/credit'
+                element={
+                  <PrivateRoute>
+                    <Customer />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path='/routing'
+                element={
+                  <PrivateRoute>
+                    <Routing />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path='/history'
+                element={
+                  <PrivateRoute>
+                    <History />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path='/agents'
+                element={
+                  <PrivateRoute>
+                    <Agents />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path='/AreaMapping'
+                element={
+                  <PrivateRoute>
+                    <AreaMapping />
+                  </PrivateRoute>
+                }
+              />
+            </>
+            <Route path='/login' element={<Login />} />
+            <Route path='/' element={<Navigate to='/login' />} />
+          </Routes>
+        </div>
         <ReactQueryDevtools initialIsOpen={false} />
         <Toaster />
       </QueryClientProvider>

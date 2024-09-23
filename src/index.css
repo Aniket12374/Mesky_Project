@@ -1,27 +1,27 @@
-@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap");
 
-.fredoka-400 {
-  font-family: "Fredoka", sans-serif;
+.roboto-400 {
+  font-family: "Roboto", sans-serif;
   font-weight: 400;
 }
 
-.fredoka-500 {
-  font-family: "Fredoka", sans-serif;
+.roboto-500 {
+  font-family: "Roboto", sans-serif;
   font-weight: 500;
 }
 
-.fredoka-600 {
-  font-family: "Fredoka", sans-serif;
+.roboto-600 {
+  font-family: "Roboto", sans-serif;
   font-weight: 600;
 }
 
-.fredoka-700 {
-  font-family: "Fredoka", sans-serif;
+.roboto-700 {
+  font-family: "Roboto", sans-serif;
   font-weight: 700;
 }
 
 body {
-  font-family: "Fredoka", sans-serif;
+  font-family: "Roboto", sans-serif;
   font-weight: 400;
 }
 
@@ -33,7 +33,7 @@ body {
 .ant-table-wrapper .ant-table-tbody > tr > td {
   font-size: 16px;
   border-bottom: 2px solid #e5e7eb;
-  font-family: "Fredoka", sans-serif !important;
+  font-family: "Roboto", sans-serif !important;
 }
 
 .pricing-form span.ant-input-suffix {
@@ -173,4 +173,137 @@ body {
 .border-select__control {
   box-shadow: 2px 2px 8px 2px rgba(215, 73, 132, 0.25) inset;
   padding: 5px;
+}
+
+.orange-bg {
+  background-color: #fc8172;
+}
+#mapdiv {
+  height: 500px;
+  width: 700px;
+  position: absolute;
+}
+
+.orange-btn {
+  @apply orange-bg w-32 text-white p-2 rounded-lg;
+}
+
+.transaction-pagination li.ant-pagination-total-text {
+  display: block;
+  margin-bottom: 10px;
+  background-color: antiquewhite;
+  text-align: center;
+}
+
+.order-listing li.ant-pagination-total-text {
+  display: block;
+  margin-bottom: 10px;
+  background-color: antiquewhite;
+  text-align: center;
+}
+
+/* .transaction-pagination li.ant-pagination-options {
+  margin-top: 15px;
+}
+
+.order-listing li.ant-pagination-options {
+  margin-top: 15px;
+  display: block;
+} */
+
+/* .order-listing .ant-select-selector .ant-select-selection-item {
+  background-color: #edc0a4;
+} */
+
+/* .order-listing .ant-select.ant-pagination-options-size-changer {
+  background-color: #edc0a4;
+} */
+
+.transaction-list .ant-table-wrapper .ant-table-tbody > tr > td {
+  font-size: 16px;
+  border-bottom: 2px solid #e5e7eb;
+  font-family: Roboto, sans-serif !important;
+}
+
+.search-btn {
+  @apply bg-[#FB8171] p-2 rounded-lg text-white;
+}
+
+.filters-boxshadow-common {
+  @apply shadow-md rounded-md border-gray-200 m-2 p-2 text-xs;
+}
+
+span.ant-switch-inner {
+  /* border: 1px solid rgb(139, 138, 138); */
+  background-color: #9a9f9b69;
+}
+
+.ant-switch-checked span.ant-switch-inner {
+  /* border: 1px solid gray; */
+  background-color: #1677ff;
+}
+
+.return-switch .ant-switch-checked span.ant-switch-inner {
+  /* border: 1px solid gray; */
+  background-color: #4d0a8c;
+}
+
+.gray-color {
+  color: #878787;
+}
+
+.transaction-list .ant-table-cell {
+  padding: 16px 8px !important;
+}
+
+.gray-btn {
+  @apply w-32 bg-gray-200 rounded-lg;
+}
+
+li.ant-pagination-options {
+  margin-top: 10px;
+}
+
+.custom-radio-group .ant-radio-wrapper .ant-radio-checked .ant-radio-inner {
+  border-color: #fb8171;
+  background-color: #fb8171;
+}
+
+.subscription-edit-modal .ant-select-selector {
+  border: none !important; 
+  border-bottom: 1px solid gray !important; 
+  border-radius: 0 !important; 
+}
+
+.trns-70 {
+  transform: translateX(-140px);
+  width: 140px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+}
+
+.ant-dropdown-menu-item {
+  background-color: #fc8172 !important;
+  color: white !important;
+}
+
+.customer-shadow {
+  box-shadow: 1px 1px 6px 1px #dadada;
+  border-radius: 7px;
+}
+
+img.edit-delivered-order {
+  width: 100px;
+  height: 100px;
+  object-fit: fill;
+  border-radius: 4px;
+}
+
+.map-container {
+  height: 300px;
+  width: 500px;
+}
+
+.App {
+  height: 300px;
+  width: 500px;
 }

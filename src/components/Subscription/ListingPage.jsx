@@ -348,7 +348,7 @@ const ListingPage = () => {
       title: "PHONE NUMBER",
       dataIndex: "phone_number",
       key: "phone_number",
-      width:100,
+      width: 100,
       filters: uniquePhoneNumbers.map((phoneNumber) => ({
         text: phoneNumber,
         value: phoneNumber,
@@ -361,7 +361,7 @@ const ListingPage = () => {
       title: "SECTOR",
       dataIndex: "sectors",
       key: "sectors",
-      width:100,
+      width: 100,
       filters: uniqueSectors.map((sector) => ({ text: sector, value: sector })),
       filterSearch: true,
       onFilter: (value, record) => record.sectors === value,
@@ -382,7 +382,7 @@ const ListingPage = () => {
       title: "UNIT QUANTITY",
       dataIndex: "unit_qty",
       key: "unit_qty",
-      width:90,
+      width: 90,
     },
     {
       title: "QTY",
@@ -500,7 +500,7 @@ const ListingPage = () => {
       title: "QTY CHANGE",
       key: "quantity_change",
       dataIndex: "quantity_change",
-      width:100,
+      width: 100,
       render: (quantity_change, record) =>
         !record.del_time && (
           <button
@@ -538,7 +538,7 @@ const ListingPage = () => {
       title: "Refund",
       key: "refund",
       dataIndex: "refund",
-      width:100,
+      width: 100,
       render: (refund, record) =>
         record.del_time &&
         record.status == "DELIVERED" && (

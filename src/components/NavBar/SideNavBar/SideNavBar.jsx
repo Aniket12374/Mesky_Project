@@ -8,6 +8,17 @@ import {
   faSquareCaretLeft,
   faSquareCaretRight,
 } from "@fortawesome/free-solid-svg-icons";
+import { getCookie } from "../../../services/cookiesFunc";
+
+const sideBarAgent = [
+  {
+    id: 9,
+    name: "Customer Support",
+    path: "customer-support",
+    icon1: Images["DashboardColored"],
+    icon2: Images["Dashboard"],
+  },
+];
 
 const SidebarNavItems = [
   {
@@ -75,7 +86,7 @@ const SideNavBar = () => {
           samePath(path),
       })}
     >
-      <Link to={`/${path}`} className="flex items-center p-6">
+      <Link to={`/${path}`} className='flex items-center p-6'>
         <Image
           src={samePath(path) ? icon1 : icon2}
           alt={`${path}-icon`}
@@ -97,23 +108,31 @@ const SideNavBar = () => {
     </li>
   );
 
+  const isCustomerAgent = getCookie("customerAgent") == "true";
+  const sidebarItems = !isCustomerAgent
+    ? SidebarNavItems
+    : [...SidebarNavItems, ...sideBarAgent];
+
   return (
     <div
-      id="logo-sidebar"
-      className="fixed top-0 left-0 z-40  h-screen pt-20 transition-transform -translate-x-full bg-white sm:translate-x-0"
-      aria-label="Sidebar"
+      id='logo-sidebar'
+      className='absolute top-0 left-0 z-40  h-screen pt-20 transition-transform -translate-x-full bg-white sm:translate-x-0'
+      aria-label='Sidebar'
+      style={{
+        width: !close ? "100px" : "230px",
+      }}
     >
-      <div className="h-full px-3 pb-4 w-max">
-        <div className="flex mt-2 justify-end">
+      <div className='h-full pb-4 w-max overflow-y-auto'>
+        <div className='flex mt-2 justify-end'>
           <button onClick={() => setClose(!close)}>
             <FontAwesomeIcon
-              size="2x"
+              size='2x'
               icon={close ? faSquareCaretLeft : faSquareCaretRight}
             />
           </button>
         </div>
-        <ul className="py-2 space-y-2">
-          {SidebarNavItems.map((sidebarItem, index) => (
+        <ul className='py-2 space-y-2'>
+          {sidebarItems.map((sidebarItem, index) => (
             <LiItem
               path={sidebarItem.path}
               name={sidebarItem.name}

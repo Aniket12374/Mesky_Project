@@ -55,7 +55,7 @@ const StoreSection = () => {
       align: "center",
       render: (_, record) => (
         <div
-          className="flex justify-center"
+          className='flex justify-center'
           onClick={() => {
             const {
               start_date: startDate,
@@ -85,7 +85,7 @@ const StoreSection = () => {
       key: "delete",
       align: "center",
       render: (_, record) => (
-        <div className="flex justify-center">
+        <div className='flex justify-center'>
           <button onClick={() => handleDelete(record.id)}>
             <VscTrash size={30} />
           </button>
@@ -157,40 +157,40 @@ const StoreSection = () => {
         footer={null}
         onCancel={() => setIsModalOpen(false)}
       >
-        <div className="text-3xl fredoka-700 my-5">Add a holiday</div>
+        <div className='text-3xl roboto700 my-5'>Add a holiday</div>
         <form
-          className="flex flex-col space-y-4"
+          className='flex flex-col space-y-4'
           onSubmit={handleSubmitHoliday(handleAddHoliday)}
         >
           <BoxShadowInput
             register={registerHoliday}
-            fieldName="startDate"
-            label="Start date"
+            fieldName='startDate'
+            label='Start date'
           />
           <BoxShadowInput
             register={registerHoliday}
-            fieldName="endDate"
-            label="End date"
+            fieldName='endDate'
+            label='End date'
           />
           <BoxShadowInput
             register={registerHoliday}
-            fieldName="holidayReason"
-            label="Reason for holiday"
-            type="text"
+            fieldName='holidayReason'
+            label='Reason for holiday'
+            type='text'
           />
           <button
-            type="submit"
-            className="btn btn-block drop-shadow-lg text-white fredoka-600 bg-pink-600 border-0 rounded-3xl"
+            type='submit'
+            className='btn btn-block drop-shadow-lg text-white roboto600 bg-pink-600 border-0 rounded-3xl'
           >
             Save
           </button>
         </form>
       </Modal>
 
-      <div className="flex float-right">
-        <div className="my-5 md:mt-0 flex justify-center md:items-start">
+      <div className='flex float-right'>
+        <div className='my-5 md:mt-0 flex justify-center md:items-start'>
           <button
-            className="py-2 px-10 rounded-3xl drop-shadow-lg text-white fredoka-600 bg-pink-600 float-right"
+            className='py-2 px-10 rounded-3xl drop-shadow-lg text-white roboto600 bg-pink-600 float-right'
             onClick={() => {
               setHolidayValue("startDate", "");
               setHolidayValue("endDate", "");
@@ -210,7 +210,7 @@ const StoreSection = () => {
           data={colData}
           navigateTo={null}
           columns={HolidayColumns}
-          rowclassName="h-24"
+          rowclassName='h-24'
         />
       </div>
     </section>

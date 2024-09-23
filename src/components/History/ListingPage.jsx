@@ -317,7 +317,7 @@ const ListingPage = () => {
               <div onClick={() => openImagePopup(record.delImg)}>
                 <img
                   src={record.delImg}
-                  alt="Delivery Image"
+                  alt='Delivery Image'
                   style={{ maxWidth: "100px", maxHeight: "100px" }}
                 />
               </div>
@@ -342,7 +342,7 @@ const ListingPage = () => {
     },
   ];
 
-  if (isRefundUser == 'true') {
+  if (isRefundUser == "true") {
     HistoryHeaders.push({
       title: "Refund",
       key: "refund",
@@ -350,9 +350,9 @@ const ListingPage = () => {
       render: (refund, record) =>
         record.del_time &&
         record.status == "DELIVERED" && (
-          <div className="px-2">
+          <div className='px-2'>
             <button
-              className="bg-[#DF4584] rounded-2xl text-white p-2"
+              className='bg-[#DF4584] rounded-2xl text-white p-2'
               onClick={() => handleModalRef(record)}
             >
               Refund
@@ -466,7 +466,7 @@ const ListingPage = () => {
       >
         {csvLoader ? "Downloading..." : "Download All Data"}
       </button> */}
-      <div className="float-right font-medium">
+      <div className='float-right font-medium'>
         Showing Results: {filteredDataCount}/{totalDataCount}
       </div>
       <DataTable
@@ -476,9 +476,9 @@ const ListingPage = () => {
         loading={isSearchLoading || isLoading}
         onFilteredDataChange={handleFilteredDataCount}
         onChange={handleChange}
-        fileName="History_Listing.csv"
+        fileName='History_Listing.csv'
         scroll={{
-          y: "calc(100vh - 333px)",
+          y: "calc(100vh - 390px)",
         }}
         setSearch={setSearch}
         search={search}
@@ -486,7 +486,7 @@ const ListingPage = () => {
         setShowSearchData={setShowSearchData}
         handleSearch={handleSearch}
       />
-      <div className="flex justify-end px-4 py-2">
+      <div className='flex justify-end px-4 py-2'>
         <Pagination
           current={showSearchData ? searchPage : currentPage}
           total={tableData?.totalCount || searchTotalCount}
@@ -511,7 +511,7 @@ const ListingPage = () => {
         {selectedImage && (
           <img
             src={selectedImage}
-            alt="Delivery Image"
+            alt='Delivery Image'
             style={{ maxWidth: "100%" }}
           />
         )}

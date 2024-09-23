@@ -239,7 +239,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
   const handleOk = () => {
     setEditData((prev) => ({
       ...prev,
-      datesRange: [...prev.datesRange, editData?.pauseDateRange],
+      datesRange: [...prev?.datesRange, editData?.pauseDateRange],
       dateRangePickerOpen: false,
       dateRangePicker: false,
     }));
@@ -346,6 +346,12 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
     }
   };
 
+  const parsedPauseDate = moment(editData?.newStartDate, "DD-MM-YYYY");
+
+  const disabledPastDateRangePicker = (current) => {
+    return current && current < parsedPauseDate.startOf("day");
+  };
+
   const disabledPastDate = (current) => {
     return current && current < moment().add(1, "day").startOf("day");
   };
@@ -367,6 +373,17 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
           setIsWarning(false);
         }
       }
+    }
+
+    if (isCreateSubscription) {
+      setEditData((prev) => ({
+        ...prev,
+        datesRange: prev.datesRange.filter((dateObj) =>
+          moment(dateObj.start_date, "DD-MM-YYYY").isSameOrAfter(
+            moment(prev.newStartDate, "DD-MM-YYYY")
+          )
+        ),
+      }));
     }
   }, [editData.type, editData?.newStartDate]);
 
@@ -490,22 +507,17 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
                       format={dateFormat}
                       disabledDate={disabledPastDate}
                       onChange={(_, dateString) => {
-                        if (editData?.type == "ALTERNATE") {
-                          setEditData((prev) => ({
-                            ...prev,
-                            newStartDate: dateString,
-                            weekdays: getDayOfWeekAndAlternates(dateString),
-                            day: alternateDays[0],
-                          }));
-                        } else {
-                          setEditData((prev) => ({
-                            ...prev,
-                            newStartDate: dateString,
-                          }));
-                        }
+                        setEditData((prev) => ({
+                          ...prev,
+                          newStartDate: dateString,
+                          // weekdays: getDayOfWeekAndAlternates(dateString),
+                          pauseDate: null,
+                          day: alternateDays[0],
+                        }));
                       }}
                       placeholder='Select date'
                       disabled={!isCreateSubscription ? true : false}
+                      allowClear={false}
                     />
                   </div>
                 }
@@ -537,6 +549,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
                         }
                       }}
                       placeholder='Select date'
+                      allowClear={false}
                     />
                   </div>
                 )}
@@ -579,7 +592,11 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
                     start: "startInput",
                     end: "endInput",
                   }}
-                  disabledDate={disabledPastDate}
+                  disabledDate={
+                    isCreateSubscription
+                      ? disabledPastDateRangePicker
+                      : disabledPastDate
+                  }
                   onChange={handlePauseDateChange}
                   placeholder={["Start Date", "End Date"]}
                   autoFocus={true}

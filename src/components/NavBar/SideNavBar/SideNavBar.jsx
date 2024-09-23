@@ -37,13 +37,20 @@ const SidebarNavItems = [
   },
   {
     id: 3,
+    name: "Customer Credit",
+    path: "customer/credit",
+    icon1: Images["ShoppingColoredLogo"],
+    icon2: Images["ShoppingLogo"],
+  },
+  {
+    id: 4,
     name: "Routing",
     path: "routing",
     icon1: Images["RoutingColoredLogo"],
     icon2: Images["RoutingLogo"],
   },
   {
-    id: 4,
+    id: 5,
     name: "Area Mapping",
     path: "AreaMapping",
     icon1: Images["AreaMapColoredLogo"],
@@ -57,7 +64,7 @@ const SidebarNavItems = [
     icon2: Images["OrdersLogo"],
   },
   {
-    id: 8,
+    id: 7,
     name: "Agents",
     path: "agents",
     icon1: Images["SupportLogoColored"],

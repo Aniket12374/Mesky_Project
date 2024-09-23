@@ -136,6 +136,7 @@ const ListingPage = () => {
         : "",
       City: listingData?.order?.city,
       State: listingData?.order?.state,
+      warehouse_code: listingData?.warehouse_code,
       status: delStatus,
       delImg: listingData?.status?.del_img,
       not_del_reason: listingData?.status?.not_del_reason,
@@ -154,6 +155,14 @@ const ListingPage = () => {
     new Set(
       historyData
         .map((listingData) => listingData?.sectors)
+        .sort(customAlphNumericSort)
+    )
+  );
+
+  const uniqueWarehouse = Array.from(
+    new Set(
+      historyData
+        .map((listingData) => listingData?.warehouse_code)
         .sort(customAlphNumericSort)
     )
   );
@@ -291,7 +300,7 @@ const ListingPage = () => {
       title: "ORDER ID",
       dataIndex: "order_id",
       key: "order_id",
-      // width: 100,
+      width: 100,
       render: (text) => text.substring(5), // Truncate the first 5 digits
     },
     {
@@ -311,7 +320,7 @@ const ListingPage = () => {
       title: "SOCIETY NAME",
       dataIndex: "society_name",
       key: "society_name",
-      // width: 120,
+      width: 100,
       filters: uniqueSocietyNames.map((societyName) => ({
         text: societyName,
         value: societyName,
@@ -339,7 +348,7 @@ const ListingPage = () => {
       title: "PHONE NUMBER",
       dataIndex: "phone_number",
       key: "phone_number",
-
+      width: 100,
       filters: uniquePhoneNumbers.map((phoneNumber) => ({
         text: phoneNumber,
         value: phoneNumber,
@@ -352,6 +361,7 @@ const ListingPage = () => {
       title: "SECTOR",
       dataIndex: "sectors",
       key: "sectors",
+      width: 100,
       filters: uniqueSectors.map((sector) => ({ text: sector, value: sector })),
       filterSearch: true,
       onFilter: (value, record) => record.sectors === value,
@@ -372,6 +382,7 @@ const ListingPage = () => {
       title: "UNIT QUANTITY",
       dataIndex: "unit_qty",
       key: "unit_qty",
+      width: 90,
     },
     {
       title: "QTY",
@@ -387,7 +398,7 @@ const ListingPage = () => {
         text: agentName === "" ? "" : agentName,
         value: agentName,
       })),
-      // width: 120,
+      width: 120,
       filterSearch: true,
       onFilter: (value, record) => {
         if (value === "") {
@@ -402,6 +413,19 @@ const ListingPage = () => {
       key: "delivery",
       // ellipsis: true,
       width: 120,
+    },
+    {
+      title: "WARE HOUSE CODE",
+      dataIndex: "warehouse_code",
+      key: "warehouse_code",
+      // ellipsis: true,
+      width: 160,
+      filters: uniqueWarehouse.map((warehouse) => ({
+        text: warehouse,
+        value: warehouse,
+      })),
+      filterSearch: true,
+      onFilter: (value, record) => record.warehouse_code === value,
     },
     {
       title: "STATUS",
@@ -421,7 +445,7 @@ const ListingPage = () => {
           value: "PENDING",
         },
       ],
-      // width: 90,
+      width: 90,
       onFilter: (value, record) => record.status == value,
       filterSearch: true,
       render: (text, record) => {
@@ -459,7 +483,7 @@ const ListingPage = () => {
       title: "PAUSE ITEM",
       key: "item_uid",
       dataIndex: "item_uid",
-      // width: 60,
+      width: 60,
       render: (item_uid, record) =>
         !record.del_time && (
           <button
@@ -476,6 +500,7 @@ const ListingPage = () => {
       title: "QTY CHANGE",
       key: "quantity_change",
       dataIndex: "quantity_change",
+      width: 100,
       render: (quantity_change, record) =>
         !record.del_time && (
           <button
@@ -513,6 +538,7 @@ const ListingPage = () => {
       title: "Refund",
       key: "refund",
       dataIndex: "refund",
+      width: 100,
       render: (refund, record) =>
         record.del_time &&
         record.status == "DELIVERED" && (
@@ -613,6 +639,7 @@ const ListingPage = () => {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        // toast.success(res?.data?.message);
         toast.success("Successfully downloaded!");
       })
       .catch((err) => {
@@ -697,7 +724,8 @@ const ListingPage = () => {
         // pagination={paginationConfig}
         onFilteredDataChange={handleFilteredDataCount}
         scroll={{
-          y: "calc(100vh - 390px)",
+          x: "calc(200vh - 700px)",
+          y: "calc(100vh - 350px)",
         }}
         setSearch={setSearch}
         search={search}

@@ -30,8 +30,9 @@ export const DataTable = ({
   const navigate = useNavigate();
   const location = useLocation();
 
-  const paths = ["/subscription", "/history"];
+  const paths = ["/subscription", "/history", "/customer/credit"];
   const pathIncludes = paths.some((path) => location?.pathname.includes(path));
+  const iscustomerPage = location?.pathname.includes("/customer");
 
   const selectionType = checkbox ? "checkbox" : radio ? "radio" : null;
   const rowSelection = {
@@ -47,7 +48,7 @@ export const DataTable = ({
 
   return (
     <>
-      {showExport && (
+      {(!iscustomerPage || showExport) && (
         <CSVLink
           filename={fileName}
           data={data}

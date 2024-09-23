@@ -28,10 +28,14 @@ const DashboardDetail = () => {
   useEffect(() => {
     const after7 = cityWise?.city_wise_count_after_7 || {};
     const before7 = cityWise?.city_wise_count_before_7 || {};
+    const acceptedCount = cityWise?.accepted_city_wise_before_count || {};
+    const notDelivered = cityWise?.not_delivered_city_wise_before_count || {};
 
     const combinedKeys = new Set([
       ...Object.keys(before7),
       ...Object.keys(after7),
+      ...Object.keys(acceptedCount),
+      ...Object.keys(notDelivered),
     ]);
 
     const parsedData = Array.from(combinedKeys).map((key) => {
@@ -40,6 +44,8 @@ const DashboardDetail = () => {
         "City, State": `${city}, ${state}`,
         before7: before7[key] || 0,
         after7: after7[key] || 0,
+        acceptedCount: acceptedCount[key] || 0,
+        notDelivered: notDelivered[key] || 0,
       };
     });
 
@@ -109,6 +115,8 @@ const DashboardDetail = () => {
           before7: dataStats.before_7,
           after7: dataStats.after_7,
           percentage: dataStats.percent_after_7,
+          pendingDeliveryies: dataStats.accepted_delievries_count,
+          notDeliveredCount: dataStats.not_delivered_delievries_count,
         });
       } catch (error) {
         console.error("Error fetching delivery stats:", error);
@@ -201,6 +209,7 @@ const DashboardDetail = () => {
       title: "City, State",
       dataIndex: "City, State",
       key: "City, State",
+      width: 100,
     },
     {
       title: " Before 7",
@@ -212,6 +221,16 @@ const DashboardDetail = () => {
       dataIndex: "after7",
       key: "after7",
     },
+    {
+      title: "Pending ",
+      dataIndex: "acceptedCount",
+      key: "acceptedCount",
+    },
+    {
+      title: " Not Delivered ",
+      dataIndex: "notDelivered",
+      key: "notDelivered",
+    },
   ];
 
   const statItems = [
@@ -220,6 +239,11 @@ const DashboardDetail = () => {
     { value: stats?.total_agaents, label: "Riders", color: "#65CBF3" },
     { value: stats?.total_pincodes, label: "Pincodes", color: "#FC8172" },
     { value: stats?.total_sectors, label: "Sectors", color: "#AA00FF" },
+    {
+      value: stats?.unique_customer_count || 0,
+      label: "Unique Customers",
+      color: "#65CBF3",
+    },
   ];
 
   return (
@@ -260,7 +284,6 @@ const DashboardDetail = () => {
           />
         </div>
       </div>
-
       <div className='w-[45%] space-y-5'>
         <div>
           <Select
@@ -305,6 +328,11 @@ const DashboardDetail = () => {
             size='small'
             pagination={false}
           />
+        </div>
+        <div className='flex space-x-4 '>
+          <div>Pending Deliveries : {deliveryStatss?.pendingDeliveryies}</div>
+          <div>Not delivered : {deliveryStatss?.notDeliveredCount}</div>
+          <div>delivered : {deliveryStatss?.total}</div>
         </div>
         <div>
           <Table

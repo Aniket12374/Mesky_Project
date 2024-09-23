@@ -16,10 +16,25 @@ const Login = () => {
   const [otpReq, setOtpReq] = useState(false);
   const [message, setMessage] = useState("");
   const [refundUser, setRefundUser] = useState(false);
+  const [creditUser, setCreditUser] = useState(false);
 
-  const setName = useMainStore((state) => state.setName);
+  const refundUsers = [
+    "9958945515",
+    "8799712505",
+    "9654787711",
+    "9862532722",
+    "7426031798",
+  ];
 
-  const refundUsers = ["9958945515", "8799712505", "9654787711", "9862532722"];
+  const creditUsers = [
+    "9029434159",
+    "7426031798",
+    "8130067178",
+    "9654831507",
+    "9335842464",
+    "8318179623",
+    "9315429184",
+  ];
 
   const handleInputChange = (e) => {
     otpReq ? setOtp(e.target.value) : setUserInput(e.target.value);
@@ -33,6 +48,11 @@ const Login = () => {
     if (userInput) {
       let check = refundUsers.some((x) => x == userInput);
       setRefundUser(check);
+    }
+
+    if (userInput) {
+      let check = creditUsers.some((x) => x == userInput);
+      setCreditUser(check);
     }
 
     if (!emailRegex.test(userInput) && !phoneRegex.test(userInput)) {
@@ -55,6 +75,7 @@ const Login = () => {
         setCookie("refundUser", refundUser);
 
         const isCustomerAgent = getCookie("customerAgent") == "true";
+        setCookie("creditUser", creditUser);
         navigate(isCustomerAgent ? "/customer-support" : "/subscription");
         navigate(0);
       }

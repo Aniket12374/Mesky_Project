@@ -14,6 +14,7 @@ export const OrderDetails = ({ data, closeOrderModal, address }) => {
     status = "",
     orderitem_info = {},
     delivery_images = [],
+    misc = {},
   } = orderData;
 
   const tmrOrder = status === "ACCEPTED";
@@ -59,6 +60,9 @@ export const OrderDetails = ({ data, closeOrderModal, address }) => {
   );
 
   const billKeys = Object.keys(billDetails);
+  const orderReason = orderData?.misc?.reason;
+  const orderText = orderReason ? orderReason.split("-")[0] : "";
+  const orderTextDp = orderReason ? orderReason.split("-")[1] : "";
 
   return (
     <div className='p-2' onClick={() => setShowDropDown(false)}>
@@ -164,6 +168,8 @@ export const OrderDetails = ({ data, closeOrderModal, address }) => {
         orderId={orderId}
         deliveredDate={date}
         isTmrOrder={orderData?.status === "ACCEPTED"}
+        reasonText={orderText}
+        reasonDp={orderTextDp}
       />
     </div>
   );

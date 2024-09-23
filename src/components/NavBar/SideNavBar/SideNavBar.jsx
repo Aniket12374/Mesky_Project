@@ -104,7 +104,7 @@ const SideNavBar = () => {
   const isCustomerAgent = getCookie("customerAgent") == "true";
   const sidebarItems = !isCustomerAgent
     ? SidebarNavItems
-    : [SidebarNavItems, ...sideBarAgent];
+    : [...SidebarNavItems, ...sideBarAgent];
 
   return (
     <div
@@ -115,7 +115,7 @@ const SideNavBar = () => {
         width: !close ? "100px" : "230px",
       }}
     >
-      <div className='h-full px-3 pb-4 w-max overflow-y-auto'>
+      <div className='h-full pb-4 w-max overflow-y-auto'>
         <div className='flex mt-2 justify-end'>
           <button onClick={() => setClose(!close)}>
             <FontAwesomeIcon

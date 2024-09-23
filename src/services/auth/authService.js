@@ -16,7 +16,7 @@ export const otpRequest = (payload) => {
 export const validateOtp = (payload) => {
   return httpVendor.post("/api/auth/v3/validate_otp", payload).then((res) => {
     setTokenToCookie(res.data.auth_token);
-    setCookie("userName", res?.data?.logged_user_info?.first_name);
-    setCookie("customerAgent", res?.data?.logged_user_info?.is_csd);
+    setCookie("userName", res?.data?.first_name);
+    setCookie("customerAgent", res?.data?.is_csd);
   });
 };

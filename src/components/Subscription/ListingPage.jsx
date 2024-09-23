@@ -725,7 +725,7 @@ const ListingPage = () => {
         onFilteredDataChange={handleFilteredDataCount}
         scroll={{
           x: "calc(200vh - 700px)",
-          y: "calc(100vh - 350px)",
+          y: "calc(100vh - 390px)",
         }}
         setSearch={setSearch}
         search={search}

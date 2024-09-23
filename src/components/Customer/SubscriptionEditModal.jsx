@@ -128,7 +128,6 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
     day: "",
     dateRangePickerOpen: true,
   });
-  console.log(product);
 
   const addressId = localStorage.getItem("addressId");
 
@@ -139,7 +138,6 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
     (val) => val.product_id == editData?.productId
   );
   const createData = filteredData[0];
-  console.log("createData", createData);
 
   const alternateDays = getDayOfWeekAndAlternates(editData?.newStartDate);
 
@@ -363,7 +361,6 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
   const offerPrice = 
      (product?.unit_price || product?.offer_price) * editData?.quantity
     || (createData?.unit_price || createData?.offer_price) * editData?.quantity;
-  console.log("offerPrice", offerPrice);
 
   const sellingPrice =
     product?.selling_price * editData?.quantity ||

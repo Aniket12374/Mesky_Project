@@ -142,7 +142,9 @@ function NewOrderCreation({ open, onClose }) {
         resetData();
       })
       .catch((err) => {
-        toast.error(err?.response?.data?.message?.message);
+        toast.error(
+          err?.response?.data?.message?.message || err?.response?.data?.message
+        );
         console.log({ err });
       });
   };

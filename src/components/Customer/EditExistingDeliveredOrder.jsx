@@ -20,6 +20,8 @@ function EditExistingDeliveredOrder({
   orderId,
   deliveredDate,
   isTmrOrder,
+  reasonText = "",
+  reasonDp = "",
 }) {
   const quantity = product?.quantity;
   // const [refundQty, setRefundQty] = useState(quantity);
@@ -116,6 +118,8 @@ function EditExistingDeliveredOrder({
   useEffect(() => {
     setReasonDropdown(selectReasonOptions[1]);
     setTmrOrderQty(quantity);
+    setReason(reasonText);
+    setReasonDropdown(reasonDp);
   }, [data]);
 
   const refundpayload = {
@@ -160,7 +164,6 @@ function EditExistingDeliveredOrder({
     api(payload)
       .then((res) => {
         toast.success("Updated Successfully!");
-        console.log({ res });
         resetData();
 
         setCookie("currentOrderVal", presentOrderVal);

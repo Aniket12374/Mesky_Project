@@ -102,7 +102,9 @@ const SideNavBar = () => {
   );
 
   const isCustomerAgent = getCookie("customerAgent") == "true";
-  const sidebarItems = !isCustomerAgent ? SidebarNavItems : sideBarAgent;
+  const sidebarItems = !isCustomerAgent
+    ? SidebarNavItems
+    : [SidebarNavItems, ...sideBarAgent];
 
   return (
     <div

@@ -26,7 +26,7 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <div className='relative'>
           <Routes>
-            {isCustomerAgent ? (
+            {isCustomerAgent && (
               <Route
                 path='/customer-support'
                 element={
@@ -35,58 +35,57 @@ function App() {
                   </PrivateRoute>
                 }
               />
-            ) : (
-              <>
-                <Route
-                  path='/dashboard'
-                  element={
-                    <PrivateRoute>
-                      <Dashboard />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path='/subscription'
-                  element={
-                    <PrivateRoute>
-                      <Subscription />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path='/routing'
-                  element={
-                    <PrivateRoute>
-                      <Routing />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path='/history'
-                  element={
-                    <PrivateRoute>
-                      <History />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path='/agents'
-                  element={
-                    <PrivateRoute>
-                      <Agents />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path='/AreaMapping'
-                  element={
-                    <PrivateRoute>
-                      <AreaMapping />
-                    </PrivateRoute>
-                  }
-                />
-              </>
             )}
+            <>
+              <Route
+                path='/dashboard'
+                element={
+                  <PrivateRoute>
+                    <Dashboard />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path='/subscription'
+                element={
+                  <PrivateRoute>
+                    <Subscription />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path='/routing'
+                element={
+                  <PrivateRoute>
+                    <Routing />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path='/history'
+                element={
+                  <PrivateRoute>
+                    <History />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path='/agents'
+                element={
+                  <PrivateRoute>
+                    <Agents />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path='/AreaMapping'
+                element={
+                  <PrivateRoute>
+                    <AreaMapping />
+                  </PrivateRoute>
+                }
+              />
+            </>
             <Route path='/login' element={<Login />} />
             <Route path='/' element={<Navigate to='/login' />} />
           </Routes>

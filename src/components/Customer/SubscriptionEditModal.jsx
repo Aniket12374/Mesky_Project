@@ -259,7 +259,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
       return;
     }
 
-    if (editData?.type == 'WEEKLY' && editData?.weekdays.length <= 0) {
+    if (editData?.type == "WEEKLY" && editData?.weekdays.length <= 0) {
       toast.error("Please Select Week day !!");
       return;
     }
@@ -342,7 +342,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
           label: product.product_sn,
           value: product.product_id,
           img: product.default_image,
-          price: product?.selling_price,
+          price: product?.unit_price || product?.offer_price,
         }));
 
         return data;
@@ -363,9 +363,9 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
     return current && current < moment().add(1, "day").startOf("day");
   };
 
-  const offerPrice = 
-     (product?.unit_price || product?.offer_price) * editData?.quantity
-    || (createData?.unit_price || createData?.offer_price) * editData?.quantity;
+  const offerPrice =
+    (product?.unit_price || product?.offer_price) * editData?.quantity ||
+    (createData?.unit_price || createData?.offer_price) * editData?.quantity;
 
   const sellingPrice =
     product?.selling_price * editData?.quantity ||

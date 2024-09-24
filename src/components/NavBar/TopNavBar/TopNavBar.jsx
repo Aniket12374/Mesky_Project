@@ -73,7 +73,9 @@ const Search = () => {
       <Select
         showSearch
         optionFilterProp='label'
-        placeholder='Search for phone number...'
+        placeholder={
+          <div className='roboto-500'>Search for phone number...</div>
+        }
         options={options}
         onSearch={debounceFetcher}
         onKeyDown={debounceFetcher}

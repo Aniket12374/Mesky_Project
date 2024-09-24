@@ -52,18 +52,7 @@ const DashboardDetail = () => {
     setTableDataCitywise(parsedData);
   }, [cityWise]);
 
-  const colors = [
-    "#DF4584",
-    "#F9A603",
-    "#65CBF3",
-    "#FC8172",
-    "#AA00FF",
-    "#4CAF50",
-    "#FFEB3B",
-    "#00BCD4",
-    "#9C27B0",
-    "#FF9800",
-  ];
+  const colors = ["#DF4584", "#F9A603", "#65CBF3"];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -209,7 +198,7 @@ const DashboardDetail = () => {
       title: "City, State",
       dataIndex: "City, State",
       key: "City, State",
-      width: 100,
+      width: 200,
     },
     {
       title: " Before 7",
@@ -262,7 +251,7 @@ const DashboardDetail = () => {
               </div>
             ))}
         </div>
-        <div className='grid grid-cols-5 gap-4'>
+        <div className='grid grid-cols-3 gap-4'>
           {otherProducts?.map((product, index) => (
             <div
               key={index}
@@ -329,10 +318,29 @@ const DashboardDetail = () => {
             pagination={false}
           />
         </div>
-        <div className='flex space-x-4 '>
-          <div>Pending Deliveries : {deliveryStatss?.pendingDeliveryies}</div>
-          <div>Not delivered : {deliveryStatss?.notDeliveredCount}</div>
-          <div>delivered : {deliveryStatss?.total}</div>
+        <div className='grid grid-cols-3 gap-3'>
+          <div
+            className={`bg-[${colors[0]}] text-white p-2 rounded-lg text-center`}
+          >
+            <div> Pending Deliveries</div>
+            <div className='text-center'>
+              {deliveryStatss?.pendingDeliveryies}
+            </div>
+          </div>
+          <div
+            className={`bg-[${colors[0]}] text-white p-2 rounded-lg text-center`}
+          >
+            <div>Not Delivered</div>
+            <div className='text-center'>
+              {deliveryStatss?.notDeliveredCount}
+            </div>
+          </div>
+          <div
+            className={`bg-[${colors[0]}] text-white p-2 rounded-lg text-center`}
+          >
+            <div>Delivered </div>
+            <div className='text-center'>{deliveryStatss?.total}</div>
+          </div>
         </div>
         <div>
           <Table

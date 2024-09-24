@@ -68,20 +68,13 @@ export const transactionName = (record) => {
   const type = record?.type;
   const orderIdArr = record?.order_id?.split("-");
   const isCreditTransaction = type === "CREDIT" || type === "REFUND";
-  const isCreditType = type === "CREDIT";
-  const orderId = !isCreditTransaction
-    ? orderIdArr
-      ? orderIdArr[orderIdArr.length - 1]
-      : ""
-    : null;
+  const orderId = orderIdArr ? orderIdArr[orderIdArr.length - 1] : "";
 
-  return !isCreditTransaction
-    ? type == "REFUNDED"
-      ? `Refund for Order ID: ${orderId}`
-      : `Paid for Order ID: ${orderId}`
-    : isCreditType
-    ? `Recharged wallet with ₹${record?.transaction_amount}`
-    : `Refund for Order ID:  ${orderId}`;
+  return isCreditTransaction
+    ? type == "REFUND"
+      ? `Refund for Order ID: ${orderId.slice(0, 13)}`
+      : `Recharged wallet with ₹${record?.transaction_amount}`
+    : `Paid for Order ID: ${orderId}`;
 };
 
 export const ProductCard = ({

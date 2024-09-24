@@ -270,7 +270,9 @@ function EditExistingDeliveredOrder({
               ) : (
                 <div className='flex items-center space-x-3'>
                   <div className='quantity-change'>
+                    <label className='mr-2'>Qty:</label>
                     <select
+                      // value={`Qty ${tmrOrderQty}`}
                       value={tmrOrderQty}
                       onChange={(e) => setTmrOrderQty(e.target.value)}
                       className='border border-gray-200 rounded-md p-2'

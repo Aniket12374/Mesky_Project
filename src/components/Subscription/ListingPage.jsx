@@ -483,11 +483,11 @@ const ListingPage = () => {
       title: "PAUSE ITEM",
       key: "item_uid",
       dataIndex: "item_uid",
-      width: 60,
+      width: 70,
       render: (item_uid, record) =>
         !record.del_time && (
           <button
-            className='bg-[#DF4584] rounded-2xl text-white p-2'
+            className='bg-[#DF4584] rounded-2xl text-white  p-2 m-1 text-sm'
             onClick={() => handlePause(item_uid)}
             // disabled={pausedItems.includes(item_uid)} // Disable button for paused items
           >
@@ -504,7 +504,7 @@ const ListingPage = () => {
       render: (quantity_change, record) =>
         !record.del_time && (
           <button
-            className='bg-[#DF4584] rounded-2xl text-white p-2'
+            className='bg-[#DF4584] rounded-2xl text-white p-1 m-1 text-sm'
             onClick={() => handleModal(record)}
           >
             Qty Change

@@ -97,7 +97,7 @@ const SubscriptionData = ({ tab, modalData, setModalData }) => {
           end_date,
           total_subscription_price,
         } = record;
-        console.log("record", record);
+       
 
         return (
           <div className="m-1 shadow-lg rounded-lg border border-gray-300 ">
@@ -126,7 +126,7 @@ const SubscriptionData = ({ tab, modalData, setModalData }) => {
                       ₹ {total_subscription_price}
                     </span>
                     <span className="line-through px-2 text-[#9DA49E] text-[12px]">
-                      ₹ {product?.selling_price}
+                      ₹ {product?.selling_price * quantity}
                     </span>
                   </span>
                 </div>

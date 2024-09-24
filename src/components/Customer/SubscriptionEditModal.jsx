@@ -259,6 +259,11 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
       return;
     }
 
+    if (editData?.type == 'WEEKLY' && editData?.weekdays.length <= 0) {
+      toast.error("Please Select Week day !!");
+      return;
+    }
+
     if (!isCreateSubscription && editData?.type == "ALTERNATE") {
       if (!editData?.newStartDate) {
         toast.error(

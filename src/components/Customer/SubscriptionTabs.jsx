@@ -89,7 +89,16 @@ const SubscriptionData = ({ tab, modalData, setModalData }) => {
   return (
     <div className="h-[400px] overflow-y-auto space-y-2">
       {tabData.map((record, index) => {
-        const { product, quantity, dates_range, start_date, end_date } = record;
+        const {
+          product,
+          quantity,
+          dates_range,
+          start_date,
+          end_date,
+          total_subscription_price,
+        } = record;
+        console.log("record", record);
+
         return (
           <div className="m-1 shadow-lg rounded-lg border border-gray-300 ">
             <div className="flex justify-between space-x-2 p-2">
@@ -114,7 +123,7 @@ const SubscriptionData = ({ tab, modalData, setModalData }) => {
                   </span>
                   <span className="ml-10 flex justify-end w-[45%]">
                     <span className="text-[12px] ">
-                      ₹ {product?.offer_price}
+                      ₹ {total_subscription_price}
                     </span>
                     <span className="line-through px-2 text-[#9DA49E] text-[12px]">
                       ₹ {product?.selling_price}

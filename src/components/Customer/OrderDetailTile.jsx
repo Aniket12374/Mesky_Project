@@ -1,4 +1,5 @@
 import React from "react";
+import { QueryClient, useQueryClient } from "react-query";
 
 const OrderDetailTile = ({
   productName,
@@ -9,6 +10,7 @@ const OrderDetailTile = ({
   orderId,
   status,
   record,
+  index,
   setOrderModal,
   setFilterModalOpen,
 }) => {
@@ -41,7 +43,11 @@ const OrderDetailTile = ({
   }
 
   return (
-    <div className='rounded-md shadow-md m-2' onClick={setOrderData}>
+    <div
+      className='rounded-md shadow-md m-2'
+      onClick={setOrderData}
+      key={index}
+    >
       <div className='card flex justify-between  m-2'>
         <div className='flex justify-between items-center'>
           <div className={`border-b-2 border-gray-200 text-xs ${textColor}`}>

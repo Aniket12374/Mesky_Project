@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Input, Pagination } from "antd";
+import { Pagination } from "antd";
 import { useQuery } from "react-query";
 import { OrderDetails } from "./OrderDetails";
 import CustomerFilters from "./CustomerFilters";
 import OrderDetailTile from "./OrderDetailTile";
+import NewOrderCreation from "./NewOrderCreation";
 import { OrderTnxHeader } from "./CustomerConstants";
 import { getOrders } from "../../services/customerOrders/CustomerOrderService";
-import NewOrderCreation from "./NewOrderCreation";
-import { setCookie } from "../../services/cookiesFunc";
+import { setCookieOrderVal } from "../../services/cookiesFunc";
 
 const OrderListing = ({ token }) => {
   const [orders, setOrders] = useState([]);
@@ -19,55 +19,51 @@ const OrderListing = ({ token }) => {
   });
   const [finalFilters, setFinalFilters] = useState({});
   const [appliedFilters, setAppliedFilters] = useState({});
-  // const [modalOpen, setModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [size, setSize] = useState(10);
-  const [address, setAddress] = useState({});
   const [totalCount, setTotalCount] = useState(2000);
-  const [shouldFetch, setShouldFetch] = useState(true);
   const [createOrderModalOpen, setCreateOrderModalOpen] = useState(false);
 
   const handleCloseOC = () => setCreateOrderModalOpen((prev) => !prev);
 
-  const closeModal = () => setFilterModalOpen((prev) => !prev);
+  const closeFilterModal = () => setFilterModalOpen((prev) => !prev);
   const closeOrderModal = () =>
     setOrderModal((prev) => ({
       ...prev,
       open: !prev?.open,
     }));
 
-  const { isLoading: isSearchLoading, refetch } = useQuery(
-    [`getOrders_${token}`, currentPage, size, finalFilters, token],
-    () => getOrders(currentPage, size, finalFilters),
-    {
-      enabled: shouldFetch,
-      keepPreviousData: true,
-      onSuccess: (res) => {
-        setShouldFetch(false);
-        let tmrOrders = res?.data?.order_details.filter(
-          (x) => x?.status == "ACCEPTED"
+  const { isLoading: isSearchLoading, isFetching } = useQuery({
+    queryKey: [`getOrders`, token, currentPage, size, finalFilters],
+    queryFn: () => getOrders(currentPage, size, finalFilters),
+    staleTime: 60 * 1000,
+    onSuccess: (res) => {
+      let orderCurrentVal = res?.data?.order_details
+        .filter((x) => x?.status == "ACCEPTED")
+        ?.reduce(
+          (acc, curr) => acc + (curr.orderitem_info?.total_price || 0),
+          0
         );
-        let orderVal = 0;
-        tmrOrders.forEach((order) => {
-          orderVal = orderVal + order.orderitem_info.total_price;
-        });
 
-        setCookie("currentOrderVal", orderVal);
-        setAddress(res?.data?.address_info);
-        const finalOrders = res?.data?.order_details.filter((x) => x?.status);
-        setOrders(finalOrders);
-        setTotalCount(res?.data?.totalcount || 0);
-      },
-      onError: () => {
-        setShouldFetch(false);
-        setTotalCount(0);
-      },
-    }
-  );
+      setCookieOrderVal(orderCurrentVal);
+
+      const finalOrders = res?.data?.order_details.filter((x) => x?.status);
+      setOrders(finalOrders);
+      setTotalCount(res?.data?.totalcount || 0);
+    },
+    onError: () => {
+      setOrders([]);
+      setTotalCount(0);
+    },
+  });
 
   useEffect(() => {
-    (!createOrderModalOpen || !orderModal.open) && refetch();
-  }, [token, createOrderModalOpen, orderModal]);
+    setCurrentPage(1);
+    setOrderModal((prev) => ({
+      ...prev,
+      open: false,
+    }));
+  }, [token]);
 
   const removeFilter = (key) => {
     let modifiedFilters = {};
@@ -79,24 +75,18 @@ const OrderListing = ({ token }) => {
 
     setFinalFilters(modifiedFilters);
     setAppliedFilters(modifiedFilters);
-    setShouldFetch(true);
   };
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-    setShouldFetch(true);
-  };
+  const handlePageChange = (page) => setCurrentPage(page);
 
   const pageSizeOptions = ["10", "20", "50", "100", "250", "500"];
 
   const handlePageSizeChange = (current, page) => {
     setSize(page);
     setCurrentPage(1);
-    setShouldFetch(true);
   };
 
   const handleClear = () => {
-    setShouldFetch(true);
     setFinalFilters({});
     setAppliedFilters({});
     setFilterModalOpen(false);
@@ -120,9 +110,8 @@ const OrderListing = ({ token }) => {
 
       <CustomerFilters
         open={filterModalOpen}
-        closeModal={closeModal}
+        closeModal={closeFilterModal}
         modal={"order"}
-        setShouldFetch={setShouldFetch}
         finalFilters={finalFilters}
         setFinalFilters={setFinalFilters}
         removeFilter={removeFilter}
@@ -131,54 +120,61 @@ const OrderListing = ({ token }) => {
         clear={handleClear}
       />
 
-      <div>
-        <div className={orderTileClassName}>
-          {orderModal?.open ? (
-            <OrderDetails
-              data={orderModal?.data}
-              closeOrderModal={closeOrderModal}
-              address={address}
-            />
-          ) : (
-            orders?.map((order) => (
-              <OrderDetailTile
-                productName={order?.orderitem_info?.product_sn}
-                quantity={order?.orderitem_info?.quantity}
-                date={order?.date}
-                price={order?.orderitem_info?.total_price}
-                unitQuantity={order?.orderitem_info?.dprod_unit_qty}
-                orderId={order?.orderitem_info?.uid?.slice(
-                  0,
-                  order?.orderitem_info?.uid.length - 3
-                )}
-                status={order?.status}
-                record={order}
-                setOrderModal={setOrderModal}
-                setFilterModalOpen={setFilterModalOpen}
+      {isFetching ? (
+        <div>Loading...</div>
+      ) : (
+        <div>
+          <div className={orderTileClassName}>
+            {orderModal?.open ? (
+              <OrderDetails
+                closeOrderModal={closeOrderModal}
+                orderDataUid={orderModal?.data?.orderitem_info?.uid}
               />
-            ))
-          )}
-        </div>
-
-        {!orderModal?.open ? (
-          <div className='px-4 py-2 order-listing'>
-            <Pagination
-              current={currentPage}
-              total={totalCount}
-              showTotal={(total, range) =>
-                `${range[0]}-${range[1]} of ${totalCount} items`
-              }
-              showQuickJumper
-              onChange={handlePageChange}
-              showSizeChanger={true}
-              pageSizeOptions={pageSizeOptions}
-              onShowSizeChange={handlePageSizeChange}
-              disabled={isSearchLoading}
-            />
+            ) : (
+              orders?.map((order, index) => (
+                <OrderDetailTile
+                  productName={order?.orderitem_info?.product_sn}
+                  quantity={order?.orderitem_info?.quantity}
+                  date={order?.date}
+                  index={index}
+                  price={order?.orderitem_info?.total_price}
+                  unitQuantity={order?.orderitem_info?.dprod_unit_qty}
+                  orderId={order?.orderitem_info?.uid?.slice(
+                    0,
+                    order?.orderitem_info?.uid.length - 3
+                  )}
+                  status={order?.status}
+                  record={order}
+                  setOrderModal={setOrderModal}
+                  setFilterModalOpen={setFilterModalOpen}
+                />
+              ))
+            )}
           </div>
-        ) : null}
-        <NewOrderCreation open={createOrderModalOpen} onClose={handleCloseOC} />
-      </div>
+
+          {!orderModal?.open ? (
+            <div className='px-4 py-2 order-listing'>
+              <Pagination
+                current={currentPage}
+                total={totalCount}
+                showTotal={(total, range) =>
+                  `${range[0]}-${range[1]} of ${totalCount} items`
+                }
+                showQuickJumper
+                onChange={handlePageChange}
+                showSizeChanger={true}
+                pageSizeOptions={pageSizeOptions}
+                onShowSizeChange={handlePageSizeChange}
+                disabled={isSearchLoading}
+              />
+            </div>
+          ) : null}
+          <NewOrderCreation
+            open={createOrderModalOpen}
+            onClose={handleCloseOC}
+          />
+        </div>
+      )}
     </div>
   );
 };

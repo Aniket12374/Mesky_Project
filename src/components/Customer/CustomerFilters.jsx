@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Input, Modal, Select, DatePicker } from "antd";
-import moment from "moment";
 import { OrderOptions, TransactionsOptions } from "./CustomerConstants";
 import dayjs from "dayjs";
 
@@ -9,6 +8,7 @@ function CustomerFilters({
   closeModal,
   modal = "transaction",
   setFinalFilters,
+  setShouldFetch = null,
   finalFilters,
   removeFilter,
   setAppliedFilters,
@@ -59,6 +59,7 @@ function CustomerFilters({
 
   const handleSearch = () => {
     setFinalFilters(filters);
+    setShouldFetch && setShouldFetch(true);
     setAppliedFilters(filters);
   };
 

@@ -3,7 +3,7 @@ import { ProductCard } from "../../utils";
 import EditExistingDeliveredOrder from "./EditExistingDeliveredOrder";
 import { getOrders } from "../../services/customerOrders/CustomerOrderService";
 
-export const OrderDetails = ({ data, closeOrderModal, address }) => {
+export const OrderDetails = ({ data, closeOrderModal }) => {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [showdropDown, setShowDropDown] = useState(false);
   const [orderData, setOrderData] = useState({});
@@ -15,6 +15,7 @@ export const OrderDetails = ({ data, closeOrderModal, address }) => {
     orderitem_info = {},
     delivery_images = [],
     misc = {},
+    address = {},
   } = orderData;
 
   const tmrOrder = status === "ACCEPTED";

@@ -1,8 +1,15 @@
 import axios from "axios";
 import { getCustomerTokenFromCookie, getTokenFromCookie } from "./cookiesFunc";
 
+const VITE_VENDOR_API_PROD_URL = "https://mesky.in/main";
+const VITE_VENDOR_API_STAGE_URL = "https://stage.mesky.in/main";
+
+const BASE_URL = import.meta.env.VITE_ENV.includes("prod")
+  ? VITE_VENDOR_API_PROD_URL
+  : VITE_VENDOR_API_STAGE_URL;
+
 export const httpVendor = axios.create({
-  baseURL: `${import.meta.env.VITE_VENDOR_API_URL}`,
+  baseURL: BASE_URL,
 });
 
 httpVendor.interceptors.request.use((conf) => {
@@ -18,7 +25,7 @@ httpVendor.interceptors.request.use((conf) => {
 });
 
 export const httpCustomerAgent = axios.create({
-  baseURL: `${import.meta.env.VITE_VENDOR_API_URL}`,
+  baseURL: BASE_URL,
 });
 
 httpCustomerAgent.interceptors.request.use((conf) => {

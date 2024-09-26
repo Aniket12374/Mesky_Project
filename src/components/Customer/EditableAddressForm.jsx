@@ -9,7 +9,7 @@ import _ from "lodash";
 function EditableAddressForm({ data, closeModal, errors }) {
   const [formData, setFormData] = useState(data || {});
   const [formErrors, setFormErrors] = useState({});
-  let fields = ["pincode", "sector_name", "line_1", "line_2", "landmark"];
+  let fields = ["pincode", "sector_name", "line_1", "line_2", "land_mark"];
   let placeHolders = [
     "Pincode",
     "Sector/ Plot.No",

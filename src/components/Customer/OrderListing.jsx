@@ -133,17 +133,7 @@ const OrderListing = ({ token }) => {
             ) : (
               orders?.map((order, index) => (
                 <OrderDetailTile
-                  productName={order?.orderitem_info?.product_sn}
-                  quantity={order?.orderitem_info?.quantity}
-                  date={order?.date}
                   index={index}
-                  price={order?.orderitem_info?.total_price}
-                  unitQuantity={order?.orderitem_info?.dprod_unit_qty}
-                  orderId={order?.orderitem_info?.uid?.slice(
-                    0,
-                    order?.orderitem_info?.uid.length - 3
-                  )}
-                  status={order?.status}
                   record={order}
                   setOrderModal={setOrderModal}
                   setFilterModalOpen={setFilterModalOpen}

@@ -30,18 +30,9 @@ const inputStyle = {
   position: "absolute",
   top: "25px",
   margin: "10px",
-  //   position: "absolute",
-  //   left: "10px",
-  //   margin: "10px",
-  //   bottom: "10px",
 };
 
-export default function Address2({
-  data,
-  showNext,
-  setShowNext,
-  closeModal = null,
-}) {
+export default function Address2({ data, closeModal = null }) {
   const searchBoxRef = useRef(null);
 
   const { isLoaded } = useJsApiLoader({
@@ -51,7 +42,7 @@ export default function Address2({
   });
 
   const [map, setMap] = useState(null);
-  const [zoom, setZoom] = useState(10);
+  const [zoom, setZoom] = useState(6);
   const [center, setCenter] = useState({
     lat: Number(data?.latitude) || 28.4595,
     lng: Number(data?.longitude) || 77.0266,
@@ -130,7 +121,6 @@ export default function Address2({
   };
 
   const onLoad = useCallback(function callback(map) {
-    // This is just an example of getting and using the map instance!!! don't just blindly copy!
     const bounds = new window.google.maps.LatLngBounds(center);
     map.fitBounds(bounds);
 
@@ -182,7 +172,7 @@ export default function Address2({
           />
         </GoogleMap>
         <div className='roboto-600 mt-2'>Customer Address: </div>
-        <div className='text-sm'>{address?.line_2}</div>
+        <div className='text-sm p-2'>{address?.line_2}</div>
         <StandaloneSearchBox
           onLoad={(ref) => (searchBoxRef.current = ref)}
           onPlacesChanged={onPlacesChanged}

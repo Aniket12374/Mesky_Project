@@ -99,6 +99,13 @@ export const previewHeading = (isRefundOrder, isTmrOrder) =>
     ? "Preview of the Refund Details"
     : "Verify your final product and amount below";
 
+export const editOrderHeading = (isRefundOrder, isTmrOrder) =>
+  !isTmrOrder
+    ? isRefundOrder
+      ? "Refund Order Details"
+      : "Select the products and their quantities to be updated"
+    : "Edit Existing Product";
+
 export const orderBalanceNegError = (negBalance) =>
   negBalance && (
     <div className='text-white bg-red-400 border-2 border-gray-200 p-2 mt-2 rounded-md'>

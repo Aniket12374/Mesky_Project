@@ -127,6 +127,7 @@ export const OrderDetails = ({ closeOrderModal, orderDataUid }) => {
             </div>
             <ProductCard
               product={orderInfo}
+              offPrice={orderInfo.unit_price || orderInfo.offer_price}
               quantity={orderInfo?.quantity}
               className='mt-2 customer-shadow p-2'
             ></ProductCard>
@@ -177,10 +178,6 @@ export const OrderDetails = ({ closeOrderModal, orderDataUid }) => {
         deliveredDate={date}
         isTmrOrder={isTmrOrder}
         isRefundOrder={isRefundOrder}
-        // reasonText={orderText}
-        // reasonDp={orderTextDp}
-        reasonText={""}
-        reasonDp={""}
         refetchOrderUid={refetchOrderUid}
       />
     </div>

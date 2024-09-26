@@ -80,6 +80,7 @@ export const transactionName = (record) => {
 export const ProductCard = ({
   product,
   quantity,
+  offPrice,
   showQty = true,
   className = "",
   children,
@@ -108,7 +109,7 @@ export const ProductCard = ({
             {product?.dprod_unit_qty} x {quantity}
           </span>
           <span className='ml-10'>
-            <span>₹ {product?.total_price}</span>
+            <span>₹ {offPrice * quantity}</span>
             {/* <span className='line-through ml-3'>
               ₹ {product?.selling_price * product?.quantity}
             </span> */}

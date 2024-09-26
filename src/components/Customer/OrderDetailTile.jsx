@@ -1,19 +1,19 @@
 import React from "react";
-import { QueryClient, useQueryClient } from "react-query";
 
 const OrderDetailTile = ({
-  productName,
-  quantity,
-  date,
-  price,
-  unitQuantity,
-  orderId,
-  status,
   record,
   index,
   setOrderModal,
   setFilterModalOpen,
 }) => {
+  const { orderitem_info, status, date } = record;
+  const { uid, unit_price, offer_price, dprod_unit_qty, product_sn, quantity } =
+    orderitem_info;
+  const prodOddPrice = unit_price || offer_price;
+  const unitQuantity = dprod_unit_qty;
+  const totalPrice = prodOddPrice * quantity;
+  const orderUid = uid?.slice(0, uid.length - 3);
+
   const textColor =
     status === "Order Delivered"
       ? "text-[#27AE60]"
@@ -57,18 +57,18 @@ const OrderDetailTile = ({
               ? `Delivered on ${finalDate}`
               : `Order Refunded`}
           </div>
-          <div className='text-[#DF4584] font-bold text-lg'>₹ {price}</div>
+          <div className='text-[#DF4584] font-bold text-lg'>₹ {totalPrice}</div>
         </div>
 
         <div className='border-gray-200 border-dashed border-b-2 flex justify-between items-center px-1'>
-          <div className='text-sm py-1'>{productName}</div>
+          <div className='text-sm py-1'>{product_sn}</div>
           <div className='text-gray-400 text-xs'>
             {unitQuantity}x{quantity}
           </div>
         </div>
         <div className='py-1 text-xs'>
           <span className='font-bold gray-color'>Order ID:</span>
-          <span className='font-bold ml-1'>{orderId}</span>
+          <span className='font-bold ml-1'>{orderUid}</span>
         </div>
       </div>
     </div>

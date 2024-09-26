@@ -15,11 +15,6 @@ const CustomerInformation = ({ token }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [showNext, setShowNext] = useState(false);
 
-  const closeModal = () => {
-    setModalOpen(false);
-    // setShowNext(false);
-  };
-
   useEffect(() => {
     customerInfo()
       .then((res) => setDetails(res?.data))
@@ -36,10 +31,7 @@ const CustomerInformation = ({ token }) => {
     address_id: addressData?.id,
   };
 
-  const closeAddressModal = () => {
-    closeModal();
-    setShowNext(false);
-  };
+  const closeAddressModal = () => setModalOpen(false);
 
   const { customer_info: csrInfo = {}, wallet_info: walletInfo = {} } = details;
 

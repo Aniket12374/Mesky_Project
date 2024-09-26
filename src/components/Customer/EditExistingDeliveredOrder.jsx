@@ -9,6 +9,7 @@ import {
   previewHeading,
   refundQtyOptions,
   refundReasons,
+  editOrderHeading,
   totalQtyOptions,
 } from "./CustomerConstants";
 import {
@@ -38,6 +39,9 @@ function EditExistingDeliveredOrder({
   refetchOrderUid,
 }) {
   const prodQuantity = product?.quantity;
+  const prodOffPrice = product?.unit_price || product?.offer_price;
+  const initialPrice = prodQuantity * prodOffPrice;
+
   const selectReasonOptions = isTmrOrder ? OrderUpdateReasons : refundReasons;
   const [refundData, setRefundData] = useState({
     qty: prodQuantity,
@@ -116,7 +120,7 @@ function EditExistingDeliveredOrder({
     }));
 
     if (key == "amount") {
-      value > refundData?.qty * product?.total_price
+      value > refundData?.qty * prodOffPrice
         ? setErrors((prev) => _.uniq([...prev, errorAmountText]))
         : setErrors((prev) => _.filter((prev) => prev == errorAmountText));
     }
@@ -156,21 +160,24 @@ function EditExistingDeliveredOrder({
   };
 
   const handleSubmit = () => {
-    const refundpayload = {
-      amount: Number(refundData?.amount),
-      reason: `${reason}-${reasonDropDown}`,
+    const finalReason = `${reason}-${reasonDropDown}`;
+    const { amount, qty } = refundData;
+
+    const refundPayload = {
+      amount: Number(amount),
+      reason: finalReason,
       item_uid: Number(`${orderId}000`),
-      refund_qty: Number(refundData?.qty),
+      refund_qty: Number(qty),
       refund_images: images,
     };
 
-    const newOrderPayload = {
+    const updateOrderPayload = {
       qty: Number(tmrOrderQty),
       orderitem_id: Number(product?.id),
-      reason: `${reason}-${reasonDropDown}`,
+      reason: finalReason,
     };
 
-    const payload = isTmrOrder ? newOrderPayload : refundpayload;
+    const payload = isTmrOrder ? updateOrderPayload : refundPayload;
     const api = isTmrOrder ? updateOrder : updateRefundOrder;
 
     if (!reason) {
@@ -188,6 +195,8 @@ function EditExistingDeliveredOrder({
         console.log({ err });
       });
   };
+
+  const finalPrice = tmrOrderQty * prodOffPrice;
 
   return (
     <Modal
@@ -211,11 +220,7 @@ function EditExistingDeliveredOrder({
               <span>{deliveredDate}</span>
             </div>
             <div className='my-5 font-medium'>
-              {!isTmrOrder
-                ? isRefundOrder
-                  ? "Refund Order Details"
-                  : "Select the products and their quantities to be updated"
-                : "Edit Existing Product"}
+              {editOrderHeading(isRefundOrder, isTmrOrder)}
             </div>
             <ProductCard
               product={product}
@@ -232,7 +237,8 @@ function EditExistingDeliveredOrder({
                   <div className='price text-center mx-3'>
                     <div className='gray-color'>Price</div>
                     <div className='flex space-x-2'>
-                      <span> ₹{product?.total_price}</span>
+                      {/* <span> ₹{product?.total_price}</span> */}
+                      <span> ₹{initialPrice}</span>
                       {/* <span className='line-through'>
                         {product?.selling_price * quantity}
                       </span> */}
@@ -262,9 +268,7 @@ function EditExistingDeliveredOrder({
                         className='border border-gray-200 rounded-md w-32 p-1 foucs:border-gray-200 focus:outline-none'
                       />
                       <div className='text-xs gray-color'>
-                        Max{" "}
-                        {(product?.total_price / prodQuantity) *
-                          refundData?.qty}
+                        Max {prodOffPrice * refundData?.qty}
                       </div>
                     </div>
                   </div>
@@ -286,9 +290,9 @@ function EditExistingDeliveredOrder({
                   <div className='price text-center mx-2'>
                     <div className='gray-color'>Price</div>
                     <div className='flex space-x-2'>
-                      <span>{product?.offer_price * tmrOrderQty}</span>
+                      <span>₹{prodOffPrice * tmrOrderQty}</span>
                       <span className='line-through'>
-                        {product?.selling_price * tmrOrderQty}
+                        ₹{product?.selling_price * tmrOrderQty}
                       </span>
                     </div>
                   </div>
@@ -345,7 +349,7 @@ function EditExistingDeliveredOrder({
                   <div className='price text-center'>
                     <div className='gray-color'>Price</div>
                     <div className='flex space-x-2'>
-                      <span> ₹{product?.total_price}</span>
+                      <span> ₹{initialPrice}</span>
                       <span className='line-through'>
                         ₹{product?.selling_price * prodQuantity}
                       </span>
@@ -369,9 +373,9 @@ function EditExistingDeliveredOrder({
                   <div className='price text-center mx-2'>
                     <div className='gray-color'>Price</div>
                     <div className='flex space-x-2'>
-                      <span>{product?.offer_price * tmrOrderQty}</span>
+                      <span>₹{prodOffPrice * tmrOrderQty}</span>
                       <span className='line-through'>
-                        {product?.selling_price * tmrOrderQty}
+                        ₹{product?.selling_price * tmrOrderQty}
                       </span>
                     </div>
                   </div>
@@ -381,17 +385,12 @@ function EditExistingDeliveredOrder({
             <Summary
               isTmrOrder={isTmrOrder}
               currentOrderVal={currentOrderVal}
-              amountPaid={product?.total_price}
+              amountPaid={initialPrice}
               refundAmount={refundData?.amount}
-              refundTotal={
-                prodQuantity * product?.offer_price - refundData?.amount
-              }
-              tmrPrice={tmrOrderQty * product?.offer_price}
-              tmrOrderPaid={prodQuantity * product?.offer_price}
-              tmrTotal={
-                prodQuantity * product?.offer_price -
-                tmrOrderQty * product?.offer_price
-              }
+              refundTotal={initialPrice - refundData?.amount}
+              tmrPrice={finalPrice}
+              tmrOrderPaid={initialPrice}
+              tmrTotal={initialPrice - finalPrice}
             />
             {orderBalanceNegError(negBalance)}
             {!isRefundOrder && (

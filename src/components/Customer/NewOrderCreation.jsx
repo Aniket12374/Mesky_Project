@@ -325,10 +325,10 @@ const EditCreatePart = ({
             <div>
               {editable && (
                 <div
-                  className='float-right w-[20px] h-[20px] flex items-center justify-center rounded-full border-2 border-gray-200 cursor-pointer'
+                  className='float-right w-[20px] h-[20px] flex items-center justify-center rounded-full bg-red-500 border-2 border-gray-200 cursor-pointer'
                   onClick={() => handleRemove(prodID)}
                 >
-                  <div className='text-red-400'>x</div>
+                  <div className='text-white'>x</div>
                 </div>
               )}
               <ProductCard

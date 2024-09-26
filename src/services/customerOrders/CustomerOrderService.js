@@ -24,14 +24,19 @@ export const getOrders = (page = 1, size = 5, filters = {}) => {
   });
 
   const end = start + size;
-  return httpVendor.get(
-    `api/order/subscription/delivery/history?_start=${start}&_end=${end}${filtersAppend}&is_csd=true`,
-    {
-      headers: {
-        Authorization: getCustomerTokenFromCookie(),
-      },
-    }
-  );
+  return httpVendor
+    .get(
+      `api/order/subscription/delivery/history?_start=${start}&_end=${end}${filtersAppend}&is_csd=true`,
+      {
+        headers: {
+          Authorization: getCustomerTokenFromCookie(),
+        },
+      }
+    )
+    .then((res) => {
+      return res;
+    })
+    .catch((err) => err?.response?.data?.message);
 };
 
 export const createOrder = (payload) => {

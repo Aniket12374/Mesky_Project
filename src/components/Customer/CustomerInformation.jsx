@@ -96,7 +96,7 @@ const CustomerDetails = ({ info, address, setModalOpen }) => {
       <div className='flex justify-between space-x-10 border-b-2 border-gray-200 p-2'>
         <div className='font-semibold text-lg'>Account Info</div>
         <button onClick={() => setModalOpen(true)}>
-          <i class='fas fa-pencil-alt'></i>
+          <i className='fas fa-pencil-alt'></i>
         </button>
       </div>
       <div className='customer-name flex space-x-3 m-5 items-center'>

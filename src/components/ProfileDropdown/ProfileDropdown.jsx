@@ -16,7 +16,7 @@ import Cookies from "js-cookie";
 const ProfileDropdown = () => {
   const logoutUser = useMainStore((state) => state.logoutUser);
   const user = useMainStore((state) => state.user);
-  console.log({ user });
+
   let queryClient = useQueryClient();
   let navigate = useNavigate();
 

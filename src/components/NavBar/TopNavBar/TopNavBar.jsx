@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-// import { BsBell } from "react-icons/bs";
 import { Image, Select, Spin } from "antd";
 import _, { debounce } from "lodash";
 import ProfileDropdown from "../../ProfileDropdown/ProfileDropdown";
@@ -11,6 +10,7 @@ import {
   setCustomerTokenCookie,
 } from "../../../services/cookiesFunc";
 import { useMainStore } from "../../../store/store";
+import { useQueryClient } from "react-query";
 
 const TopNavBar = () => {
   const customerAgent = getCookie("customerAgent") == "true";
@@ -49,13 +49,14 @@ const Search = () => {
     (state) => state.setCustomerTokenChanged
   );
 
+  const queryClient = useQueryClient();
+
   const debounceFetcher = useMemo(() => {
     setCustomerTokenChanged(false);
     const loadOptions = (value) => {
       setOptions([]);
       setFetching(true);
       getCustomers(Number(value)).then((res) => {
-        console.log({ res }, res?.data);
         const customers = res?.data?.data;
         const customersData = customers.map((customer) => ({
           label: `${customer.default_mobile_number} - ${customer.first_name} ${customer.last_name}`,
@@ -85,6 +86,7 @@ const Search = () => {
           setText(newValue);
           setCustomerTokenCookie(newValue);
           setCustomerTokenChanged(true);
+          queryClient.removeQueries("getOrders");
         }}
       />
     </div>

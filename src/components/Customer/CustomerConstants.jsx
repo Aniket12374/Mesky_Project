@@ -1,5 +1,4 @@
 import { Dropdown } from "antd";
-import { Header } from "../../utils";
 
 export const TransactionsOptions = {
   None: "none",
@@ -40,7 +39,7 @@ export const OrderTnxHeader = ({
           >
             <span>{placeholder}</span>
             <span className='text-[#645d5d]'>
-              <i class='fa-solid fa-magnifying-glass' />
+              <i className='fa-solid fa-magnifying-glass' />
             </span>
           </button>
         </div>
@@ -85,3 +84,24 @@ export const OrderUpdateReasons = [
   "App not accessible",
   "Order frozen for tomorrow's delivery",
 ];
+
+export const errorAmountText = `Refund amount shouldn't be greater than amount paid`;
+
+export const refundQtyOptions = (quantity) =>
+  Array.from({ length: quantity }, (_, index) => index + 1);
+
+export const totalQtyOptions = Array.from({ length: 11 }, (_, index) => index);
+
+export const previewHeading = (isRefundOrder, isTmrOrder) =>
+  isTmrOrder
+    ? "Verify your return/refund products and amount below"
+    : isRefundOrder
+    ? "Preview of the Refund Details"
+    : "Verify your final product and amount below";
+
+export const orderBalanceNegError = (negBalance) =>
+  negBalance && (
+    <div className='text-white bg-red-400 border-2 border-gray-200 p-2 mt-2 rounded-md'>
+      Order value is greater than Available Wallet Balance
+    </div>
+  );

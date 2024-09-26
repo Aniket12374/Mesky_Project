@@ -131,7 +131,7 @@ function Transactions({
       render: (_, record) =>
         !name && (
           <div className='text-[#beb8b8] text-[13px]'>
-            <i class='fa-solid fa-chevron-right'></i>
+            <i className='fa-solid fa-chevron-right'></i>
           </div>
         ),
     },

@@ -9,7 +9,6 @@ function CustomerFilters({
   closeModal,
   modal = "transaction",
   setFinalFilters,
-  setShouldFetch,
   finalFilters,
   removeFilter,
   setAppliedFilters,
@@ -60,7 +59,6 @@ function CustomerFilters({
 
   const handleSearch = () => {
     setFinalFilters(filters);
-    setShouldFetch(true);
     setAppliedFilters(filters);
   };
 

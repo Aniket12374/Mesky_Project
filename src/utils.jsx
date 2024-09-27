@@ -161,7 +161,8 @@ export const dateModified = (date) => {
     let timeArr = time.split(":");
     if (timeArr[0] > 12) timeArr[0] = timeArr[0] - 12;
     time = timeArr.reduce((acc, cur) => acc + ":" + cur);
-    const final = dateArr.reduce((acc, cur) => acc + " " + cur);
+    const final =
+      dateArr.length > 0 ? dateArr.reduce((acc, cur) => acc + " " + cur) : "";
     finalDate = final + " " + time;
   }
   return finalDate;

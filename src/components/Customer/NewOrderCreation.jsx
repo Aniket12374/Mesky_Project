@@ -46,7 +46,7 @@ function NewOrderCreation({ open, onClose }) {
           label: product.product_sn,
           value: product.product_id,
           img: product.default_image,
-          price: product?.selling_price,
+          price: product?.offer_price,
           quantity: 1,
           ...product,
         }));

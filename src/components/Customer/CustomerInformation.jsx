@@ -266,6 +266,9 @@ const WalletBalanceTransaction = ({ walletData }) => {
             </div>
           );
         })}
+        {recharges.length == 0 && (
+          <div className='p-2'>No wallet Recharges Found</div>
+        )}
       </div>
     </div>
   );

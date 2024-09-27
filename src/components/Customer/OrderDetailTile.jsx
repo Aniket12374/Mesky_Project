@@ -7,7 +7,7 @@ const OrderDetailTile = ({
   setOrderModal,
   setFilterModalOpen,
 }) => {
-  const { orderitem_info, status, date } = record;
+  const { orderitem_info, status, date, refund_misc } = record;
   const {
     uid,
     unit_price,
@@ -19,15 +19,12 @@ const OrderDetailTile = ({
   } = orderitem_info;
   const prodOddPrice = unit_price || offer_price;
   const unitQuantity = dprod_unit_qty;
-  const totalPrice = prodOddPrice * quantity;
+  const orderedPrice = prodOddPrice * quantity;
+  const refundedPrice = refund_misc?.refund_amount || 0;
+  const finalOrderPrice = orderedPrice - refundedPrice;
   const orderUid = uid?.slice(0, uid.length - 3);
 
-  const textColor =
-    status === "Order Delivered"
-      ? "text-[#27AE60]"
-      : status !== "Paused"
-      ? "text-[#FB8171]"
-      : "tex-red-400";
+  const textColor = status !== "ACCEPTED" ? "text-[#27AE60]" : "text-red-400";
 
   const setOrderData = () => {
     setFilterModalOpen(false);
@@ -61,14 +58,11 @@ const OrderDetailTile = ({
           <div className={`border-b-2 border-gray-200 text-xs ${textColor}`}>
             {status === "ACCEPTED"
               ? "To be delivered today/tomorrow between 5 to 8 am"
-              : status === "Order Delivered"
-              ? `Delivered on ${finalDate}`
-              : `Order Refunded on ${moment(
-                  modified_date,
-                  "DD-MM-YYYY HH:mm"
-                ).format("lll")}`}
+              : `Delivered on ${finalDate}`}
           </div>
-          <div className='text-[#DF4584] font-bold text-lg'>₹ {totalPrice}</div>
+          <div className='text-[#DF4584] font-bold text-lg'>
+            ₹ {finalOrderPrice}
+          </div>
         </div>
 
         <div className='border-gray-200 border-dashed border-b-2 flex justify-between items-center px-1'>

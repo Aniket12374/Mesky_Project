@@ -164,19 +164,21 @@ export const OrderDetails = ({ closeOrderModal, orderDataUid }) => {
               ))}
             </div>
           </div>
-          <div className='delivery-images my-5'>
-            <div className='text-sm font-semibold'>
-              Images uploaded by Delivery Team
+          {!isTmrOrder && (
+            <div className='delivery-images my-5'>
+              <div className='text-sm font-semibold'>
+                Images uploaded by Delivery Team
+              </div>
+              <div className='flex justify-center mt-2'>
+                <img
+                  src={delImages?.length > 0 ? delImages[0] : null}
+                  alt='delivered-img'
+                  height={200}
+                  width={200}
+                />
+              </div>
             </div>
-            <div className='flex justify-center mt-2'>
-              <img
-                src={delImages?.length > 0 ? delImages[0] : null}
-                alt='delivered-img'
-                height={200}
-                width={200}
-              />
-            </div>
-          </div>
+          )}
         </>
       )}
       <EditExistingDeliveredOrder

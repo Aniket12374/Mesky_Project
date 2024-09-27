@@ -52,27 +52,26 @@ export const OrderDetails = ({ closeOrderModal, orderDataUid }) => {
   };
 
   const subTotalHeading = `Sub Total (${orderInfo?.quantity} Items)`;
-  const totalPriceOrdered =
-    orderInfo?.quantity * (orderInfo?.unit_price || orderInfo?.offer_price);
   const refundQtyHeading = `Refunded Items (${
     refund_misc?.refund_qty || orderInfo?.quantity
   }Qty)`;
+
+  const totalPriceOrdered =
+    orderInfo?.quantity * (orderInfo?.unit_price || orderInfo?.offer_price);
+
+  const refundAmount = refund_misc?.refund_amount || 0;
 
   const billDetails = {
     [subTotalHeading]: <span className='flex'>₹ {totalPriceOrdered}</span>,
     MRP: `₹ ${orderInfo?.total_price}`,
     "Product Discount": `₹ 0`,
     ...(isRefundOrder && {
-      [refundQtyHeading]: (
-        <span>
-          <span> ₹ {refund_misc?.refund_amount || 0}</span>
-        </span>
-      ),
+      [refundQtyHeading]: <span> ₹ {refundAmount}</span>,
     }),
     "Delivered Charge": <span className='text-[#12c412]'>Free</span>,
     "Grand Total": (
       <div className='font-semibold text-sm my-2'>
-        ₹ {orderInfo?.total_price}
+        ₹ {totalPriceOrdered - refundAmount}
       </div>
     ),
   };

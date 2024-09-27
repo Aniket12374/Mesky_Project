@@ -119,11 +119,12 @@ function EditExistingDeliveredOrder({
       [key]: value,
     }));
 
-    if (key == "amount") {
-      value > refundData?.qty * prodOffPrice
-        ? setErrors((prev) => _.uniq([...prev, errorAmountText]))
-        : setErrors((prev) => _.filter((prev) => prev == errorAmountText));
-    }
+    const amountTBR = key == "amount" ? value : refundData?.amount || 0;
+    const qtyTBR = key === "qty" ? value : refundData?.qty || prodQuantity;
+
+    amountTBR > qtyTBR * prodOffPrice
+      ? setErrors((prev) => _.uniq([...prev, errorAmountText]))
+      : setErrors((prev) => _.filter((prev) => prev == errorAmountText));
   };
 
   const walletBalance = getCookieWalletBalance;
@@ -182,7 +183,7 @@ function EditExistingDeliveredOrder({
     const api = isTmrOrder ? updateOrder : updateRefundOrder;
 
     if (!reason) {
-      return toast.error("Please write the reason!");
+      return toast.error("Please mention your comments!");
     }
 
     if (!isTmrOrder && payload?.amount === 0) {

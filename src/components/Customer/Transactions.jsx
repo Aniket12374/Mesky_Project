@@ -1,18 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Header, IconGreen, transactionName } from "../../utils";
-import CustomerPopup from "../Common/CustomerPopup";
-import { AudioOutlined } from "@ant-design/icons";
-import {
-  getOrders,
-  getTransactionDetail,
-  getTransactions,
-} from "../../services/customerOrders/CustomerOrderService";
-import DataTable from "../Common/DataTable/DataTable";
+import { IconGreen, transactionName } from "../../utils";
+import { getTransactions } from "../../services/customerOrders/CustomerOrderService";
 import moment from "moment";
 import { OrderDetails } from "./OrderDetails";
 import { useQuery } from "react-query";
-import { Input, Pagination, Table } from "antd";
-import CustomerFilters, { AppliedFilters } from "./CustomerFilters";
+import { Pagination, Table } from "antd";
+import CustomerFilters from "./CustomerFilters";
 import TransactionDetailTile from "./TransactionDetailTile";
 import { OrderTnxHeader } from "./CustomerConstants";
 
@@ -28,12 +21,10 @@ function Transactions({
   const [transactionId, setTransactionId] = useState(null);
   const [finalFilters, setFinalFilters] = useState(filters);
   const [appliedFilters, setAppliedFilters] = useState({});
-  const [debitData, setDebitData] = useState(null);
-  const [address, setAddress] = useState({});
+  const [debitId, setDebitId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [size, setSize] = useState(10);
   const [totalCount, setTotalCount] = useState(0);
-  // const [shouldFetch, setShouldFetch] = useState(true);
   const [copied, setCopied] = useState(false);
 
   const closeModal = () => setModalOpen((prev) => !prev);
@@ -42,11 +33,9 @@ function Transactions({
     [`getTransactions`, currentPage, size, finalFilters, token],
     () => getTransactions(currentPage, size, finalFilters),
     {
-      // enabled: shouldFetch,
       staleTime: 600000,
       keepPreviousData: true,
       onSuccess: (data) => {
-        // setShouldFetch(false);
         setTransactions(data?.data?.transactions);
         setTotalCount(data?.data?.total_count);
       },
@@ -57,23 +46,11 @@ function Transactions({
     refetch();
   }, [token, finalFilters]);
 
-  const getDebitData = (debitId) => {
-    getOrders(1, 1, { search_value: debitId, search_type: "order_id" })
-      .then((res) => {
-        setDebitData(res?.data?.order_details[0]);
-        setAddress(res?.data?.address_info);
-        setModalOpen(false);
-      })
-      .catch((err) => {
-        console.log({ err });
-      });
-  };
-
   const clickHandler = (record) => {
     return !copied
       ? !name
         ? record.type === "DEBIT"
-          ? getDebitData(record?.order_id?.split("-")[1])
+          ? setDebitId(record?.order_id?.split("-")[1])
           : setTransactionId(record?.id)
         : null
       : null;
@@ -90,8 +67,10 @@ function Transactions({
         const isCreditTransaction = type === "CREDIT" || type === "REFUND";
         return !isCreditTransaction ? (
           <IconGreen icon='-' />
-        ) : (
+        ) : type === "CREDIT" ? (
           <IconGreen icon='+' />
+        ) : (
+          <IconGreen icon={<span className='text-xs'>₹</span>} />
         );
       },
     },
@@ -138,10 +117,7 @@ function Transactions({
     },
   ];
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-    // setShouldFetch(true);
-  };
+  const handlePageChange = (page) => setCurrentPage(page);
 
   const removeFilter = (key) => {
     let modifiedFilters = {};
@@ -153,14 +129,12 @@ function Transactions({
 
     setFinalFilters(modifiedFilters);
     setAppliedFilters(modifiedFilters);
-    // setShouldFetch(true);
   };
 
   const handleClear = () => {
     setFinalFilters({});
     setAppliedFilters({});
     setModalOpen(false);
-    // setShouldFetch(true);
   };
 
   const pageSizeOptions = ["10", "20", "50", "100", "250", "500"];
@@ -168,12 +142,11 @@ function Transactions({
   const handlePageSizeChange = (current, page) => {
     setSize(page);
     setCurrentPage(1);
-    // setShouldFetch(true);
   };
 
   const trnxTileClassName = modalOpen
     ? "h-[200px] overflow-y-auto transaction-list"
-    : debitData
+    : debitId
     ? "h-[500px] overflow-y-auto transaction-list"
     : "h-[400px] overflow-y-auto transaction-list";
 
@@ -203,14 +176,13 @@ function Transactions({
       )}
 
       {transactionId === null ? (
-        debitData ? (
+        debitId ? (
           <div className={trnxTileClassName}>
             <OrderDetails
-              data={debitData}
-              address={address}
+              orderDataUid={debitId + "000"}
               closeOrderModal={() => {
                 setTransactionId(null);
-                setDebitData(null);
+                setDebitId(null);
               }}
             />
           </div>

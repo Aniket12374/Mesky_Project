@@ -426,261 +426,526 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
           />
         </div>
       )}
-
-      <div className="flex space-x-2 p-2 shadow-md  rounded-sx">
-        <div className="m-1 p-2">
-          <img
-            src={product?.images_list?.[0] || createData?.default_image || null}
-            width={100}
-            height={100}
-            className="rounded-lg"
-            alt="sub_img"
-          />
-        </div>
-
+      {!isCreateSubscription && (
         <div>
-          <div className="font-semibold font-roboto">
-            {product?.product_sn || editData?.productName}
-          </div>
-          <div className="flex items-center">
-            <span className="text-[#9DA49E]">
-              {product?.dprod_unit_qty || createData?.dprod_unit_qty}
-            </span>
-            <Select
-              value={`Qty ${editData?.quantity}`}
-              className="subscription-edit-modal w-16 ml-12 w-[80px]"
-              onSelect={handleQuantityChange}
-              options={quantityOptions.map((option) => ({
-                label: option,
-                value: option,
-              }))}
-            />
-            <span className="ml-10">
-              <span className="font-semibold">₹ {offerPrice}</span>
-              <span className="line-through px-2 text-[#9DA49E]">
-                ₹ {sellingPrice}
-              </span>
-            </span>
-          </div>
-          <div className="flex py-4 space-x-4">
-            <div>
-              <div className="font-semibold pb-2 font-roboto">
-                Delivery Schedule
-              </div>
-              <Radio.Group
-                onChange={handleTypeChange}
-                value={editData?.type}
-                className="custom-radio-group"
-              >
-                <Space direction="vertical">
-                  {deliverySchedule?.map((schedule) => {
-                    const label = Object.keys(schedule)[0];
-                    const value = schedule[label];
-                    return (
-                      <Radio
-                        key={label}
-                        value={value}
-                        className="subscription-selector"
-                      >
-                        <p className="text-[#9DA49E]">{label}</p>
-                      </Radio>
-                    );
-                  })}
-                </Space>
-              </Radio.Group>
-            </div>
-
-            <div>
-              <div className="flex space-x-2">
-                {
-                  <div>
-                    <div className="text-[#9DA49E]">Starting from</div>
-
-                    <DatePicker
-                      // {...(!isCreateSubscription
-                      //   ? {
-                      //       value: moment(editData.startDate, dateFormat),
-                      //     }
-                      //   : {})}
-                      // defaultValue={
-                      //   !isCreateSubscription
-                      //     ? dayjs(editData.startDate, dateFormat)
-                      //     : dayjs(defaultDate, dateFormat)
-                      // }
-                      value={
-                        !isCreateSubscription
-                          ? dayjs(editData.startDate, dateFormat)
-                          : dayjs(editData?.newStartDate, dateFormat)
-                      }
-                      format={dateFormat}
-                      disabledDate={disabledPastDate}
-                      onChange={(_, dateString) => {
-                        setEditData((prev) => ({
-                          ...prev,
-                          newStartDate: dateString,
-                          // weekdays: getDayOfWeekAndAlternates(dateString),
-                          pauseDate: null,
-                          day: alternateDays[0],
-                        }));
-                      }}
-                      placeholder="Select date"
-                      disabled={!isCreateSubscription ? true : false}
-                      allowClear={false}
-                    />
-                  </div>
+          <div className="flex space-x-2 p-2 shadow-md  rounded-sx">
+            <div className="m-1 p-2">
+              <img
+                src={
+                  product?.images_list?.[0] || createData?.default_image || null
                 }
-                {!isCreateSubscription && editData?.type == "ALTERNATE" && (
-                  <div className="">
-                    <div className="text-[#9DA49E]">Alternate days</div>
-                    <DatePicker
-                      // value={
-                      //   editData?.startDate
-                      //     ? moment(editData.startDate, dateFormat)
-                      //     : undefined
-                      // }
-                      format={dateFormat}
-                      disabledDate={disabledPastDate}
-                      onChange={(_, dateString) => {
-                        if (editData?.type == "ALTERNATE") {
-                          setEditData((prev) => ({
-                            ...prev,
-                            newStartDate: dateString,
-                            weekdays: getDayOfWeekAndAlternates(dateString),
-                            day: alternateDays[0],
-                          }));
-                        } else {
-                          setEditData((prev) => ({
-                            ...prev,
-                            newStartDate: dateString,
-                            day: alternateDays[0],
-                          }));
-                        }
-                      }}
-                      placeholder="Select date"
-                      allowClear={false}
-                    />
-                  </div>
-                )}
-              </div>
-
-              {editData?.type === "WEEKLY" && (
-                <>
-                  <div className="py-2 text-[#9DA49E]">Choose Day</div>
-                  <div className="flex space-x-2">
-                    {weekDays?.map((day) => (
-                      <div
-                        key={day}
-                        onClick={() => toggleDaySelection(day)}
-                        className={`w-10 h-10 pt-2 rounded-full text-center cursor-pointer ${
-                          editData?.weekdays?.includes(day)
-                            ? "bg-[#FB8171] text-white"
-                            : "text-black border-black border"
-                        }`}
-                      >
-                        {day}
-                      </div>
-                    ))}
-                  </div>
-                </>
-              )}
+                width={100}
+                height={100}
+                className="rounded-lg"
+                alt="sub_img"
+              />
             </div>
-          </div>
-        </div>
-      </div>
 
-      <div className="shadow-md py-4 rounded-lg px-2">
-        <div className="font-medium">Pause Schedule</div>
-        <div className="flex justify-end space-x-2">
-          <div>
-            {editData?.dateRangePicker && (
-              <div className=" px-2 py-2">
-                <RangePicker
-                  format={dateFormat}
-                  id={{
-                    start: "startInput",
-                    end: "endInput",
-                  }}
-                  disabledDate={
-                    isCreateSubscription
-                      ? disabledPastDateRangePicker
-                      : disabledPastDate
-                  }
-                  onChange={handlePauseDateChange}
-                  placeholder={["Start Date", "End Date"]}
-                  autoFocus={true}
-                  open={editData?.dateRangePickerOpen}
-                  onOpenChange={handleOpenChange}
+            <div>
+              <div className="font-semibold font-roboto">
+                {product?.product_sn || editData?.productName}
+              </div>
+              <div className="flex items-center">
+                <span className="text-[#9DA49E]">
+                  {product?.dprod_unit_qty || createData?.dprod_unit_qty}
+                </span>
+                <Select
+                  value={`Qty ${editData?.quantity}`}
+                  className="subscription-edit-modal w-16 ml-12 w-[80px]"
+                  onSelect={handleQuantityChange}
+                  options={quantityOptions.map((option) => ({
+                    label: option,
+                    value: option,
+                  }))}
                 />
-                <div className="py-1 flex justify-center">
-                  <Button
-                    key="ok"
-                    type="primary"
-                    onClick={handleOk}
-                    disabled={editData?.pauseDateRange == null}
-                    // onChange={handlePauseDateChange}
+                <span className="ml-10">
+                  <span className="font-semibold">₹ {offerPrice}</span>
+                  <span className="line-through px-2 text-[#9DA49E]">
+                    ₹ {sellingPrice}
+                  </span>
+                </span>
+              </div>
+              <div className="flex py-4 space-x-4">
+                <div>
+                  <div className="font-semibold pb-2 font-roboto">
+                    Delivery Schedule
+                  </div>
+                  <Radio.Group
+                    onChange={handleTypeChange}
+                    value={editData?.type}
+                    className="custom-radio-group"
                   >
-                    Set Pause Date
-                  </Button>
+                    <Space direction="vertical">
+                      {deliverySchedule?.map((schedule) => {
+                        const label = Object.keys(schedule)[0];
+                        const value = schedule[label];
+                        return (
+                          <Radio
+                            key={label}
+                            value={value}
+                            className="subscription-selector"
+                          >
+                            <p className="text-[#9DA49E]">{label}</p>
+                          </Radio>
+                        );
+                      })}
+                    </Space>
+                  </Radio.Group>
+                </div>
+
+                <div>
+                  <div className="flex space-x-2">
+                    {
+                      <div>
+                        <div className="text-[#9DA49E]">Starting from</div>
+
+                        <DatePicker
+                          // {...(!isCreateSubscription
+                          //   ? {
+                          //       value: moment(editData.startDate, dateFormat),
+                          //     }
+                          //   : {})}
+                          // defaultValue={
+                          //   !isCreateSubscription
+                          //     ? dayjs(editData.startDate, dateFormat)
+                          //     : dayjs(defaultDate, dateFormat)
+                          // }
+                          value={
+                            !isCreateSubscription
+                              ? dayjs(editData.startDate, dateFormat)
+                              : dayjs(editData?.newStartDate, dateFormat)
+                          }
+                          format={dateFormat}
+                          disabledDate={disabledPastDate}
+                          onChange={(_, dateString) => {
+                            setEditData((prev) => ({
+                              ...prev,
+                              newStartDate: dateString,
+                              // weekdays: getDayOfWeekAndAlternates(dateString),
+                              pauseDate: null,
+                              day: alternateDays[0],
+                            }));
+                          }}
+                          placeholder="Select date"
+                          disabled={!isCreateSubscription ? true : false}
+                          allowClear={false}
+                        />
+                      </div>
+                    }
+                    {!isCreateSubscription && editData?.type == "ALTERNATE" && (
+                      <div className="">
+                        <div className="text-[#9DA49E]">Alternate days</div>
+                        <DatePicker
+                          // value={
+                          //   editData?.startDate
+                          //     ? moment(editData.startDate, dateFormat)
+                          //     : undefined
+                          // }
+                          format={dateFormat}
+                          disabledDate={disabledPastDate}
+                          onChange={(_, dateString) => {
+                            if (editData?.type == "ALTERNATE") {
+                              setEditData((prev) => ({
+                                ...prev,
+                                newStartDate: dateString,
+                                weekdays: getDayOfWeekAndAlternates(dateString),
+                                day: alternateDays[0],
+                              }));
+                            } else {
+                              setEditData((prev) => ({
+                                ...prev,
+                                newStartDate: dateString,
+                                day: alternateDays[0],
+                              }));
+                            }
+                          }}
+                          placeholder="Select date"
+                          allowClear={false}
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {editData?.type === "WEEKLY" && (
+                    <>
+                      <div className="py-2 text-[#9DA49E]">Choose Day</div>
+                      <div className="flex space-x-2">
+                        {weekDays?.map((day) => (
+                          <div
+                            key={day}
+                            onClick={() => toggleDaySelection(day)}
+                            className={`w-10 h-10 pt-2 rounded-full text-center cursor-pointer ${
+                              editData?.weekdays?.includes(day)
+                                ? "bg-[#FB8171] text-white"
+                                : "text-black border-black border"
+                            }`}
+                          >
+                            {day}
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
-            )}
+            </div>
           </div>
-          <div
-            className={`text-white bg-[#FB8171] shadow-md  cursor-pointer ${
-              editData?.dateRangePicker
-                ? "rounded-full px-2 h-6 relative top-3"
-                : "p-1 rounded-md px-2"
-            }`}
-            onClick={() =>
-              setEditData((prev) => ({
-                ...prev,
-                dateRangePicker: !prev.dateRangePicker,
-                pauseDateRange: null,
-              }))
-            }
-          >
-            {editData?.dateRangePicker ? "x" : "+ ADD PAUSE"}
-          </div>
-        </div>
 
-        <div className="w-full overflow-x-auto scrollbar-hide pt-1">
-          <div className="flex space-x-2 min-w-max">
-            {editData?.datesRange?.map((item, index) => (
-              <>
-                {item.start_date && (
-                  <div
-                    key={index}
-                    className="border border-gray-300 rounded-lg p-2 w-[127px] flex relative"
-                  >
-                    <img
-                      src={trashBin}
-                      width={15}
-                      height={15}
-                      alt="delete-bin"
-                      onClick={() => handleDeletePauseDate(index)}
-                      className="absolute top-1 right-1 cursor-pointer"
+          <div className="shadow-md py-4 rounded-lg px-2">
+            <div className="font-medium">Pause Schedule</div>
+            <div className="flex justify-end space-x-2">
+              <div>
+                {editData?.dateRangePicker && (
+                  <div className=" px-2 py-2">
+                    <RangePicker
+                      format={dateFormat}
+                      id={{
+                        start: "startInput",
+                        end: "endInput",
+                      }}
+                      disabledDate={
+                        isCreateSubscription
+                          ? disabledPastDateRangePicker
+                          : disabledPastDate
+                      }
+                      onChange={handlePauseDateChange}
+                      placeholder={["Start Date", "End Date"]}
+                      autoFocus={true}
+                      open={editData?.dateRangePickerOpen}
+                      onOpenChange={handleOpenChange}
                     />
-                    <div className="text-center ml-2">
-                      <p>{item.start_date}</p>
-                      <p>to</p>
-                      <p>{item.end_date}</p>
+                    <div className="py-1 flex justify-center">
+                      <Button
+                        key="ok"
+                        type="primary"
+                        onClick={handleOk}
+                        disabled={editData?.pauseDateRange == null}
+                        // onChange={handlePauseDateChange}
+                      >
+                        Set Pause Date
+                      </Button>
                     </div>
                   </div>
                 )}
-              </>
-            ))}
+              </div>
+              <div
+                className={`text-white bg-[#FB8171] shadow-md  cursor-pointer ${
+                  editData?.dateRangePicker
+                    ? "rounded-full px-2 h-6 relative top-3"
+                    : "p-1 rounded-md px-2"
+                }`}
+                onClick={() =>
+                  setEditData((prev) => ({
+                    ...prev,
+                    dateRangePicker: !prev.dateRangePicker,
+                    pauseDateRange: null,
+                  }))
+                }
+              >
+                {editData?.dateRangePicker ? "x" : "+ ADD PAUSE"}
+              </div>
+            </div>
+
+            <div className="w-full overflow-x-auto scrollbar-hide pt-1">
+              <div className="flex space-x-2 min-w-max">
+                {editData?.datesRange?.map((item, index) => (
+                  <>
+                    {item.start_date && (
+                      <div
+                        key={index}
+                        className="border border-gray-300 rounded-lg p-2 w-[127px] flex relative"
+                      >
+                        <img
+                          src={trashBin}
+                          width={15}
+                          height={15}
+                          alt="delete-bin"
+                          onClick={() => handleDeletePauseDate(index)}
+                          className="absolute top-1 right-1 cursor-pointer"
+                        />
+                        <div className="text-center ml-2">
+                          <p>{item.start_date}</p>
+                          <p>to</p>
+                          <p>{item.end_date}</p>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-end mt-4">
+            <button
+              className="bg-[#FB8171] text-white py-2 rounded-md px-12"
+              onClick={handleAttachTicket}
+            >
+              AttachTicket
+            </button>
           </div>
         </div>
-      </div>
+      )}
+      {isCreateSubscription && createData && (
+        <div>
+          <div className="flex space-x-2 p-2 shadow-md  rounded-sx">
+            <div className="m-1 p-2">
+              <img
+                src={
+                  product?.images_list?.[0] || createData?.default_image || null
+                }
+                width={100}
+                height={100}
+                className="rounded-lg"
+                alt="sub_img"
+              />
+            </div>
 
-      <div className="flex justify-end mt-4">
-        <button
-          className="bg-[#FB8171] text-white py-2 rounded-md px-12"
-          onClick={handleAttachTicket}
-        >
-          AttachTicket
-        </button>
-      </div>
+            <div>
+              <div className="font-semibold font-roboto">
+                {product?.product_sn || editData?.productName}
+              </div>
+              <div className="flex items-center">
+                <span className="text-[#9DA49E]">
+                  {product?.dprod_unit_qty || createData?.dprod_unit_qty}
+                </span>
+                <Select
+                  value={`Qty ${editData?.quantity}`}
+                  className="subscription-edit-modal w-16 ml-12 w-[80px]"
+                  onSelect={handleQuantityChange}
+                  options={quantityOptions.map((option) => ({
+                    label: option,
+                    value: option,
+                  }))}
+                />
+                <span className="ml-10">
+                  <span className="font-semibold">₹ {offerPrice}</span>
+                  <span className="line-through px-2 text-[#9DA49E]">
+                    ₹ {sellingPrice}
+                  </span>
+                </span>
+              </div>
+              <div className="flex py-4 space-x-4">
+                <div>
+                  <div className="font-semibold pb-2 font-roboto">
+                    Delivery Schedule
+                  </div>
+                  <Radio.Group
+                    onChange={handleTypeChange}
+                    value={editData?.type}
+                    className="custom-radio-group"
+                  >
+                    <Space direction="vertical">
+                      {deliverySchedule?.map((schedule) => {
+                        const label = Object.keys(schedule)[0];
+                        const value = schedule[label];
+                        return (
+                          <Radio
+                            key={label}
+                            value={value}
+                            className="subscription-selector"
+                          >
+                            <p className="text-[#9DA49E]">{label}</p>
+                          </Radio>
+                        );
+                      })}
+                    </Space>
+                  </Radio.Group>
+                </div>
+
+                <div>
+                  <div className="flex space-x-2">
+                    {
+                      <div>
+                        <div className="text-[#9DA49E]">Starting from</div>
+
+                        <DatePicker
+                          // {...(!isCreateSubscription
+                          //   ? {
+                          //       value: moment(editData.startDate, dateFormat),
+                          //     }
+                          //   : {})}
+                          // defaultValue={
+                          //   !isCreateSubscription
+                          //     ? dayjs(editData.startDate, dateFormat)
+                          //     : dayjs(defaultDate, dateFormat)
+                          // }
+                          value={
+                            !isCreateSubscription
+                              ? dayjs(editData.startDate, dateFormat)
+                              : dayjs(editData?.newStartDate, dateFormat)
+                          }
+                          format={dateFormat}
+                          disabledDate={disabledPastDate}
+                          onChange={(_, dateString) => {
+                            setEditData((prev) => ({
+                              ...prev,
+                              newStartDate: dateString,
+                              // weekdays: getDayOfWeekAndAlternates(dateString),
+                              pauseDate: null,
+                              day: alternateDays[0],
+                            }));
+                          }}
+                          placeholder="Select date"
+                          disabled={!isCreateSubscription ? true : false}
+                          allowClear={false}
+                        />
+                      </div>
+                    }
+                    {!isCreateSubscription && editData?.type == "ALTERNATE" && (
+                      <div className="">
+                        <div className="text-[#9DA49E]">Alternate days</div>
+                        <DatePicker
+                          // value={
+                          //   editData?.startDate
+                          //     ? moment(editData.startDate, dateFormat)
+                          //     : undefined
+                          // }
+                          format={dateFormat}
+                          disabledDate={disabledPastDate}
+                          onChange={(_, dateString) => {
+                            if (editData?.type == "ALTERNATE") {
+                              setEditData((prev) => ({
+                                ...prev,
+                                newStartDate: dateString,
+                                weekdays: getDayOfWeekAndAlternates(dateString),
+                                day: alternateDays[0],
+                              }));
+                            } else {
+                              setEditData((prev) => ({
+                                ...prev,
+                                newStartDate: dateString,
+                                day: alternateDays[0],
+                              }));
+                            }
+                          }}
+                          placeholder="Select date"
+                          allowClear={false}
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {editData?.type === "WEEKLY" && (
+                    <>
+                      <div className="py-2 text-[#9DA49E]">Choose Day</div>
+                      <div className="flex space-x-2">
+                        {weekDays?.map((day) => (
+                          <div
+                            key={day}
+                            onClick={() => toggleDaySelection(day)}
+                            className={`w-10 h-10 pt-2 rounded-full text-center cursor-pointer ${
+                              editData?.weekdays?.includes(day)
+                                ? "bg-[#FB8171] text-white"
+                                : "text-black border-black border"
+                            }`}
+                          >
+                            {day}
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="shadow-md py-4 rounded-lg px-2">
+            <div className="font-medium">Pause Schedule</div>
+            <div className="flex justify-end space-x-2">
+              <div>
+                {editData?.dateRangePicker && (
+                  <div className=" px-2 py-2">
+                    <RangePicker
+                      format={dateFormat}
+                      id={{
+                        start: "startInput",
+                        end: "endInput",
+                      }}
+                      disabledDate={
+                        isCreateSubscription
+                          ? disabledPastDateRangePicker
+                          : disabledPastDate
+                      }
+                      onChange={handlePauseDateChange}
+                      placeholder={["Start Date", "End Date"]}
+                      autoFocus={true}
+                      open={editData?.dateRangePickerOpen}
+                      onOpenChange={handleOpenChange}
+                    />
+                    <div className="py-1 flex justify-center">
+                      <Button
+                        key="ok"
+                        type="primary"
+                        onClick={handleOk}
+                        disabled={editData?.pauseDateRange == null}
+                        // onChange={handlePauseDateChange}
+                      >
+                        Set Pause Date
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div
+                className={`text-white bg-[#FB8171] shadow-md  cursor-pointer ${
+                  editData?.dateRangePicker
+                    ? "rounded-full px-2 h-6 relative top-3"
+                    : "p-1 rounded-md px-2"
+                }`}
+                onClick={() =>
+                  setEditData((prev) => ({
+                    ...prev,
+                    dateRangePicker: !prev.dateRangePicker,
+                    pauseDateRange: null,
+                  }))
+                }
+              >
+                {editData?.dateRangePicker ? "x" : "+ ADD PAUSE"}
+              </div>
+            </div>
+
+            <div className="w-full overflow-x-auto scrollbar-hide pt-1">
+              <div className="flex space-x-2 min-w-max">
+                {editData?.datesRange?.map((item, index) => (
+                  <>
+                    {item.start_date && (
+                      <div
+                        key={index}
+                        className="border border-gray-300 rounded-lg p-2 w-[127px] flex relative"
+                      >
+                        <img
+                          src={trashBin}
+                          width={15}
+                          height={15}
+                          alt="delete-bin"
+                          onClick={() => handleDeletePauseDate(index)}
+                          className="absolute top-1 right-1 cursor-pointer"
+                        />
+                        <div className="text-center ml-2">
+                          <p>{item.start_date}</p>
+                          <p>to</p>
+                          <p>{item.end_date}</p>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-end mt-4">
+            <button
+              className="bg-[#FB8171] text-white py-2 rounded-md px-12"
+              onClick={handleAttachTicket}
+            >
+              AttachTicket
+            </button>
+          </div>
+        </div>
+      )}
     </Modal>
   );
 }

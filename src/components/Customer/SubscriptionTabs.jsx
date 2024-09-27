@@ -96,8 +96,8 @@ const SubscriptionData = ({ tab, modalData, setModalData }) => {
           start_date,
           end_date,
           total_subscription_price,
+          subscription_type,
         } = record;
-       
 
         return (
           <div className="m-1 shadow-lg rounded-lg border border-gray-300 ">
@@ -144,7 +144,14 @@ const SubscriptionData = ({ tab, modalData, setModalData }) => {
               }  text-white rounded-b-md flex justify-center`}
               style={{ fontSize: "12px", padding: "4px" }}
             >
-              <span>Daily Subscription</span>
+              <span>
+                {subscription_type?.type === "NO_WEEKENDS"
+                  ? "No delivery on weekends"
+                  : subscription_type?.type.charAt(0).toUpperCase() +
+                    subscription_type?.type.slice(1).toLowerCase()}{" "}
+                Subscription
+              </span>
+
               <span className="inline-flex items-center">
                 <Dotted />
                 <span>

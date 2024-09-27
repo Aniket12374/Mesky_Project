@@ -151,3 +151,18 @@ export const extractSectorValue = (line) => {
   const result = line.match(sectorPattern);
   return result ? result[0].trim() : "";
 };
+
+export const dateModified = (date) => {
+  const dateArr = date?.replace(" GMT", "").split(" ");
+  let finalDate = "";
+  if (dateArr) {
+    let time = dateArr ? dateArr[dateArr?.length - 1] : [];
+    dateArr.pop();
+    let timeArr = time.split(":");
+    if (timeArr[0] > 12) timeArr[0] = timeArr[0] - 12;
+    time = timeArr.reduce((acc, cur) => acc + ":" + cur);
+    const final = dateArr.reduce((acc, cur) => acc + " " + cur);
+    finalDate = final + " " + time;
+  }
+  return finalDate;
+};

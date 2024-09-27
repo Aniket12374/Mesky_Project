@@ -93,7 +93,7 @@ export const refundQtyOptions = (quantity) =>
 export const totalQtyOptions = Array.from({ length: 11 }, (_, index) => index);
 
 export const previewHeading = (isRefundOrder, isTmrOrder) =>
-  isTmrOrder
+  !isTmrOrder
     ? "Verify your return/refund products and amount below"
     : isRefundOrder
     ? "Preview of the Refund Details"
@@ -104,7 +104,7 @@ export const editOrderHeading = (isRefundOrder, isTmrOrder) =>
     ? isRefundOrder
       ? "Refund Order Details"
       : "Select the products and their quantities to be updated"
-    : "Edit Existing Product";
+    : "Edit Existing Products";
 
 export const orderBalanceNegError = (negBalance) =>
   negBalance && (

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ProductCard } from "../../utils";
+import { dateModified, ProductCard } from "../../utils";
 import EditExistingDeliveredOrder from "./EditExistingDeliveredOrder";
 import { getOrders } from "../../services/customerOrders/CustomerOrderService";
 import { useQuery } from "react-query";
@@ -51,11 +51,24 @@ export const OrderDetails = ({ closeOrderModal, orderDataUid }) => {
     e.stopPropagation();
   };
 
+  const subTotalHeading = `Sub Total (${orderInfo?.quantity} Items)`;
+  const totalPriceOrdered =
+    orderInfo?.quantity * (orderInfo?.unit_price || orderInfo?.offer_price);
+  const refundQtyHeading = `Refunded Items (${
+    refund_misc?.refund_qty || orderInfo?.quantity
+  }Qty)`;
+
   const billDetails = {
-    "Sub Total": <span className='flex'>₹ {orderInfo?.total_price}</span>,
-    MRP: orderInfo?.total_price,
+    [subTotalHeading]: <span className='flex'>₹ {totalPriceOrdered}</span>,
+    MRP: `₹ ${orderInfo?.total_price}`,
     "Product Discount": `₹ 0`,
-    "Returned Items": `₹ 0`,
+    ...(isRefundOrder && {
+      [refundQtyHeading]: (
+        <span>
+          <span> ₹ {refund_misc?.refund_amount || 0}</span>
+        </span>
+      ),
+    }),
     "Delivered Charge": <span className='text-[#12c412]'>Free</span>,
     "Grand Total": (
       <div className='font-semibold text-sm my-2'>
@@ -66,11 +79,6 @@ export const OrderDetails = ({ closeOrderModal, orderDataUid }) => {
 
   const orderId = orderDataUid?.slice(0, orderDataUid?.length - 3);
   const billKeys = Object.keys(billDetails);
-  // const orderReason = !isRefundOrder
-  //   ? misc?.reason
-  //   : refund_misc?.refund_reason;
-  // const orderText = orderReason ? orderReason.split("-")[0] : "";
-  // const orderTextDp = orderReason ? orderReason.split("-")[1] : "";
 
   return (
     <div className='p-2' onClick={() => setShowDropDown(false)}>
@@ -81,21 +89,23 @@ export const OrderDetails = ({ closeOrderModal, orderDataUid }) => {
         >
           <i className='fa-sharp fa-solid fa-arrow-left text-2xl'></i>
         </button>
-        <div className='relative'>
-          <button onClick={handleDropDown}>
-            <i className='fa fa-ellipsis-v ml-2 mt-3' aria-hidden='true'></i>
-          </button>
-          {showdropDown && (
-            <div className='dropdown-options z-40 shadow-md bg-gray-300  w-full'>
-              <div
-                className='option p-2 hover:bg-[#FB8171] hover:text-white absolute trns-70 bg-gray-200  cursor-pointer'
-                onClick={editModal}
-              >
-                Update Order
+        {!isRefundOrder && (
+          <div className='relative'>
+            <button onClick={handleDropDown}>
+              <i className='fa fa-ellipsis-v ml-2 mt-3' aria-hidden='true'></i>
+            </button>
+            {showdropDown && (
+              <div className='dropdown-options z-40 shadow-md bg-gray-300  w-full'>
+                <div
+                  className='option p-2 hover:bg-[#FB8171] hover:text-white absolute trns-70 bg-gray-200  cursor-pointer'
+                  onClick={editModal}
+                >
+                  Update Order
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
       </div>
       {isFetching ? (
         <>Loading...</>
@@ -111,7 +121,8 @@ export const OrderDetails = ({ closeOrderModal, orderDataUid }) => {
                 <span className='font-semibold'>{orderId}</span>
               </div>
               <div className='text-[12px]'>
-                {isTmrOrder ? "Will be delivered" : "Delivered"} on {date}
+                {isTmrOrder ? "Will be delivered" : "Delivered"} on{" "}
+                {dateModified(date)}
               </div>
             </div>
             <div className='flex flex-col space-x-3 flex-1 items-end'>
@@ -136,7 +147,7 @@ export const OrderDetails = ({ closeOrderModal, orderDataUid }) => {
             <div className='font-bold text-sm'>Bill Details</div>
             <div className='mt-2 text-sm'>
               {billKeys.map((x, index) => (
-                <div className='flex justify-between my-1'>
+                <div className='flex justify-between my-1 items-center'>
                   <div
                     className={`${
                       index == 1 || index == 2 ? "text-gray-400" : ""

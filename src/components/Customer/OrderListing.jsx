@@ -33,7 +33,11 @@ const OrderListing = ({ token }) => {
       open: !prev?.open,
     }));
 
-  const { isLoading: isSearchLoading, isFetching } = useQuery({
+  const {
+    isLoading: isSearchLoading,
+    isFetching,
+    refetch: refetchOrders,
+  } = useQuery({
     queryKey: [`getOrders`, token, currentPage, size, finalFilters],
     queryFn: () => getOrders(currentPage, size, finalFilters),
     staleTime: 60 * 1000,
@@ -64,6 +68,10 @@ const OrderListing = ({ token }) => {
       open: false,
     }));
   }, [token]);
+
+  useEffect(() => {
+    refetchOrders();
+  }, [finalFilters]);
 
   const removeFilter = (key) => {
     let modifiedFilters = {};

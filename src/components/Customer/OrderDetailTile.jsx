@@ -1,4 +1,5 @@
 import React from "react";
+import moment from "moment";
 
 const OrderDetailTile = ({
   record,
@@ -7,8 +8,15 @@ const OrderDetailTile = ({
   setFilterModalOpen,
 }) => {
   const { orderitem_info, status, date } = record;
-  const { uid, unit_price, offer_price, dprod_unit_qty, product_sn, quantity } =
-    orderitem_info;
+  const {
+    uid,
+    unit_price,
+    offer_price,
+    dprod_unit_qty,
+    product_sn,
+    quantity,
+    modified_date,
+  } = orderitem_info;
   const prodOddPrice = unit_price || offer_price;
   const unitQuantity = dprod_unit_qty;
   const totalPrice = prodOddPrice * quantity;
@@ -55,7 +63,10 @@ const OrderDetailTile = ({
               ? "To be delivered today/tomorrow between 5 to 8 am"
               : status === "Order Delivered"
               ? `Delivered on ${finalDate}`
-              : `Order Refunded`}
+              : `Order Refunded on ${moment(
+                  modified_date,
+                  "DD-MM-YYYY HH:mm"
+                ).format("lll")}`}
           </div>
           <div className='text-[#DF4584] font-bold text-lg'>₹ {totalPrice}</div>
         </div>

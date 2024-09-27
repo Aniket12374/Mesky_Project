@@ -1,7 +1,7 @@
 import { Modal, Switch, Input } from "antd";
 import React, { useEffect, useState } from "react";
 import _ from "lodash";
-import { ProductCard } from "../../utils";
+import { dateModified, ProductCard } from "../../utils";
 import {
   errorAmountText,
   orderBalanceNegError,
@@ -156,6 +156,7 @@ function EditExistingDeliveredOrder({
     refetchOrderUid();
     setCookie("currentOrderVal", isTmrOrder ? presentOrderVal : refundOrderVal);
     queryClient.invalidateQueries("getOrders");
+    queryClient.refetchQueries("getTransactions");
     closeModal();
   };
 
@@ -212,12 +213,12 @@ function EditExistingDeliveredOrder({
         <div className='flex space-x-10 mt-5'>
           <div className='w-[60%]'>
             <div>
-              <span className='font-bold gray-color text-sm'>Order ID: </span>
+              <span className='font-medium gray-color text-sm'>Order ID: </span>
               <span className='font-medium'>{orderId}</span>
             </div>
-            <div className='text-xs font-bold'>
+            <div className='text-xs font-medium'>
               <span className='gray-color'>Delivery Date: </span>
-              <span>{deliveredDate}</span>
+              <span>{dateModified(deliveredDate)}</span>
             </div>
             <div className='my-5 font-medium'>
               {editOrderHeading(isRefundOrder, isTmrOrder)}
@@ -274,7 +275,7 @@ function EditExistingDeliveredOrder({
                   </div>
                 </div>
               ) : (
-                <div className='flex items-center space-x-3'>
+                <div className='flex items-center space-x-3 text-xs'>
                   <div className='quantity-change'>
                     <label className='mr-2'>Qty:</label>
                     <select
@@ -291,7 +292,7 @@ function EditExistingDeliveredOrder({
                     <div className='gray-color'>Price</div>
                     <div className='flex space-x-2'>
                       <span>₹{prodOffPrice * tmrOrderQty}</span>
-                      <span className='line-through'>
+                      <span className='line-through gray-color'>
                         ₹{product?.selling_price * tmrOrderQty}
                       </span>
                     </div>
@@ -350,7 +351,7 @@ function EditExistingDeliveredOrder({
                     <div className='gray-color'>Price</div>
                     <div className='flex space-x-2'>
                       <span> ₹{initialPrice}</span>
-                      <span className='line-through'>
+                      <span className='line-through gray-color'>
                         ₹{product?.selling_price * prodQuantity}
                       </span>
                     </div>
@@ -365,7 +366,7 @@ function EditExistingDeliveredOrder({
                   </div>
                 </div>
               ) : (
-                <div className='flex space-x-3'>
+                <div className='flex space-x-3 text-xs'>
                   <div className='quantity'>
                     <div className='gray-color'>Quantity</div>
                     <div>{tmrOrderQty}</div>
@@ -374,7 +375,7 @@ function EditExistingDeliveredOrder({
                     <div className='gray-color'>Price</div>
                     <div className='flex space-x-2'>
                       <span>₹{prodOffPrice * tmrOrderQty}</span>
-                      <span className='line-through'>
+                      <span className='line-through gray-color'>
                         ₹{product?.selling_price * tmrOrderQty}
                       </span>
                     </div>

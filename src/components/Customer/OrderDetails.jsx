@@ -1,68 +1,84 @@
 import React, { useEffect, useState } from "react";
-import { ProductCard } from "../../utils";
+import { dateModified, ProductCard } from "../../utils";
 import EditExistingDeliveredOrder from "./EditExistingDeliveredOrder";
 import { getOrders } from "../../services/customerOrders/CustomerOrderService";
+import { useQuery } from "react-query";
 
-export const OrderDetails = ({ data, closeOrderModal, address }) => {
+export const OrderDetails = ({ closeOrderModal, orderDataUid }) => {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [showdropDown, setShowDropDown] = useState(false);
-  const [orderData, setOrderData] = useState({});
-  const [fetching, setFetching] = useState(true);
+
   const editModal = () => setEditModalOpen((prev) => !prev);
+
+  const getOrderUid = (uid) => {
+    return getOrders(1, 1, {
+      search_value: uid,
+      search_type: "order_id",
+    }).then((res) => {
+      const orderDetailData = res?.data?.order_details;
+      const successOrderData = orderDetailData.find((x) => x.status);
+      return successOrderData;
+    });
+  };
+
+  const {
+    isFetching,
+    refetch: refetchOrderUid,
+    data: OrderUIDData,
+    isSuccess,
+  } = useQuery({
+    queryKey: ["order_uid", orderDataUid],
+    queryFn: () => getOrderUid(orderDataUid),
+    staleTime: 30000,
+  });
+
   const {
     date = "",
     status = "",
-    orderitem_info = {},
-    delivery_images = [],
+    orderitem_info: orderInfo = {},
+    delivery_images: delImages = [],
     misc = {},
-  } = orderData;
+    refund_misc = {},
+    address = {},
+  } = OrderUIDData || {};
 
-  const tmrOrder = status === "ACCEPTED";
-
-  useEffect(() => {
-    setFetching(true);
-    getOrders(1, 1, {
-      search_value: data?.orderitem_info?.uid,
-      search_type: "order_id",
-    })
-      .then((res) => {
-        let orderDetailData = res?.data?.order_details;
-        setOrderData(orderDetailData[0]);
-        setFetching(false);
-      })
-      .catch((err) => {
-        setFetching(false);
-        console.log({ err });
-      });
-  }, [editModalOpen]);
+  const isTmrOrder = status === "ACCEPTED";
+  const isRefundOrder = status.toLowerCase().includes("refund");
+  // const orderUid = orderInfo?.uid;
 
   const handleDropDown = (e) => {
     setShowDropDown(true);
     e.stopPropagation();
   };
 
+  const subTotalHeading = `Sub Total (${orderInfo?.quantity} Items)`;
+  const totalPriceOrdered =
+    orderInfo?.quantity * (orderInfo?.unit_price || orderInfo?.offer_price);
+  const refundQtyHeading = `Refunded Items (${
+    refund_misc?.refund_qty || orderInfo?.quantity
+  }Qty)`;
+
   const billDetails = {
-    "Sub Total": <span className='flex'>₹ {orderitem_info?.total_price}</span>,
-    MRP: orderitem_info?.total_price,
+    [subTotalHeading]: <span className='flex'>₹ {totalPriceOrdered}</span>,
+    MRP: `₹ ${orderInfo?.total_price}`,
     "Product Discount": `₹ 0`,
-    "Returned Items": `₹ 0`,
+    ...(isRefundOrder && {
+      [refundQtyHeading]: (
+        <span>
+          <span> ₹ {refund_misc?.refund_amount || 0}</span>
+        </span>
+      ),
+    }),
     "Delivered Charge": <span className='text-[#12c412]'>Free</span>,
     "Grand Total": (
       <div className='font-semibold text-sm my-2'>
-        ₹ {orderitem_info?.total_price}
+        ₹ {orderInfo?.total_price}
       </div>
     ),
   };
 
-  const orderId = orderitem_info?.uid?.slice(
-    0,
-    orderitem_info?.uid?.length - 3
-  );
-
+  const orderId = orderDataUid?.slice(0, orderDataUid?.length - 3);
   const billKeys = Object.keys(billDetails);
-  const orderReason = orderData?.misc?.reason;
-  const orderText = orderReason ? orderReason.split("-")[0] : "";
-  const orderTextDp = orderReason ? orderReason.split("-")[1] : "";
 
   return (
     <div className='p-2' onClick={() => setShowDropDown(false)}>
@@ -71,25 +87,27 @@ export const OrderDetails = ({ data, closeOrderModal, address }) => {
           onClick={closeOrderModal}
           className='rounded-full border-2 border-gray-400 w-8 h-8 flex justify-center items-center'
         >
-          <i class='fa-sharp fa-solid fa-arrow-left text-2xl'></i>
+          <i className='fa-sharp fa-solid fa-arrow-left text-2xl'></i>
         </button>
-        <div className='relative'>
-          <button onClick={handleDropDown}>
-            <i class='fa fa-ellipsis-v ml-2 mt-3' aria-hidden='true'></i>
-          </button>
-          {showdropDown && (
-            <div className='dropdown-options z-40 shadow-md bg-gray-300  w-full'>
-              <div
-                className='option p-2 hover:bg-[#FB8171] hover:text-white absolute trns-70 bg-gray-200  cursor-pointer'
-                onClick={editModal}
-              >
-                Update Order
+        {!isRefundOrder && (
+          <div className='relative'>
+            <button onClick={handleDropDown}>
+              <i className='fa fa-ellipsis-v ml-2 mt-3' aria-hidden='true'></i>
+            </button>
+            {showdropDown && (
+              <div className='dropdown-options z-40 shadow-md bg-gray-300  w-full'>
+                <div
+                  className='option p-2 hover:bg-[#FB8171] hover:text-white absolute trns-70 bg-gray-200  cursor-pointer'
+                  onClick={editModal}
+                >
+                  Update Order
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
       </div>
-      {fetching ? (
+      {isFetching ? (
         <>Loading...</>
       ) : (
         <>
@@ -103,7 +121,8 @@ export const OrderDetails = ({ data, closeOrderModal, address }) => {
                 <span className='font-semibold'>{orderId}</span>
               </div>
               <div className='text-[12px]'>
-                {tmrOrder ? "Will be delivered" : "Delivered"} on {date}
+                {isTmrOrder ? "Will be delivered" : "Delivered"} on{" "}
+                {dateModified(date)}
               </div>
             </div>
             <div className='flex flex-col space-x-3 flex-1 items-end'>
@@ -115,11 +134,12 @@ export const OrderDetails = ({ data, closeOrderModal, address }) => {
           </div>
           <div className='delivered-items my-5'>
             <div className='text-sm font-bold'>
-              {tmrOrder ? "Items to be Delivered" : "Delivered Items"}
+              {isTmrOrder ? "Items to be Delivered" : "Delivered Items"}
             </div>
             <ProductCard
-              product={orderitem_info}
-              quantity={orderitem_info?.quantity}
+              product={orderInfo}
+              offPrice={orderInfo.unit_price || orderInfo.offer_price}
+              quantity={orderInfo?.quantity}
               className='mt-2 customer-shadow p-2'
             ></ProductCard>
           </div>
@@ -127,7 +147,7 @@ export const OrderDetails = ({ data, closeOrderModal, address }) => {
             <div className='font-bold text-sm'>Bill Details</div>
             <div className='mt-2 text-sm'>
               {billKeys.map((x, index) => (
-                <div className='flex justify-between my-1'>
+                <div className='flex justify-between my-1 items-center'>
                   <div
                     className={`${
                       index == 1 || index == 2 ? "text-gray-400" : ""
@@ -144,32 +164,34 @@ export const OrderDetails = ({ data, closeOrderModal, address }) => {
               ))}
             </div>
           </div>
-          <div className='delivery-images my-5'>
-            <div className='text-sm font-semibold'>
-              Images uploaded by Delivery Team
+          {!isTmrOrder && (
+            <div className='delivery-images my-5'>
+              <div className='text-sm font-semibold'>
+                Images uploaded by Delivery Team
+              </div>
+              <div className='flex justify-center mt-2'>
+                <img
+                  src={delImages?.length > 0 ? delImages[0] : null}
+                  alt='delivered-img'
+                  height={200}
+                  width={200}
+                />
+              </div>
             </div>
-            <div className='flex justify-center mt-2'>
-              <img
-                src={delivery_images?.length > 0 ? delivery_images[0] : null}
-                alt='delivered-img'
-                height={200}
-                width={200}
-              />
-            </div>
-          </div>
+          )}
         </>
       )}
       <EditExistingDeliveredOrder
-        data={orderData}
-        fetching={fetching}
+        data={OrderUIDData}
+        fetching={isFetching}
         open={editModalOpen}
         setOpen={setEditModalOpen}
-        product={orderData?.orderitem_info}
+        product={orderInfo}
         orderId={orderId}
         deliveredDate={date}
-        isTmrOrder={orderData?.status === "ACCEPTED"}
-        reasonText={orderText}
-        reasonDp={orderTextDp}
+        isTmrOrder={isTmrOrder}
+        isRefundOrder={isRefundOrder}
+        refetchOrderUid={refetchOrderUid}
       />
     </div>
   );

@@ -80,6 +80,7 @@ export const transactionName = (record) => {
 export const ProductCard = ({
   product,
   quantity,
+  offPrice,
   showQty = true,
   className = "",
   children,
@@ -108,7 +109,7 @@ export const ProductCard = ({
             {product?.dprod_unit_qty} x {quantity}
           </span>
           <span className='ml-10'>
-            <span>₹ {product?.total_price}</span>
+            <span>₹ {offPrice * quantity}</span>
             {/* <span className='line-through ml-3'>
               ₹ {product?.selling_price * product?.quantity}
             </span> */}
@@ -149,4 +150,19 @@ export const extractSectorValue = (line) => {
   const sectorPattern = /sector\s*[^,]*/i; // Match 'sector' followed by any number of spaces and then any characters except a comma
   const result = line.match(sectorPattern);
   return result ? result[0].trim() : "";
+};
+
+export const dateModified = (date) => {
+  const dateArr = date?.replace(" GMT", "").split(" ");
+  let finalDate = "";
+  if (dateArr) {
+    let time = dateArr ? dateArr[dateArr?.length - 1] : [];
+    dateArr.pop();
+    let timeArr = time.split(":");
+    if (timeArr[0] > 12) timeArr[0] = timeArr[0] - 12;
+    time = timeArr.reduce((acc, cur) => acc + ":" + cur);
+    const final = dateArr.reduce((acc, cur) => acc + " " + cur);
+    finalDate = final + " " + time;
+  }
+  return finalDate;
 };

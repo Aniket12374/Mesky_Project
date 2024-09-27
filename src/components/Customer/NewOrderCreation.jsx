@@ -8,9 +8,11 @@ import { getCookie } from "../../services/cookiesFunc";
 import { createOrder } from "../../services/customerOrders/CustomerOrderService";
 import toast from "react-hot-toast";
 import moment from "moment";
+import { useQueryClient } from "react-query";
 
 function NewOrderCreation({ open, onClose }) {
   const dateFormat = "DD-MM-YYYY";
+  const queryClient = useQueryClient();
   const [orderData, setOrderData] = useState({
     start_date: moment().add(1, "days").endOf("day").format(dateFormat),
     qty: 0,
@@ -121,6 +123,13 @@ function NewOrderCreation({ open, onClose }) {
     });
   };
 
+  const handleOrderSuccess = () => {
+    toast.success("Succesfully created");
+    onClose();
+    resetData();
+    queryClient.invalidateQueries("getOrders");
+  };
+
   const handleSubmitCreation = () => {
     const orderCreationPayload = {
       order_creation_date: orderData.start_date || tmrDate,
@@ -136,11 +145,7 @@ function NewOrderCreation({ open, onClose }) {
     }
 
     createOrder(orderCreationPayload)
-      .then((res) => {
-        toast.success("Succesfully created");
-        onClose();
-        resetData();
-      })
+      .then((res) => handleOrderSuccess())
       .catch((err) => {
         toast.error(
           err?.response?.data?.message?.message || err?.response?.data?.message
@@ -173,7 +178,7 @@ function NewOrderCreation({ open, onClose }) {
                 </div>
                 <div>
                   <span className='text-[#645d5d]'>
-                    <i class='fa-solid fa-magnifying-glass' />
+                    <i className='fa-solid fa-magnifying-glass' />
                   </span>
                 </div>
               </div>
@@ -320,10 +325,10 @@ const EditCreatePart = ({
             <div>
               {editable && (
                 <div
-                  className='float-right w-[20px] h-[20px] flex items-center justify-center rounded-full border-2 border-gray-200 cursor-pointer'
+                  className='float-right w-[20px] h-[20px] flex items-center justify-center rounded-full bg-red-500 border-2 border-gray-200 cursor-pointer'
                   onClick={() => handleRemove(prodID)}
                 >
-                  <div className='text-red-400'>x</div>
+                  <div className='text-white'>x</div>
                 </div>
               )}
               <ProductCard

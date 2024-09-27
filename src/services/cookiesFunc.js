@@ -1,6 +1,7 @@
 import Cookies from "js-cookie";
 
 const customerToken = "customerToken";
+const customerOrderVal = "currentOrderVal";
 
 export const setCookie = (key, value) => {
   Cookies.set(key, value);
@@ -13,6 +14,14 @@ export const setCustomerTokenCookie = (value) => {
 export const getCookie = (key) => {
   return Cookies.get(key);
 };
+
+export const setCookieOrderVal = (orderVal) => {
+  return setCookie(customerOrderVal, orderVal);
+};
+
+export const getCookieWalletBalance = Number(getCookie("walletBalance"));
+
+export const getCookieOrderVal = Number(getCookie("currentOrderVal"));
 
 export const removeCookie = (key) => {
   Cookies.remove(key);

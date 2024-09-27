@@ -33,19 +33,20 @@ function Transactions({
   const [currentPage, setCurrentPage] = useState(1);
   const [size, setSize] = useState(10);
   const [totalCount, setTotalCount] = useState(0);
-  const [shouldFetch, setShouldFetch] = useState(true);
+  // const [shouldFetch, setShouldFetch] = useState(true);
   const [copied, setCopied] = useState(false);
 
   const closeModal = () => setModalOpen((prev) => !prev);
 
   const { isLoading: isSearchLoading, refetch } = useQuery(
-    [`getTransactions_${token}`, currentPage, size, finalFilters, token],
+    [`getTransactions`, currentPage, size, finalFilters, token],
     () => getTransactions(currentPage, size, finalFilters),
     {
-      enabled: shouldFetch,
+      // enabled: shouldFetch,
+      staleTime: 600000,
       keepPreviousData: true,
       onSuccess: (data) => {
-        setShouldFetch(false);
+        // setShouldFetch(false);
         setTransactions(data?.data?.transactions);
         setTotalCount(data?.data?.total_count);
       },
@@ -54,7 +55,7 @@ function Transactions({
 
   useEffect(() => {
     refetch();
-  }, [token]);
+  }, [token, finalFilters]);
 
   const getDebitData = (debitId) => {
     getOrders(1, 1, { search_value: debitId, search_type: "order_id" })
@@ -131,7 +132,7 @@ function Transactions({
       render: (_, record) =>
         !name && (
           <div className='text-[#beb8b8] text-[13px]'>
-            <i class='fa-solid fa-chevron-right'></i>
+            <i className='fa-solid fa-chevron-right'></i>
           </div>
         ),
     },
@@ -139,7 +140,7 @@ function Transactions({
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
-    setShouldFetch(true);
+    // setShouldFetch(true);
   };
 
   const removeFilter = (key) => {
@@ -152,14 +153,14 @@ function Transactions({
 
     setFinalFilters(modifiedFilters);
     setAppliedFilters(modifiedFilters);
-    setShouldFetch(true);
+    // setShouldFetch(true);
   };
 
   const handleClear = () => {
     setFinalFilters({});
     setAppliedFilters({});
     setModalOpen(false);
-    setShouldFetch(true);
+    // setShouldFetch(true);
   };
 
   const pageSizeOptions = ["10", "20", "50", "100", "250", "500"];
@@ -167,7 +168,7 @@ function Transactions({
   const handlePageSizeChange = (current, page) => {
     setSize(page);
     setCurrentPage(1);
-    setShouldFetch(true);
+    // setShouldFetch(true);
   };
 
   const trnxTileClassName = modalOpen
@@ -193,7 +194,7 @@ function Transactions({
           modal={"transaction"}
           setFinalFilters={setFinalFilters}
           finalFilters={finalFilters}
-          setShouldFetch={setShouldFetch}
+          // setShouldFetch={setShouldFetch}
           setAppliedFilters={setAppliedFilters}
           appliedFilters={appliedFilters}
           removeFilter={removeFilter}

@@ -16,7 +16,7 @@ import Cookies from "js-cookie";
 const ProfileDropdown = () => {
   const logoutUser = useMainStore((state) => state.logoutUser);
   const user = useMainStore((state) => state.user);
-  console.log({ user });
+
   let queryClient = useQueryClient();
   let navigate = useNavigate();
 
@@ -47,7 +47,18 @@ const ProfileDropdown = () => {
           {/* <div className='box-border rounded-3xl flex flex-row h-8 w-8 mask mask-squircle'>
             <img src={meskyLogoCircle} alt='user image' />
           </div> */}
-          <div className=''> {user?.name}</div>
+          <div className=''>
+            {user?.name}
+            <span>
+              {!import.meta.env.VITE_ENV.includes("prod") ? (
+                <span className='text-red-500'>
+                  -- {import.meta.env.VITE_ENV}
+                </span>
+              ) : (
+                ""
+              )}
+            </span>
+          </div>
 
           <MdArrowDropDown />
         </div>

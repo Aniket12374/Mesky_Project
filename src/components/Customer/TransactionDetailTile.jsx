@@ -31,7 +31,7 @@ const TransactionDetailTile = ({ transactionId, setTransactionId }) => {
           className='rounded-full border-2 border-gray-400 w-8 h-8 flex justify-center items-center'
           onClick={() => setTransactionId(null)}
         >
-          <i class='fa-sharp fa-solid fa-arrow-left text-2xl'></i>
+          <i className='fa-sharp fa-solid fa-arrow-left text-2xl'></i>
         </button>
       </div>
       <div className='mt-10 ml-3 font-semibold text-lg'>

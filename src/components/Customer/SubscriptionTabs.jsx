@@ -3,6 +3,7 @@ import { Header } from "../../utils";
 import { getSubscriptions } from "../../services/customerInfo/CustomerInfoService";
 import { Modal, Select, Tabs } from "antd";
 import SubscriptionEditModal from "./SubscriptionEditModal";
+import Cookies from 'js-cookie';
 
 function SubscriptionTabs() {
   const [activeTab, setActiveTab] = useState(1);
@@ -65,11 +66,13 @@ function SubscriptionTabs() {
 const SubscriptionData = ({ tab, modalData, setModalData }) => {
   const [tabData, setTabData] = useState([]);
 
+  const customerToken = Cookies.get("customerToken");
+
   useEffect(() => {
     getSubscriptions(tab == 1 ? "active" : "inactive").then((res) => {
       setTabData(res?.data);
     });
-  }, [modalData]);
+  }, [modalData, customerToken]);
 
   const handleEdit = () => {};
 

@@ -148,7 +148,6 @@ export default function Address2({ data, closeModal = null }) {
       }));
     });
   };
-  console.log({ center });
 
   return isLoaded ? (
     <div className='flex space-x-10'>

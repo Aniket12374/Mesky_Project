@@ -5,6 +5,7 @@ import {
 } from "../../services/customerInfo/CustomerInfoService";
 import toast from "react-hot-toast";
 import _ from "lodash";
+import { useQueryClient } from "react-query";
 
 function EditableAddressForm({ data, closeModal, errors }) {
   const [formData, setFormData] = useState(data || {});
@@ -18,6 +19,7 @@ function EditableAddressForm({ data, closeModal, errors }) {
     "Landmark",
   ];
   let personalFields = ["first_name", "last_name", "default_email"];
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     setFormData(data);
@@ -94,6 +96,7 @@ function EditableAddressForm({ data, closeModal, errors }) {
       updateInfo(formData)
         .then((res) => {
           toast.success("Address Updated Successfully!");
+          queryClient.invalidateQueries("CustomerInfo");
           closeModal();
         })
         .catch((err) => toast.error("Not Updated!"));

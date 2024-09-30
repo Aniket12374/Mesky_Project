@@ -9,17 +9,29 @@ import Transactions from "./Transactions";
 import toast from "react-hot-toast";
 import { setCookie } from "../../services/cookiesFunc";
 import Address2 from "./Address2";
+import { useQuery } from "react-query";
 
 const CustomerInformation = ({ token }) => {
-  const [details, setDetails] = useState({});
   const [modalOpen, setModalOpen] = useState(false);
-  const [showNext, setShowNext] = useState(false);
+
+  const {
+    data,
+    isLoading,
+    isError,
+    isFetched,
+    isFetching,
+    refetch: refetchCustomerInfo,
+  } = useQuery({
+    queryKey: ["CustomerInfo", token],
+    queryFn: () => customerInfo(),
+    staleTime: 60 * 1000,
+  });
 
   useEffect(() => {
-    customerInfo()
-      .then((res) => setDetails(res?.data))
-      .catch((err) => console.log({ err }));
-  }, [modalOpen, token]);
+    isFetched && refetchCustomerInfo();
+  }, [token, isFetched]);
+
+  const details = data?.data;
 
   const addressData = details?.address_info?.find(
     (x) => x.address_name !== null
@@ -33,9 +45,12 @@ const CustomerInformation = ({ token }) => {
 
   const closeAddressModal = () => setModalOpen(false);
 
-  const { customer_info: csrInfo = {}, wallet_info: walletInfo = {} } = details;
+  const { customer_info: csrInfo = {}, wallet_info: walletInfo = {} } =
+    details || {};
 
-  return (
+  return isLoading ? (
+    <div>Loading...</div>
+  ) : (
     <div className='flex space-x-2 mt-2'>
       <CustomerDetails
         info={csrInfo}
@@ -52,12 +67,7 @@ const CustomerInformation = ({ token }) => {
         width={1000}
         footer={null}
       >
-        <Address2
-          data={addressPayload}
-          showNext={showNext}
-          setShowNext={setShowNext}
-          closeModal={closeAddressModal}
-        />
+        <Address2 data={addressPayload} closeModal={closeAddressModal} />
       </Modal>
     </div>
   );
@@ -117,8 +127,9 @@ const CustomerDetails = ({ info, address, setModalOpen }) => {
       <div className='customer-address m-5'>
         <div className='text-gray-500'>Delivery Address</div>
         <div className='text-sm'>
-          {address?.line_1}, {address?.line_2}, {address?.line_3},{" "}
-          {address?.city}-{address?.pincode}, {address?.state}
+          {address?.line_1}, {address?.line_2}, {address?.line_3},
+          {address?.land_mark}, {address?.city}-{address?.pincode},{" "}
+          {address?.state}
         </div>
       </div>
     </div>

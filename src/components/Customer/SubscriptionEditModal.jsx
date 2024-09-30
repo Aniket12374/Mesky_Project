@@ -363,6 +363,14 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
     return current && current < moment().add(1, "day").startOf("day");
   };
 
+  const enableTodayTmrw = (current) => {
+    const today = moment().startOf('day'); 
+    const tomorrow = moment().add(1, 'day').endOf('day'); 
+
+    return current && (current < today || current > tomorrow);
+};
+
+
   const offerPrice =
     (product?.unit_price || product?.offer_price) * editData?.quantity ||
     (createData?.unit_price || createData?.offer_price) * editData?.quantity;
@@ -542,7 +550,7 @@ function SubscriptionEditModal({ modalData, handleEdit, handleOpenClose }) {
                           //     : undefined
                           // }
                           format={dateFormat}
-                          disabledDate={disabledPastDate}
+                          disabledDate={enableTodayTmrw}
                           onChange={(_, dateString) => {
                             if (editData?.type == "ALTERNATE") {
                               setEditData((prev) => ({

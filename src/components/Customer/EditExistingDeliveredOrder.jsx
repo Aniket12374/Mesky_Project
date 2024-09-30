@@ -158,6 +158,9 @@ function EditExistingDeliveredOrder({
     setCookie("currentOrderVal", isTmrOrder ? presentOrderVal : refundOrderVal);
     queryClient.invalidateQueries("getOrders");
     queryClient.refetchQueries("getTransactions");
+    queryClient.refetchQueries("CustomerInfo", {
+      refetchActive: true,
+    });
     closeModal();
   };
 

@@ -4,8 +4,9 @@ import { httpVendor, httpVendorUpload } from "../../services/api-client";
 import { addRider, getSocieties } from "../../services/riders/riderService";
 import toast from "react-hot-toast";
 import Select from "react-select";
-import { DatePicker } from "antd";
+import { DatePicker, Tabs } from "antd";
 import moment from "moment";
+import FileAction from "../shared/FileAction";
 
 const dateFormat = "YYYY/MM/DD";
 
@@ -164,220 +165,329 @@ const AgentCreation = ({ setShowAgentCreation }) => {
 
   return (
     <div>
-      <div className="flex justify-end">
-        <Button btnName={"Save"} onClick={handleSaveAgent} />
-        <Button
-          btnName={"Cancel"}
-          onClick={() => setShowAgentCreation(false)}
-        />
-      </div>
-      <div className="flex space-x-5 w-full justify-start">
-        <div className="w-[40%] space-y-2">
-          <div className="">
-            <label>Full Name</label>
-            <input
-              type="text"
-              className="w-full h-12 rounded-lg border-select__control p-2"
-              value={agent?.full_name}
-              onChange={(e) => handleChange("full_name", e.target.value)}
+      {/* Tabs for Page 1 and Page 2 */}
+      <Tabs defaultActiveKey="1" started>
+        {/* Page 1 - Agent Information */}
+        <Tabs.TabPane tab="Agent Info" key="1">
+          <div className="w-full flex justify-end ">
+            <Button btnName={"Edit"} onClick={handleSaveAgent}/>
+            <Button
+              btnName={"Verify"}
+              onClick={() => setShowAgentCreation(false)}
+            />
+            <Button
+              btnName={"Reject"}
+              onClick={() => setShowAgentCreation(false)}
             />
           </div>
-          <div className="">
-            <label>Phone Number (example : 8130067178)</label>
-            <input
-              type="text"
-              className="w-full h-12 rounded-lg  border-select__control  p-2"
-              value={agent?.mobile_number}
-              onChange={(e) => handleChange("mobile_number", e.target.value)}
-            />
-          </div>
-        </div>
-        <div className="w-[40%]">
-          <div>
-            <label>Assigned Area</label>
-            <Select
-              options={socitiesList}
-              isMulti
-              classNamePrefix="border-select"
-              placeholder="Please select areas"
-              onChange={handleSelectOption}
-            />
-          </div>
-        </div>
-      </div>
-      <div>
-        <div className="font-bold text-2xl">Documents</div>
-        <div className="flex justify-evenly w-full">
-          <div className="w-1/2 flex justify-evenly">
-            <div className="space-y-4">
-              <div className="text-lg font-medium">TYPE</div>
-              <div>Driving License</div>
-              <div>Aadhaar Card</div>
-              <div>Vehicle Name Plate Image</div>
-              <div>Vehicle RC</div>
-              <div>Vehicle Insurance</div>
-              <div>Vehicle (PUC) Pollution Check</div>
-            </div>
-            <div className="space-y-3 w-2/5">
-              <div className="text-lg text-center font-medium">DOCUMENT</div>
-              <div className="upload-container">
-                <label
-                  htmlFor="driving-license"
-                  className={`w-full block text-center rounded-2xl ${
-                    uploadedFiles.dl ? "bg-red-500" : "bg-[#df4584]"
-                  } shadow-md shadow-slate-400 text-white py-[2px] text-base`}
-                >
-                  {uploadedFiles.dl ? "Uploaded" : "Upload"}
-                </label>
+          <div className="flex space-x-5 w-full justify-start">
+            <div className="w-[40%] space-y-2">
+              <div className="">
+                <label>Full Name</label>
                 <input
-                  type="file"
-                  id="driving-license"
-                  name="driving-license"
-                  onChange={(e) => handleUpload(e, "dl")}
-                  hidden
+                  type="text"
+                  className="w-full h-12 rounded-lg border-select__control p-2"
+                  value={agent?.full_name}
+                  onChange={(e) => handleChange("full_name", e.target.value)}
                 />
               </div>
+              <div className="">
+                <label>Phone Number (example: 8130067178)</label>
+                <input
+                  type="text"
+                  className="w-full h-12 rounded-lg border-select__control p-2"
+                  value={agent?.mobile_number}
+                  onChange={(e) =>
+                    handleChange("mobile_number", e.target.value)
+                  }
+                />
+              </div>
+              <div className="">
+                <label>Status</label>
+                <select
+                  className="w-full h-12 rounded-lg border-select__control p-2"
+                  value={agent?.status || ""}
+                  onChange={(e) => handleChange("status", e.target.value)}
+                >
+                  <option value="" disabled>
+                    Select status
+                  </option>
+                  <option value="available">Available</option>
+                  <option value="not_available">Not Available</option>
+                </select>
+              </div>
+            </div>
+            <div className="w-[40%]">
+              <div>
+                <label>Assigned Area</label>
+                <Select
+                  options={socitiesList}
+                  isMulti
+                  classNamePrefix="border-select"
+                  placeholder="Please select areas"
+                  onChange={handleSelectOption}
+                />
+              </div>
+            </div>
+          </div>
+          <div className="mt-4 flex w-[100%] justify-between">
+            <div className="bg-[#FEF2F7] w-[30%] border-2 border-gray rounded-lg shadow-xs pt-4 space-y-3 px-4 pb-4">
+              <p className="font-bold text-lg">Work Details</p>
+              <div className="space-y-1">
+                <label className="text-[#878787] py-1">
+                  WAREHOUSE ALLOCATED *
+                </label>
+                <div className="w-72">
+                  <Select
+                    options={socitiesList}
+                    isMulti
+                    classNamePrefix="border-select"
+                    placeholder="Please select areas"
+                    onChange={handleSelectOption}
+                  />
+                </div>
+              </div>
+              <div className="space-y-1">
+                <label className="text-[#878787]">REFFERED BY *</label>
+                <div className="w-72">
+                  <Select
+                    options={socitiesList}
+                    isMulti
+                    classNamePrefix="border-select"
+                    placeholder="Please select areas"
+                    onChange={handleSelectOption}
+                  />
+                </div>
+              </div>
+              {/* joining date */}
 
+              <div className="font-medium">Joining Date *</div>
+
+              <DatePicker
+                format={"DD-MM-YYYY"}
+                placeholder="Select date"
+                allowClear={false}
+              />
               <div className="flex justify-between">
-                <div className="upload-container w-[49%]">
-                  <label
-                    htmlFor="aadhar-card-front"
-                    className={`w-full block text-center rounded-2xl ${
-                      uploadedFiles.adhar_front ? "bg-red-500" : "bg-[#df4584]"
-                    } shadow-md shadow-slate-400 text-white py-[2px] text-base`}
-                  >
-                    {uploadedFiles.adhar_front ? "Uploaded" : "Upload"}
-                  </label>
-                  <input
-                    type="file"
-                    id="aadhar-card-front"
-                    name="aadhar-card-front"
-                    onChange={(e) => handleUpload(e, "adhar_front")}
-                    hidden
-                  />
-                </div>
-                <div className="upload-container w-[49%]">
-                  <label
-                    htmlFor="aadhar-card-back"
-                    className={`w-full block text-center rounded-2xl ${
-                      uploadedFiles.adhar_back ? "bg-red-500" : "bg-[#df4584]"
-                    } shadow-md shadow-slate-400 text-white py-[2px] text-base`}
-                  >
-                    {uploadedFiles.adhar_back ? "Uploaded" : "Upload"}
-                  </label>
-                  <input
-                    type="file"
-                    id="aadhar-card-back"
-                    name="aadhar-card-back"
-                    onChange={(e) => handleUpload(e, "adhar_back")}
-                    hidden
-                  />
-                </div>
+                <p>VEHICAL TYPE *</p>
+                <p className="bg-[#FF80B4] px-8 border border-[#FF80B4] rounded-md">
+                  Petrol
+                </p>
+                <p className="border border-[#FF80B4] px-8 rounded-md">
+                  Electric
+                </p>
               </div>
-              <div className="upload-container">
-                <label
-                  htmlFor="vehicle-name-plate"
-                  className={`w-full block text-center rounded-2xl ${
-                    uploadedFiles.veh_n_pl_im ? "bg-red-500" : "bg-[#df4584]"
-                  } shadow-md shadow-slate-400 text-white py-[2px] text-base`}
-                >
-                  {uploadedFiles.veh_n_pl_im ? "Uploaded" : "Upload"}
-                </label>
-                <input
-                  type="file"
-                  id="vehicle-name-plate"
-                  name="vehicle-name-plate"
-                  onChange={(e) => handleUpload(e, "veh_n_pl_im")}
-                  hidden
-                />
-              </div>
-              <div className="upload-container">
-                <label
-                  htmlFor="vehicle-rc"
-                  className={`w-full block text-center rounded-2xl ${
-                    uploadedFiles.veh_rc ? "bg-red-500" : "bg-[#df4584]"
-                  } shadow-md shadow-slate-400 text-white py-[2px] text-base`}
-                >
-                  {uploadedFiles.veh_rc ? "Uploaded" : "Upload"}
-                </label>
-                <input
-                  type="file"
-                  id="vehicle-rc"
-                  name="vehicle-rc"
-                  onChange={(e) => handleUpload(e, "veh_rc")}
-                  hidden
-                />
-              </div>
-              <div className="upload-container">
-                <label
-                  htmlFor="vehicle-insurance"
-                  className={`w-full block text-center rounded-2xl ${
-                    uploadedFiles.veh_is ? "bg-red-500" : "bg-[#df4584]"
-                  } shadow-md shadow-slate-400 text-white py-[2px] text-base`}
-                >
-                  {uploadedFiles.veh_is ? "Uploaded" : "Upload"}
-                </label>
-                <input
-                  type="file"
-                  id="vehicle-insurance"
-                  name="vehicle-insurance"
-                  onChange={(e) => handleUpload(e, "veh_is")}
-                  hidden
-                />
-              </div>
-              <div className="upload-container">
-                <label
-                  htmlFor="vehicle-puc"
-                  className={`w-full block text-center rounded-2xl ${
-                    uploadedFiles.poll_ch ? "bg-red-500" : "bg-[#df4584]"
-                  } shadow-md shadow-slate-400 text-white py-[2px] text-base`}
-                >
-                  {uploadedFiles.poll_ch ? "Uploaded" : "Upload"}
-                </label>
-                <input
-                  type="file"
-                  id="vehicle-puc"
-                  name="vehicle-puc"
-                  onChange={(e) => handleUpload(e, "poll_ch")}
-                  hidden
-                />
+            </div>
+            <div className="w-[50%] h-[200px]">
+              <div className="ml-4">Action History</div>
+              <div className="border border-gray border-2 w-[69%] h-72">
+                <div className="p-2">Rejected Reasons....</div>
               </div>
             </div>
           </div>
-          <div className="w-1/2 flex justify-evenly">
-            <div className="space-y-4">
-              <div className="text-lg font-medium">ISSUE DATE</div>
-              {issueDts.map((x) => (
-                <div key={x} className="border-[#808080] border rounded-md">
-                  <DatePicker
-                    placeholder={"select date"}
-                    format={dateFormat}
-                    disabledDate={disabledFutureDate}
-                    onChange={(date, dateString) => {
-                      handleChange(x, dateString);
-                    }}
+          {/* Bank details  */}
+          <div className="w-[40%] bg-[#FEF2F7] mt-4 border-2 border-gray rounded-lg shadow-xs pb-2">
+            <div className="px-4 space-y-2 py-2">
+              <p className="font-bold text-lg">Bank Details</p>
+              <div className="">
+                <input
+                  type="text"
+                  className="w-full h-12 rounded-lg shadow-xs border-2 border-gray p-2"
+                  value={agent?.mobile_number}
+                  placeholder="Bank account number *"
+                  onChange={(e) =>
+                    handleChange("mobile_number", e.target.value)
+                  }
+                />
+              </div>
+              <div className="">
+                <input
+                  type="text"
+                  className="w-full h-12 rounded-lg shadow-xs border-2 border-gray p-2"
+                  value={agent?.mobile_number}
+                  placeholder="Account Holder's number *"
+                  onChange={(e) =>
+                    handleChange("mobile_number", e.target.value)
+                  }
+                />
+              </div>
+              <div className="flex justify-between">
+                <div className="w-[48%]">
+                  <input
+                    type="text"
+                    className="w-full h-12 rounded-lg shadow-xs border-2 border-gray p-2"
+                    value={agent?.mobile_number}
+                    placeholder="IFSC Code *"
+                    onChange={(e) =>
+                      handleChange("mobile_number", e.target.value)
+                    }
                   />
                 </div>
-              ))}
-            </div>
-            <div className="space-y-4">
-              <div className="text-lg font-medium">EXPIRY DATE</div>
-              {expDts.map((x) => (
-                <div key={x} className="border-[#808080] border rounded-md">
-                  <DatePicker
-                    format={dateFormat}
-                    placeholder={"select date"}
-                    disabledDate={disabledPastDate}
-                    onChange={(date, dateString) => {
-                      handleChange(x, dateString);
-                    }}
+                <div className="w-[48%]">
+                  <input
+                    type="text"
+                    className="w-full h-12 rounded-lg shadow-xs border-2 border-gray p-2"
+                    value={agent?.mobile_number}
+                    placeholder="Branch Name *"
+                    onChange={(e) =>
+                      handleChange("mobile_number", e.target.value)
+                    }
                   />
                 </div>
-              ))}
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+        </Tabs.TabPane>
+
+        {/* Page 2 - Documents */}
+        <Tabs.TabPane tab="Documents" key="2">
+          <div>
+            {/* Adhar details */}
+            <div>
+              <p className="font-bold pb-1">Enter Aadhar Details</p>
+              <div className="flex space-x-2">
+                <input
+                  className="py-3 px-2 w-52 border border-gray rounded-md h-12"
+                  placeholder="Enter your Aadhar Number"
+                />
+                <FileAction
+                  name={"Upload Aadhar Front JPG/PDF"}
+                  upload={true}
+                  display={true}
+                  
+                  download={true}
+                />
+                <FileAction
+                  name={"Upload Aadhar Back JPG/PDF"}
+                  upload={true}
+                  display={true}
+                 
+                  download={true}
+                />
+              </div>
+            </div>
+            {/* DL details */}
+            <div>
+              <p className="font-bold pb-1">Driving License Details</p>
+              <div className="flex space-x-2">
+                <input
+                  className="py-3 px-2 w-52 border border-gray rounded-md h-12"
+                  placeholder="Enter your Aadhar Number"
+                />
+                <DatePicker
+                  format={"DD-MM-YYYY"}
+                  placeholder="Enter Expiry date"
+                  allowClear={false}
+                  className="h-12 w-48"
+                />
+                <FileAction
+                  name={"Upload DL with expiry date Visible JPG/PDF"}
+                  upload={true}
+                  display={true}
+                  
+                  download={true}
+                />
+              </div>
+            </div>
+            {/* Insurance details */}
+            <div>
+              <p className="font-bold pb-1">Insurance Details</p>
+              <div className="flex space-x-2">
+                <DatePicker
+                  format={"DD-MM-YYYY"}
+                  placeholder="Enter Expiry date"
+                  allowClear={false}
+                  className="h-12 w-52"
+                />
+                <FileAction
+                  name={"upload 2-wheeler insurance (JPG/PDF)"}
+                  upload={true}
+                  display={true}
+                 
+                  download={true}
+                />
+              </div>
+            </div>
+            {/* Registration details */}
+            <div>
+              <p className="font-bold pb-1">Registration Details</p>
+              <div className="flex space-x-2">
+                <input
+                  className="py-3 px-2 w-52 border border-gray rounded-md h-12"
+                  placeholder="Enter your Aadhar Number"
+                />
+                <DatePicker
+                  format={"DD-MM-YYYY"}
+                  placeholder="Enter Expiry date"
+                  allowClear={false}
+                  className="h-12 w-48"
+                />
+                <FileAction
+                  name={"Upload DL with expiry date Visible JPG/PDF"}
+                  upload={true}
+                  display={true}
+                 
+                  download={true}
+                />
+                <FileAction
+                  name={"Upload DL with expiry date Visible JPG/PDF"}
+                  upload={true}
+                  display={true}
+                  
+                  download={true}
+                />
+              </div>
+            </div>
+            {/* PAN details */}
+            <div>
+              <p className="font-bold pb-1">Insurance Details</p>
+              <div className="flex space-x-2">
+                <input
+                  className="py-3 px-2 w-52 border border-gray rounded-md h-12"
+                  placeholder="Enter your Aadhar Number"
+                />
+
+                <FileAction
+                  name={"upload 2-wheeler insurance (JPG/PDF)"}
+                  upload={true}
+                  display={true}
+                  
+                  download={true}
+                />
+              </div>
+            </div>
+            {/* polution Check details */}
+            <div>
+              <p className="font-bold pb-1">Insurance Details</p>
+              <div className="flex space-x-2">
+                <DatePicker
+                  format={"DD-MM-YYYY"}
+                  placeholder="Enter Expiry date"
+                  allowClear={false}
+                  className="h-12 w-52"
+                />
+                <FileAction
+                  name={"upload 2-wheeler insurance (JPG/PDF)"}
+                  upload={true}
+                  display={true}
+                  download={true}
+                />
+              </div>
+            </div>
+            {/* Bank PassBook / cancelled Cheque  */}
+            <div>
+              <p className="font-bold pb-1">Bank Passbook/ Cancelled Cheque</p>
+              <FileAction
+                name={"upload 2-wheeler insurance (JPG/PDF)"}
+                upload={true}
+                display={true}
+               
+                download={true}
+              />
+            </div>
+          </div>
+        </Tabs.TabPane>
+      </Tabs>
     </div>
   );
 };

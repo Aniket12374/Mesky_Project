@@ -22,6 +22,19 @@ const AgentCreation = ({ setShowAgentCreation }) => {
     veh_is: false,
     poll_ch: false,
   });
+  const [file, setFile] = useState({
+    adharFront: null,
+    adharBack: null,
+    drivingLicence: null,
+    uploadTwoWheelerInsurance: null,
+    uploadRC: null,
+    uploadVehical: null,
+    uploadPan: null,
+    uploadPUC: null,
+    
+  });
+
+  const [fileType, setFileType] = useState("");
 
   const handleChange = (key, value) => {
     setAgent((prev) => ({ ...prev, ...{ [key]: value } }));
@@ -170,7 +183,7 @@ const AgentCreation = ({ setShowAgentCreation }) => {
         {/* Page 1 - Agent Information */}
         <Tabs.TabPane tab="Agent Info" key="1">
           <div className="w-full flex justify-end ">
-            <Button btnName={"Edit"} onClick={handleSaveAgent}/>
+            <Button btnName={"Edit"} onClick={handleSaveAgent} />
             <Button
               btnName={"Verify"}
               onClick={() => setShowAgentCreation(false)}
@@ -354,14 +367,17 @@ const AgentCreation = ({ setShowAgentCreation }) => {
                   name={"Upload Aadhar Front JPG/PDF"}
                   upload={true}
                   display={true}
-                  
+                  fileKey="adharFront"
+                  fileState={file.adharFront}
+                  setFile={setFile}
                   download={true}
                 />
                 <FileAction
                   name={"Upload Aadhar Back JPG/PDF"}
                   upload={true}
                   display={true}
-                 
+                  setFile={setFile}
+                  file={file}
                   download={true}
                 />
               </div>
@@ -384,7 +400,8 @@ const AgentCreation = ({ setShowAgentCreation }) => {
                   name={"Upload DL with expiry date Visible JPG/PDF"}
                   upload={true}
                   display={true}
-                  
+                  setFile={setFile}
+                  file={file}
                   download={true}
                 />
               </div>
@@ -403,7 +420,8 @@ const AgentCreation = ({ setShowAgentCreation }) => {
                   name={"upload 2-wheeler insurance (JPG/PDF)"}
                   upload={true}
                   display={true}
-                 
+                  setFile={setFile}
+                  file={file}
                   download={true}
                 />
               </div>
@@ -423,24 +441,26 @@ const AgentCreation = ({ setShowAgentCreation }) => {
                   className="h-12 w-48"
                 />
                 <FileAction
-                  name={"Upload DL with expiry date Visible JPG/PDF"}
+                  name={"Upload vehical Registration Certificate (JPG/PDF)"}
                   upload={true}
                   display={true}
-                 
+                  setFile={setFile}
+                  file={file}
                   download={true}
                 />
                 <FileAction
-                  name={"Upload DL with expiry date Visible JPG/PDF"}
+                  name={"Upload vehical picture with number visible (JPG/PDF)"}
                   upload={true}
                   display={true}
-                  
+                  setFile={setFile}
+                  file={file}
                   download={true}
                 />
               </div>
             </div>
             {/* PAN details */}
             <div>
-              <p className="font-bold pb-1">Insurance Details</p>
+              <p className="font-bold pb-1">PAN Details</p>
               <div className="flex space-x-2">
                 <input
                   className="py-3 px-2 w-52 border border-gray rounded-md h-12"
@@ -448,17 +468,18 @@ const AgentCreation = ({ setShowAgentCreation }) => {
                 />
 
                 <FileAction
-                  name={"upload 2-wheeler insurance (JPG/PDF)"}
+                  name={"upload PAN Card (JPG/PDF)"}
                   upload={true}
                   display={true}
-                  
+                  setFile={setFile}
+                  file={file}
                   download={true}
                 />
               </div>
             </div>
             {/* polution Check details */}
             <div>
-              <p className="font-bold pb-1">Insurance Details</p>
+              <p className="font-bold pb-1">Pollution Check Details</p>
               <div className="flex space-x-2">
                 <DatePicker
                   format={"DD-MM-YYYY"}
@@ -467,9 +488,11 @@ const AgentCreation = ({ setShowAgentCreation }) => {
                   className="h-12 w-52"
                 />
                 <FileAction
-                  name={"upload 2-wheeler insurance (JPG/PDF)"}
+                  name={"upload Vehical PUC check (JPG/PDF)"}
                   upload={true}
                   display={true}
+                  setFile={setFile}
+                  file={file}
                   download={true}
                 />
               </div>
@@ -478,10 +501,11 @@ const AgentCreation = ({ setShowAgentCreation }) => {
             <div>
               <p className="font-bold pb-1">Bank Passbook/ Cancelled Cheque</p>
               <FileAction
-                name={"upload 2-wheeler insurance (JPG/PDF)"}
+                name={"Passbook/ cancelled Cheque (JPG/PDF)"}
                 upload={true}
                 display={true}
-               
+                setFile={setFile}
+                file={file}
                 download={true}
               />
             </div>

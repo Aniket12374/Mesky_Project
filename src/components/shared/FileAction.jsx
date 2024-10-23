@@ -12,15 +12,24 @@ function FileAction({
   download,
   fileKey,
   fileState,
+  setFormData,
   setFile,
 }) {
   const [fileType, setFileType] = useState(null); // Track the file type
+
+  // const setFile = (key, value) => {
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     [key]: value,
+  //   }));
+  // };
+
 
   const handleImageChange = (e) => {
     const selectedFile = e.target.files[0];
     const fileUrl = URL.createObjectURL(selectedFile);
 
-    setFile((prevFiles) => ({
+    setFormData((prevFiles) => ({
       ...prevFiles,
       [fileKey]: fileUrl, // Update the specific file in state
     }));
@@ -92,7 +101,7 @@ function FileAction({
               height={20}
               preview={false}
               className="cursor-pointer"
-              onClick={handleDownload} 
+              onClick={handleDownload}
             />
           )}
         </div>

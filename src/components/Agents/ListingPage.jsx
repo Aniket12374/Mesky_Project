@@ -6,6 +6,7 @@ import { ridersList } from "../../services/riders/riderService";
 import Button from "../Common/Button";
 import { useNavigate } from "react-router-dom";
 import { Pagination } from "antd";
+import AgentCreation from "./AgentCreation";
 
 const colorStatus = {
   AVAILABLE: "#9c29c1",
@@ -140,7 +141,7 @@ const ListingPage = ({ setShowAgentCreation }) => {
       `}
       </style>
       {selectedRowData ? (
-        <AgentDetail
+        <AgentCreation
           rowData={selectedRowData}
           setShowAgentCreation={setShowAgentCreation}
           setSelectedRowData={setSelectedRowData}
@@ -148,7 +149,7 @@ const ListingPage = ({ setShowAgentCreation }) => {
         />
       ) : (
         <div>
-          <div className='float-right'>
+          <div className="float-right">
             <Button
               btnName={"+ Add Agent"}
               onClick={() => setShowAgentCreation(true)}
@@ -156,7 +157,7 @@ const ListingPage = ({ setShowAgentCreation }) => {
           </div>
           <DataTable
             data={riders}
-            fileName='Agents_Listing.csv'
+            fileName="Agents_Listing.csv"
             columns={HistoryHeaders}
             loading={isLoading}
             onRow={(record, rowIndex) => {
@@ -172,7 +173,7 @@ const ListingPage = ({ setShowAgentCreation }) => {
             }}
             // pagination={paginationConfig}
           />
-          <div className='flex justify-end px-4 py-2'>
+          <div className="flex justify-end px-4 py-2">
             <Pagination
               current={currentPage}
               total={totalDataCount}

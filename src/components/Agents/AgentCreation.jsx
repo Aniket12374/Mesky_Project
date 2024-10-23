@@ -1,91 +1,283 @@
 import { useEffect, useState } from "react";
 import Button from "../Common/Button";
 import { httpVendor, httpVendorUpload } from "../../services/api-client";
-import { addRider, getSocieties } from "../../services/riders/riderService";
+import {
+  addRider,
+  getSocieties,
+  getRiderData,
+  getRiderHistory,
+  getWarehouses,
+  feedBackRider,
+  getRiderFeedback,
+  modifyRider,
+  getRiderInfo,
+} from "../../services/riders/riderService";
 import toast from "react-hot-toast";
 import Select from "react-select";
-import { DatePicker, Tabs } from "antd";
+import { DatePicker, Modal, Tabs } from "antd";
 import moment from "moment";
 import FileAction from "../shared/FileAction";
+import AgentDetail from "./AgentDetail";
+import RiderHistory from "./RiderHistory";
+import AgentDoc from "./AgentDoc";
 
 const dateFormat = "YYYY/MM/DD";
 
-const AgentCreation = ({ setShowAgentCreation }) => {
+const AgentCreation = ({
+  setShowAgentCreation,
+  rowData,
+  setSelectedRowData,
+  refetch,
+}) => {
   const [agent, setAgent] = useState({});
   const [socitiesList, setSocitiesList] = useState([]);
-  const [uploadedFiles, setUploadedFiles] = useState({
-    dl: false,
-    adhar_front: false,
-    adhar_back: false,
-    veh_n_pl_im: false,
-    veh_rc: false,
-    veh_is: false,
-    poll_ch: false,
-  });
-  const [file, setFile] = useState({
-    adharFront: null,
-    adharBack: null,
-    drivingLicence: null,
-    uploadTwoWheelerInsurance: null,
-    uploadRC: null,
-    uploadVehical: null,
-    uploadPan: null,
-    uploadPUC: null,
-    
+
+  const [rejectionModel, setRejectionModel] = useState(false);
+  const [riderFeedback, setRiderFeedback] = useState("");
+  const [riderActions, setRiderActions] = useState();
+  const [isDisable, setIsDisable] = useState(true);
+  const [wareHouseList, setWareHouseList] = useState([]);
+  const [referenceList, setReferenceList] = useState([]);
+  console.log("riderActions", riderActions);
+
+  const uniqueDates = Array.from(
+    new Set(
+      riderActions?.map((action) =>
+        new Date(action.created_date).toLocaleDateString()
+      )
+    )
+  );
+
+  console.log("uniqueDates", uniqueDates);
+
+  // const [uploadedFiles, setUploadedFiles] = useState({
+  //   dl: false,
+  //   adhar_front: false,
+  //   adhar_back: false,
+  //   veh_n_pl_im: false,
+  //   veh_rc: false,
+  //   veh_is: false,
+  //   poll_ch: false,
+  // });
+  const [docs, setDocs] = useState();
+
+  const [agentInfo, setAgentInfo] = useState({
+    full_name: rowData?.agent_name || "",
+    mobile_number: rowData?.phone_number || "",
+    status: rowData?.status || "",
+    assigned_areas: rowData?.assigned_area || [],
+    warehouse: [] || null,
+    referred_by: docs?.refered_by_rider.full_name || "",
+    joining_date: null,
+    vehicle_type: "Petrol",
+    bank_account_number: docs?.bank_details.account_number || "",
+    account_holder_name: docs?.bank_details.account_holder_name || "",
+    ifsc_code: docs?.bank_details.ifsc_code || "",
+    branch_name: docs?.bank_details.branch_name || "",
   });
 
-  const [fileType, setFileType] = useState("");
+  console.log("agentInfo", agentInfo);
+
+  const [formData, setFormData] = useState({
+    aadharNumber: docs?.adhar || "",
+    aadharFront: null,
+    aadharBack: null,
+    drivingLicenseNumber: docs?.dl_details?.document_number || "",
+    drivingLicenseExpiry: docs?.dl_details?.expiry_date || null,
+    drivingLicenseFile: docs?.dl || null,
+    insuranceExpiry: docs?.veh_ins_ex_date || null,
+    insuranceFile: docs?.veh_ins || null,
+    rcNumber: docs?.rc_details.document_number || "",
+    rcExpiry: docs?.rc_details.expiry_date || null,
+    rcFile: docs?.veh_rc || null,
+    rcVehiclePicture: docs?.veh_n_pl_im || null,
+    panNumber: "",
+    panFile: null,
+    pollutionCheckExpiry: docs?.pol_check_details.expiry_date || null,
+    pollutionCheckFile: docs?.poll_ch || null,
+    bankPassbookCheque: docs?.bank_details.passbook_or_cancelled_cheque || null,
+  });
+  console.log("formData", formData);
+
+  useEffect(() => {
+    getRiderInfo().then((res) => {
+      setReferenceList(res?.data);
+    });
+    getWarehouses().then((res) => {
+      setWareHouseList(res?.data);
+    });
+    getSocieties().then((res) => {
+      let list = res?.data?.data?.map((x) => ({
+        label: x.sector,
+        value: x.id,
+      }));
+      setSocitiesList(list);
+    });
+
+    handleChange("rider_id", rowData?.s_no);
+
+    // Object?.keys(rowData).map((row) => {
+    //   setAgent((prev) => ({ ...prev, ...{ [row]: rowData[row] } }));
+    // });
+
+    let agentAssignedAreas = rowData?.assigned_area?.map((x) =>
+      x.replace(", ", "")
+    );
+
+    setAgentInfo((prev) => ({
+      ...prev,
+      ...{ assigned_areas: agentAssignedAreas },
+    }));
+
+    getRiderHistory(rowData?.s_no).then((res) => {
+      let list = [];
+      res?.data?.data.map((x) => {
+        list.push({
+          order_date: x.accept_date,
+          order_id: x.order.uid,
+          customer_name: x.order.full_name,
+          society_name: x.society.name,
+          delivery: x.order.line_1 + " " + x.order.line_2,
+          agent_name: x.rider.map((x) => x.full_name),
+          status: x.status.del_status,
+          del_image: x.status.del_img,
+          image_log: x.status.img_status,
+          align: "center",
+        });
+      });
+
+      // setHistoryData(list);
+    });
+  }, []);
+
+  useEffect(() => {
+    getRiderData(rowData?.s_no)
+      .then((res) => {
+        const data = res?.data;
+        console.log("data", data);
+        // const { poll_ch, veh_ins, veh_n_pl_im, veh_rc, dl } = data;
+        setAgentInfo((prev) => ({
+          ...prev,
+          warehouse: data?.allocated_warehouse || [],
+          referred_by: data?.refered_by_rider.full_name || "",
+          joining_date: data?.joining_date,
+          vehicle_type: "Petrol",
+          bank_account_number: data?.bank_details.account_number || "",
+          account_holder_number: data?.bank_details.account_holder_name || "",
+          ifsc_code: data?.bank_details.ifsc_code || "",
+          branch_name: data?.bank_details.branch_name || "",
+        }));
+        setFormData({
+          aadharNumber: data?.adhar || "",
+          aadharFront: data?.aadhar_details.adhar_front || null,
+          aadharBack: data?.aadhar_details.adhar_back || null,
+          drivingLicenseNumber: data?.dl_details?.document_number || "",
+          drivingLicenseExpiry: data?.dl_details?.expiry_date || null,
+          drivingLicenseFile: data?.dl || null,
+          insuranceExpiry: data?.veh_ins_ex_date || null,
+          insuranceFile: data?.veh_ins || null,
+          rcNumber: data?.rc_details.document_number || "",
+          rcExpiry: data?.rc_details.expiry_date || null,
+          rcFile: data?.veh_rc || null,
+          rcVehiclePicture: data?.veh_n_pl_im || null,
+          panNumber: data?.document_number || "",
+          panFile: null,
+          pollutionCheckExpiry: data?.pol_check_details.expiry_date || null,
+          pollutionCheckFile: data?.poll_ch || null,
+          bankPassbookCheque:
+            data?.bank_details.passbook_or_cancelled_cheque || null,
+        });
+      })
+      .catch((err) => console.log({ err }));
+  }, []);
+
+  useEffect(() => {
+    getRiderFeedback(rowData?.s_no).then((res) => {
+      setRiderActions(res?.data);
+    });
+  }, []);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleDateChange = (key, date) => {
+    setFormData((prev) => ({
+      ...prev,
+      [key]: date,
+    }));
+  };
+
+  const handleVehicleTypeChange = (type) => {
+    setAgentInfo((prev) => ({
+      ...prev,
+      vehicle_type: type,
+    }));
+  };
 
   const handleChange = (key, value) => {
-    setAgent((prev) => ({ ...prev, ...{ [key]: value } }));
+    setAgentInfo((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
   };
 
-  const handleUpload = (event, key) => {
-    let files = event.target.files;
+  // const [fileType, setFileType] = useState("");
 
-    // Check if a file is selected
-    if (files.length === 0) {
-      return; // No file selected
-    }
+  // const handleChange = (key, value) => {
+  //   setAgentInfo((prev) => ({ ...prev, ...{ [key]: value } }));
+  // };
 
-    // Check file type
-    const allowedTypes = [
-      "application/pdf",
-      "image/jpeg",
-      "image/jpg",
-      "image/png",
-    ];
-    const fileType = files[0].type;
+  // const handleUpload = (event, key) => {
+  //   let files = event.target.files;
 
-    // Extract file extension from the file name
-    const fileName = files[0].name;
-    const fileExtension = fileName.split(".").pop().toLowerCase();
+  //   // Check if a file is selected
+  //   if (files.length === 0) {
+  //     return; // No file selected
+  //   }
 
-    // Check both MIME type and file extension
-    if (
-      !allowedTypes.includes(fileType) ||
-      !["pdf", "jpeg", "jpg", "png"].includes(fileExtension)
-    ) {
-      // Invalid file type
-      toast.error("Please upload PDF, JPEG, JPG, or PNG files only.");
-      return;
-    }
+  //   // Check file type
+  //   const allowedTypes = [
+  //     "application/pdf",
+  //     "image/jpeg",
+  //     "image/jpg",
+  //     "image/png",
+  //   ];
+  //   const fileType = files[0].type;
 
-    // Proceed with file upload
-    const formData = new FormData();
-    formData.append("files", files[0], fileName);
+  //   // Extract file extension from the file name
+  //   const fileName = files[0].name;
+  //   const fileExtension = fileName.split(".").pop().toLowerCase();
 
-    httpVendorUpload
-      .post("/api/upload/multiple-image", formData)
-      .then((res) => {
-        const links = res.data.links;
-        handleChange(key, links.length > 0 ? links[0] : null);
-        setUploadedFiles((prev) => ({ ...prev, [key]: true }));
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
+  //   // Check both MIME type and file extension
+  //   if (
+  //     !allowedTypes.includes(fileType) ||
+  //     !["pdf", "jpeg", "jpg", "png"].includes(fileExtension)
+  //   ) {
+  //     // Invalid file type
+  //     toast.error("Please upload PDF, JPEG, JPG, or PNG files only.");
+  //     return;
+  //   }
+
+  //   // Proceed with file upload
+  //   const formData = new FormData();
+  //   formData.append("files", files[0], fileName);
+
+  //   httpVendorUpload
+  //     .post("/api/upload/multiple-image", formData)
+  //     .then((res) => {
+  //       const links = res.data.links;
+  //       handleChange(key, links.length > 0 ? links[0] : null);
+  //       setUploadedFiles((prev) => ({ ...prev, [key]: true }));
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
+  // };
 
   const handleSaveAgent = () => {
     // Define required fields including documents
@@ -102,7 +294,7 @@ const AgentCreation = ({ setShowAgentCreation }) => {
     ];
 
     // Check if required fields are filled
-    const missingFields = requiredFields.filter((field) => !agent[field]);
+    const missingFields = requiredFields?.filter((field) => !agent[field]);
 
     // If any required fields are missing, show error message
     if (missingFields.length > 0) {
@@ -140,379 +332,408 @@ const AgentCreation = ({ setShowAgentCreation }) => {
     );
   };
 
-  useEffect(() => {
-    getSocieties().then((res) => {
-      let list = res?.data?.data?.map((x) => ({
-        label: x.sector,
-        value: x.id,
-      }));
-      setSocitiesList(list);
-    });
-  }, []);
+  const handleOptionChange = (selectedOption, key) => {
+    setAgentInfo((prev) => ({
+      ...prev,
+      [key]: selectedOption,
+    }));
+  };
 
-  const issueDts = [
-    "dl_i_date",
-    "adhar_i_date",
-    "veh_n_pl_im_i_date",
-    "veh_rc_i_date",
-    "poll_ch_i_date",
-  ];
+  const handleRiderFeedback = async (event) => {
+    event.preventDefault(); // Prevent the form from refreshing the page
+    const data = {
+      rider_id: rowData.s_no,
+      feedback: riderFeedback,
+    };
 
-  const expDts = [
-    "dl_ex_date",
-    "adhar_ex_date",
-    "veh_n_pl_im_ex_date",
-    "veh_rc_ex_date",
-    "poll_ch_ex_date",
-  ];
+    try {
+      await feedBackRider(data);
+      toast.success("Feed Back Submited Successfully");
+      setRejectionModel(false);
+      // handle successful response
+    } catch (error) {
+      // handle error response
+    }
+  };
 
-  const dateFormat = "YYYY-MM-DD";
+  const handleVerifyAgent = async () => {
+    try {
+      let agent = {
+        rider_id: rowData?.s_no,
+        status: agentInfo?.status,
+        society_ids: agentInfo.assigned_areas,
+        full_name: agentInfo?.full_name,
+        warehouse_id: agentInfo?.warehouse,
+        tentative_date_of_joining: agentInfo?.joining_date,
+        vehicle_type: agentInfo?.vehicle_type,
+        mobile_number: agentInfo?.mobile_number,
+        account_number: agentInfo?.bank_account_number,
+        account_holder_name: agentInfo?.account_holder_name,
+        ifsc_code: agentInfo?.ifsc_code,
+        branch_name: agentInfo?.branch_name,
+        aadhar_number: formData?.aadharNumber,
+        aadhar_front: formData?.aadharFront,
+        aadhar_back: formData?.aadharBack,
+        dl_number: formData?.drivingLicenseNumber,
+        dl_img: formData?.drivingLicenseFile,
+        dl_exp: formData?.drivingLicenseExpiry,
+        dl_n_plate: formData?.rcVehiclePicture,
+        // insurance_number: formData,
+        insurance_img: formData?.insuranceFile,
+        insurance_exp: formData?.insuranceExpiry,
+        registration_number: formData?.rcNumber,
+        registration_img: formData?.rcFile,
+        registration_exp: formData?.rcExpiry,
+        pan_number: formData?.panNumber,
+        pan_img: formData?.panFile,
+        // pol_check_number: formData,
+        pol_check_img: formData?.pollutionCheckFile,
+        pol_check_exp: formData?.pollutionCheckExpiry,
+        passbk_canc_check_img: formData?.bankPassbookCheque,
+      };
+      const response = await modifyRider(agent);
+      if (response.data?.message) {
+        const errorMessage = response.data.message;
 
-  function disabledFutureDate(current) {
-    return current && current > moment().endOf("day");
-  }
+        // Check if the message contains "sector already allocated"
+        if (errorMessage.includes("sector already allocated")) {
+          // Extract rider name and sector from the message
+          const match = errorMessage.match(
+            /\{'rider': '([^']*)', 'society': '([^']*)'\}/
+          );
+          if (match) {
+            const riderName = match[1];
+            const sector = match[2];
+            // Display a customized error message
 
-  function disabledPastDate(current) {
-    return current && current < moment().startOf("day");
-  }
+            toast.error(
+              `Sector already allocated to ${riderName} in ${sector}`
+            );
+            handleChange("assigned_area", rowData?.assigned_area);
+          } else {
+            // If unable to extract rider name and sector, display original message
+            toast.error(errorMessage);
+            handleChange("assigned_area", rowData?.assigned_area);
+          }
+        } else {
+          // Display original message if it doesn't contain "sector already allocated"
+          toast.error(errorMessage);
+          handleChange("assigned_area", rowData?.assigned_area);
+        }
+      } else {
+        setEditable(false);
+        refetch();
+        toast.success("Successfully Edited");
+      }
+    } catch (error) {
+      toast.error("Error Occurred");
+      handleChange("assigned_area", rowData?.assigned_area);
+    }
+  };
+  // useEffect(() => {
+  //   getSocieties().then((res) => {
+  //     let list = res?.data?.data?.map((x) => ({
+  //       label: x.sector,
+  //       value: x.id,
+  //     }));
+  //     setSocitiesList(list);
+  //   });
+  // }, []);
+
+  // const issueDts = [
+  //   "dl_i_date",
+  //   "adhar_i_date",
+  //   "veh_n_pl_im_i_date",
+  //   "veh_rc_i_date",
+  //   "poll_ch_i_date",
+  // ];
+
+  // const expDts = [
+  //   "dl_ex_date",
+  //   "adhar_ex_date",
+  //   "veh_n_pl_im_ex_date",
+  //   "veh_rc_ex_date",
+  //   "poll_ch_ex_date",
+  // ];
+
+  // const dateFormat = "YYYY-MM-DD";
+
+  // function disabledFutureDate(current) {
+  //   return current && current > moment().endOf("day");
+  // }
+
+  // function disabledPastDate(current) {
+  //   return current && current < moment().startOf("day");
+  // }
 
   return (
-    <div>
-      {/* Tabs for Page 1 and Page 2 */}
-      <Tabs defaultActiveKey="1" started>
-        {/* Page 1 - Agent Information */}
-        <Tabs.TabPane tab="Agent Info" key="1">
-          <div className="w-full flex justify-end ">
-            <Button btnName={"Edit"} onClick={handleSaveAgent} />
-            <Button
-              btnName={"Verify"}
-              onClick={() => setShowAgentCreation(false)}
-            />
-            <Button
-              btnName={"Reject"}
-              onClick={() => setShowAgentCreation(false)}
-            />
-          </div>
-          <div className="flex space-x-5 w-full justify-start">
-            <div className="w-[40%] space-y-2">
-              <div className="">
-                <label>Full Name</label>
-                <input
-                  type="text"
-                  className="w-full h-12 rounded-lg border-select__control p-2"
-                  value={agent?.full_name}
-                  onChange={(e) => handleChange("full_name", e.target.value)}
-                />
-              </div>
-              <div className="">
-                <label>Phone Number (example: 8130067178)</label>
-                <input
-                  type="text"
-                  className="w-full h-12 rounded-lg border-select__control p-2"
-                  value={agent?.mobile_number}
-                  onChange={(e) =>
-                    handleChange("mobile_number", e.target.value)
-                  }
-                />
-              </div>
-              <div className="">
-                <label>Status</label>
-                <select
-                  className="w-full h-12 rounded-lg border-select__control p-2"
-                  value={agent?.status || ""}
-                  onChange={(e) => handleChange("status", e.target.value)}
-                >
-                  <option value="" disabled>
-                    Select status
-                  </option>
-                  <option value="available">Available</option>
-                  <option value="not_available">Not Available</option>
-                </select>
-              </div>
-            </div>
-            <div className="w-[40%]">
-              <div>
-                <label>Assigned Area</label>
-                <Select
-                  options={socitiesList}
-                  isMulti
-                  classNamePrefix="border-select"
-                  placeholder="Please select areas"
-                  onChange={handleSelectOption}
-                />
-              </div>
-            </div>
-          </div>
-          <div className="mt-4 flex w-[100%] justify-between">
-            <div className="bg-[#FEF2F7] w-[30%] border-2 border-gray rounded-lg shadow-xs pt-4 space-y-3 px-4 pb-4">
-              <p className="font-bold text-lg">Work Details</p>
-              <div className="space-y-1">
-                <label className="text-[#878787] py-1">
-                  WAREHOUSE ALLOCATED *
-                </label>
-                <div className="w-72">
-                  <Select
-                    options={socitiesList}
-                    isMulti
-                    classNamePrefix="border-select"
-                    placeholder="Please select areas"
-                    onChange={handleSelectOption}
-                  />
-                </div>
-              </div>
-              <div className="space-y-1">
-                <label className="text-[#878787]">REFFERED BY *</label>
-                <div className="w-72">
-                  <Select
-                    options={socitiesList}
-                    isMulti
-                    classNamePrefix="border-select"
-                    placeholder="Please select areas"
-                    onChange={handleSelectOption}
-                  />
-                </div>
-              </div>
-              {/* joining date */}
-
-              <div className="font-medium">Joining Date *</div>
-
-              <DatePicker
-                format={"DD-MM-YYYY"}
-                placeholder="Select date"
-                allowClear={false}
+    <>
+      <div>
+        {/* Tabs for Page 1 and Page 2 */}
+        <Tabs defaultActiveKey="1" started>
+          {/* Page 1 - Agent Information */}
+          <Tabs.TabPane tab="Agent Info" key="1">
+            <div className="w-full flex justify-end ">
+              <Button btnName={"Edit"} onClick={() => setIsDisable(false)} />
+              <Button btnName={"Verify"} onClick={handleVerifyAgent} />
+              <Button
+                btnName={"Reject"}
+                onClick={() => setRejectionModel(true)}
               />
-              <div className="flex justify-between">
-                <p>VEHICAL TYPE *</p>
-                <p className="bg-[#FF80B4] px-8 border border-[#FF80B4] rounded-md">
-                  Petrol
-                </p>
-                <p className="border border-[#FF80B4] px-8 rounded-md">
-                  Electric
-                </p>
-              </div>
             </div>
-            <div className="w-[50%] h-[200px]">
-              <div className="ml-4">Action History</div>
-              <div className="border border-gray border-2 w-[69%] h-72">
-                <div className="p-2">Rejected Reasons....</div>
-              </div>
-            </div>
-          </div>
-          {/* Bank details  */}
-          <div className="w-[40%] bg-[#FEF2F7] mt-4 border-2 border-gray rounded-lg shadow-xs pb-2">
-            <div className="px-4 space-y-2 py-2">
-              <p className="font-bold text-lg">Bank Details</p>
-              <div className="">
-                <input
-                  type="text"
-                  className="w-full h-12 rounded-lg shadow-xs border-2 border-gray p-2"
-                  value={agent?.mobile_number}
-                  placeholder="Bank account number *"
-                  onChange={(e) =>
-                    handleChange("mobile_number", e.target.value)
-                  }
-                />
-              </div>
-              <div className="">
-                <input
-                  type="text"
-                  className="w-full h-12 rounded-lg shadow-xs border-2 border-gray p-2"
-                  value={agent?.mobile_number}
-                  placeholder="Account Holder's number *"
-                  onChange={(e) =>
-                    handleChange("mobile_number", e.target.value)
-                  }
-                />
-              </div>
-              <div className="flex justify-between">
-                <div className="w-[48%]">
+
+            <div className="flex space-x-5 w-full justify-start">
+              <div className="w-[40%] space-y-2">
+                <div className="">
+                  <label>Full Name</label>
                   <input
                     type="text"
-                    className="w-full h-12 rounded-lg shadow-xs border-2 border-gray p-2"
-                    value={agent?.mobile_number}
-                    placeholder="IFSC Code *"
+                    className="w-full h-12 rounded-lg border-select__control p-2"
+                    value={agentInfo.full_name}
+                    onChange={(e) => handleChange("full_name", e.target.value)}
+                    disabled={isDisable}
+                  />
+                </div>
+                <div className="">
+                  <label>Phone Number (example: 8130067178)</label>
+                  <input
+                    type="text"
+                    className="w-full h-12 rounded-lg border-select__control p-2"
+                    value={agentInfo.mobile_number}
                     onChange={(e) =>
                       handleChange("mobile_number", e.target.value)
                     }
+                    disabled={isDisable}
                   />
                 </div>
-                <div className="w-[48%]">
+                <div className="">
+                  <label>Status</label>
+                  <select
+                    className="w-full h-12 rounded-lg border-select__control p-2"
+                    value={agentInfo.status}
+                    onChange={(e) => handleChange("status", e.target.value)}
+                  >
+                    <option value="" disabled>
+                      Select status
+                    </option>
+                    <option value="available">Available</option>
+                    <option value="not_available">Not Available</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="w-[40%]">
+                <div>
+                  <label>Assigned Area</label>
+                  <Select
+                    options={socitiesList}
+                    isMulti={true}
+                    placeholder="Please select areas"
+                    onChange={handleSelectOption}
+                    className="w-full"
+                    classNamePrefix="border-select"
+                    value={socitiesList.filter((society) =>
+                      agentInfo?.assigned_areas?.includes(society.label)
+                    )}
+                    disabled={isDisable}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-4 flex w-[100%] justify-between">
+              <div className="bg-[#FEF2F7] w-[30%] border-2 border-gray rounded-lg shadow-xs pt-4 space-y-3 px-4 pb-4">
+                <p className="font-bold text-lg">Work Details</p>
+                <div className="space-y-1">
+                  <label className="text-[#878787] py-1">
+                    WAREHOUSE ALLOCATED *
+                  </label>
+                  <Select
+                    options={wareHouseList} // The array of warehouse objects
+                    getOptionLabel={(option) => option.name} // Display warehouse name in dropdown
+                    getOptionValue={(option) => option.id} // Use the warehouse id as the value
+                    value={wareHouseList.find(
+                      (ware) => ware.id === agentInfo?.warehouse?.id
+                    )} // Display selected warehouse by matching id
+                    onChange={(selectedOption) =>
+                      handleOptionChange(selectedOption, "warehouse")
+                    }
+                    classNamePrefix="border-select"
+                    placeholder="Please select warehouse"
+                    isMulti={false} // Assuming single selection
+                    disabled={isDisable}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[#878787]">REFFERED BY *</label>
+                  <Select
+                    options={referenceList}
+                    isMulti
+                    classNamePrefix="border-select"
+                    placeholder="Please select reference"
+                    getOptionLabel={(option) => option.full_name} // Display warehouse name in dropdown
+                    getOptionValue={(option) => option.id} // Use the warehouse id as the value
+                    value={referenceList.find(
+                      (list) => list.id === agentInfo?.referred_by?.id
+                    )}
+                    onChange={(selectedOption) =>
+                      handleOptionChange(selectedOption, "referred_by")
+                    }
+                    disabled={isDisable}
+                  />
+                </div>
+
+                <div className="font-medium">Joining Date *</div>
+                <DatePicker
+                  format={"DD-MM-YYYY"}
+                  placeholder="Select date"
+                  allowClear={false}
+                  onChange={(date) => handleChange("joining_date", date)}
+                  disabled={isDisable}
+                />
+
+                <div className="flex justify-between">
+                  <p>VEHICAL TYPE *</p>
+                  <p
+                    className={`px-8 border rounded-md ${
+                      agentInfo.vehicle_type === "Petrol"
+                        ? "bg-[#FF80B4] border-[#FF80B4]"
+                        : ""
+                    } cursor-pointer`}
+                    onClick={() => handleVehicleTypeChange("Petrol")}
+                  >
+                    Petrol
+                  </p>
+                  <p
+                    className={`px-8 border rounded-md ${
+                      agentInfo.vehicle_type === "Electric"
+                        ? "bg-[#FF80B4] border-[#FF80B4]"
+                        : ""
+                    } cursor-pointer`}
+                    onClick={() => handleVehicleTypeChange("Electric")}
+                  >
+                    Electric
+                  </p>
+                </div>
+              </div>
+
+              <div className="w-[50%] h-[200px]">
+                <div className="ml-4">Action History</div>
+                <div className="border border-gray border-2 w-[69%] h-72">
+                  {riderActions?.map((item) => (
+                    <div>
+                      <div className="p-2">{uniqueDates[0]}</div>
+                      <div>
+                        {/* {item.split("")[0] == uniqueDates[0] && item.feedback} */}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Bank details */}
+            <div className="w-[40%] bg-[#FEF2F7] mt-4 border-2 border-gray rounded-lg shadow-xs pb-2">
+              <div className="px-4 space-y-2 py-2">
+                <p className="font-bold text-lg">Bank Details</p>
+                <div className="">
                   <input
                     type="text"
                     className="w-full h-12 rounded-lg shadow-xs border-2 border-gray p-2"
-                    value={agent?.mobile_number}
-                    placeholder="Branch Name *"
+                    value={agentInfo.bank_account_number}
+                    placeholder="Bank account number *"
                     onChange={(e) =>
-                      handleChange("mobile_number", e.target.value)
+                      handleChange("bank_account_number", e.target.value)
                     }
+                    disabled={isDisable}
                   />
+                </div>
+                <div className="">
+                  <input
+                    type="text"
+                    className="w-full h-12 rounded-lg shadow-xs border-2 border-gray p-2"
+                    value={agentInfo.account_holder_name}
+                    placeholder="Account Holder's number *"
+                    onChange={(e) =>
+                      handleChange("account_holder_name", e.target.value)
+                    }
+                    disabled={isDisable}
+                  />
+                </div>
+                <div className="flex justify-between">
+                  <div className="w-[48%]">
+                    <input
+                      type="text"
+                      className="w-full h-12 rounded-lg shadow-xs border-2 border-gray p-2"
+                      value={agentInfo.ifsc_code}
+                      placeholder="IFSC Code *"
+                      onChange={(e) =>
+                        handleChange("ifsc_code", e.target.value)
+                      }
+                      disabled={isDisable}
+                    />
+                  </div>
+                  <div className="w-[48%]">
+                    <input
+                      type="text"
+                      className="w-full h-12 rounded-lg shadow-xs border-2 border-gray p-2"
+                      value={agentInfo.branch_name}
+                      placeholder="Branch Name *"
+                      onChange={(e) =>
+                        handleChange("branch_name", e.target.value)
+                      }
+                      disabled={isDisable}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </Tabs.TabPane>
+          </Tabs.TabPane>
 
-        {/* Page 2 - Documents */}
-        <Tabs.TabPane tab="Documents" key="2">
-          <div>
-            {/* Adhar details */}
-            <div>
-              <p className="font-bold pb-1">Enter Aadhar Details</p>
-              <div className="flex space-x-2">
-                <input
-                  className="py-3 px-2 w-52 border border-gray rounded-md h-12"
-                  placeholder="Enter your Aadhar Number"
-                />
-                <FileAction
-                  name={"Upload Aadhar Front JPG/PDF"}
-                  upload={true}
-                  display={true}
-                  fileKey="adharFront"
-                  fileState={file.adharFront}
-                  setFile={setFile}
-                  download={true}
-                />
-                <FileAction
-                  name={"Upload Aadhar Back JPG/PDF"}
-                  upload={true}
-                  display={true}
-                  setFile={setFile}
-                  file={file}
-                  download={true}
-                />
-              </div>
-            </div>
-            {/* DL details */}
-            <div>
-              <p className="font-bold pb-1">Driving License Details</p>
-              <div className="flex space-x-2">
-                <input
-                  className="py-3 px-2 w-52 border border-gray rounded-md h-12"
-                  placeholder="Enter your Aadhar Number"
-                />
-                <DatePicker
-                  format={"DD-MM-YYYY"}
-                  placeholder="Enter Expiry date"
-                  allowClear={false}
-                  className="h-12 w-48"
-                />
-                <FileAction
-                  name={"Upload DL with expiry date Visible JPG/PDF"}
-                  upload={true}
-                  display={true}
-                  setFile={setFile}
-                  file={file}
-                  download={true}
-                />
-              </div>
-            </div>
-            {/* Insurance details */}
-            <div>
-              <p className="font-bold pb-1">Insurance Details</p>
-              <div className="flex space-x-2">
-                <DatePicker
-                  format={"DD-MM-YYYY"}
-                  placeholder="Enter Expiry date"
-                  allowClear={false}
-                  className="h-12 w-52"
-                />
-                <FileAction
-                  name={"upload 2-wheeler insurance (JPG/PDF)"}
-                  upload={true}
-                  display={true}
-                  setFile={setFile}
-                  file={file}
-                  download={true}
-                />
-              </div>
-            </div>
-            {/* Registration details */}
-            <div>
-              <p className="font-bold pb-1">Registration Details</p>
-              <div className="flex space-x-2">
-                <input
-                  className="py-3 px-2 w-52 border border-gray rounded-md h-12"
-                  placeholder="Enter your Aadhar Number"
-                />
-                <DatePicker
-                  format={"DD-MM-YYYY"}
-                  placeholder="Enter Expiry date"
-                  allowClear={false}
-                  className="h-12 w-48"
-                />
-                <FileAction
-                  name={"Upload vehical Registration Certificate (JPG/PDF)"}
-                  upload={true}
-                  display={true}
-                  setFile={setFile}
-                  file={file}
-                  download={true}
-                />
-                <FileAction
-                  name={"Upload vehical picture with number visible (JPG/PDF)"}
-                  upload={true}
-                  display={true}
-                  setFile={setFile}
-                  file={file}
-                  download={true}
-                />
-              </div>
-            </div>
-            {/* PAN details */}
-            <div>
-              <p className="font-bold pb-1">PAN Details</p>
-              <div className="flex space-x-2">
-                <input
-                  className="py-3 px-2 w-52 border border-gray rounded-md h-12"
-                  placeholder="Enter your Aadhar Number"
-                />
-
-                <FileAction
-                  name={"upload PAN Card (JPG/PDF)"}
-                  upload={true}
-                  display={true}
-                  setFile={setFile}
-                  file={file}
-                  download={true}
-                />
-              </div>
-            </div>
-            {/* polution Check details */}
-            <div>
-              <p className="font-bold pb-1">Pollution Check Details</p>
-              <div className="flex space-x-2">
-                <DatePicker
-                  format={"DD-MM-YYYY"}
-                  placeholder="Enter Expiry date"
-                  allowClear={false}
-                  className="h-12 w-52"
-                />
-                <FileAction
-                  name={"upload Vehical PUC check (JPG/PDF)"}
-                  upload={true}
-                  display={true}
-                  setFile={setFile}
-                  file={file}
-                  download={true}
-                />
-              </div>
-            </div>
-            {/* Bank PassBook / cancelled Cheque  */}
-            <div>
-              <p className="font-bold pb-1">Bank Passbook/ Cancelled Cheque</p>
-              <FileAction
-                name={"Passbook/ cancelled Cheque (JPG/PDF)"}
-                upload={true}
-                display={true}
-                setFile={setFile}
-                file={file}
-                download={true}
-              />
-            </div>
+          {/* Page 2 - Documents */}
+          <Tabs.TabPane tab="Documents" key="2">
+            <AgentDoc
+              formData={formData}
+              setFormData={setFormData}
+              handleInputChange={handleInputChange}
+              handleDateChange={handleDateChange}
+              isDisable={isDisable}
+            />
+          </Tabs.TabPane>
+          {/* Page 3 -  Delivery History*/}
+          {rowData && (
+            <Tabs.TabPane tab="Delivery History" key="3">
+              <RiderHistory rowData={rowData} />
+            </Tabs.TabPane>
+          )}
+        </Tabs>
+      </div>
+      <Modal
+        open={rejectionModel}
+        onCancel={() => setRejectionModel(false)}
+        footer={null}
+        title="Action History"
+        centered
+      >
+        <form>
+          <div className="flex flex-col">
+            <textarea
+              onChange={(e) => setRiderFeedback(e.target.value)}
+              placeholder="Enter rejection Feedback"
+              className="border border-gray-300 rounded-lg p-4 shadow-md h-72"
+            />
           </div>
-        </Tabs.TabPane>
-      </Tabs>
-    </div>
+          <div className="flex justify-center">
+            <button
+              onClick={handleRiderFeedback}
+              className="bg-[#DF4584] px-8 text-white p-2 mr-2 rounded-3xl relative top-2"
+            >
+              submit
+            </button>
+          </div>
+        </form>
+      </Modal>
+    </>
   );
 };
 

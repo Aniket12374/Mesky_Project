@@ -38,6 +38,7 @@ const AgentDetail = ({
     "Driver License": "",
   });
   const { TabPane } = Tabs;
+  
 
   useEffect(() => {
     getSocieties().then((res) => {
@@ -60,7 +61,7 @@ const AgentDetail = ({
 
     setAgent((prev) => ({
       ...prev,
-      ...{ assigned_area: agentAssignedAreas },
+      ...{ assigned_areas: agentAssignedAreas },
     }));
 
     getRiderHistory(rowData?.s_no).then((res) => {
@@ -246,6 +247,8 @@ const AgentDetail = ({
     refetch();
   };
 
+  console.log(socitiesList, agent.assigned_area);
+
   const AgentDetailsComponent = () => (
     <div>
       {/* <div className="text-3xl font-semibold">{rowData?.agent_name}</div> */}
@@ -307,7 +310,7 @@ const AgentDetail = ({
             value={socitiesList.filter((society) =>
               agent?.assigned_area.includes(society.label)
             )}
-            isDisabled={!editable}
+            // isDisabled={!editable}
           />
         </div>
       </div>
@@ -571,7 +574,7 @@ const AgentDetail = ({
     </div>
   );
 
-  const DeliveryHistoryComponent = () => (
+ const DeliveryHistoryComponent = () => (
     <div>
       <div className="font-bold text-2xl pt-5">Delivery History</div>
       <div>

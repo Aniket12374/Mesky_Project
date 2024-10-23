@@ -16,8 +16,20 @@ export const getSocieties = () => {
   return httpVendor.get("api/delivery/portal/society/list?_start=0&_end=1000");
 };
 
+export const getWarehouses = () => {
+  return httpVendor.get("api/delivery/portal/warehouse_info");
+};
+
 export const modifyRider = (data) => {
   return httpVendor.post("/api/delivery/portal/rider", data);
+};
+
+export const feedBackRider = (data) => {
+  return httpVendor.post("api/delivery/portal/rider_feedback", data);
+};
+
+export const getRiderFeedback = (id) => {
+  return httpVendor.get(`api/delivery/portal/rider_feedback?rider_id=${id}`);
 };
 
 export const getRiderHistory = (id) => {
@@ -26,4 +38,8 @@ export const getRiderHistory = (id) => {
 
 export const getRiderData = (riderId) => {
   return httpVendor.get(`api/delivery/portal/rider?rider_id=${riderId}`);
+};
+
+export const getRiderInfo = () => {
+  return httpVendor.get(`api/delivery/portal/rider_info`);
 };

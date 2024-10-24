@@ -38,13 +38,17 @@ const AgentCreation = ({
   const [isDisable, setIsDisable] = useState(true);
   const [wareHouseList, setWareHouseList] = useState([]);
   const [referenceList, setReferenceList] = useState([]);
-  console.log("riderActions", riderActions);
 
   const uniqueDates = Array.from(
     new Set(
-      riderActions?.map((action) =>
-        new Date(action.created_date).toLocaleDateString()
-      )
+      riderActions?.map((action) => {
+        const date = new Date(action.created_date);
+        return date.toLocaleDateString("en-GB", {
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+        });
+      })
     )
   );
 
@@ -60,11 +64,13 @@ const AgentCreation = ({
   //   poll_ch: false,
   // });
   const [docs, setDocs] = useState();
+  console.log("row", rowData);
 
   const [agentInfo, setAgentInfo] = useState({
     full_name: rowData?.agent_name || "",
     mobile_number: rowData?.phone_number || "",
     status: rowData?.status || "",
+    society_ids: rowData?.society_ids || [],
     assigned_areas: rowData?.assigned_area || [],
     warehouse: [] || null,
     referred_by: docs?.refered_by_rider.full_name || "",
@@ -172,17 +178,17 @@ const AgentCreation = ({
           aadharFront: data?.aadhar_details.adhar_front || null,
           aadharBack: data?.aadhar_details.adhar_back || null,
           drivingLicenseNumber: data?.dl_details?.document_number || "",
-          drivingLicenseExpiry: data?.dl_details?.expiry_date || null,
+          drivingLicenseExpiry: data?.dl_details?.expiry_date || "",
           drivingLicenseFile: data?.dl || null,
-          insuranceExpiry: data?.veh_ins_ex_date || null,
+          insuranceExpiry: data?.veh_ins_ex_date || "",
           insuranceFile: data?.veh_ins || null,
           rcNumber: data?.rc_details.document_number || "",
-          rcExpiry: data?.rc_details.expiry_date || null,
+          rcExpiry: data?.rc_details.expiry_date || "",
           rcFile: data?.veh_rc || null,
           rcVehiclePicture: data?.veh_n_pl_im || null,
           panNumber: data?.document_number || "",
           panFile: null,
-          pollutionCheckExpiry: data?.pol_check_details.expiry_date || null,
+          pollutionCheckExpiry: data?.pol_check_details.expiry_date || "",
           pollutionCheckFile: data?.poll_ch || null,
           bankPassbookCheque:
             data?.bank_details.passbook_or_cancelled_cheque || null,
@@ -326,10 +332,14 @@ const AgentCreation = ({
   };
 
   const handleSelectOption = (selectedOption) => {
-    handleChange(
-      "society",
-      selectedOption.map((x) => x.value)
-    );
+    const selectedSocietyIds = selectedOption.map((x) => x.value);
+    const selectedAssignedAreas = selectedOption.map((x) => x.label);
+
+    setAgentInfo((prevState) => ({
+      ...prevState,
+      society_ids: selectedSocietyIds,
+      assigned_areas: selectedAssignedAreas,
+    }));
   };
 
   const handleOptionChange = (selectedOption, key) => {
@@ -361,9 +371,9 @@ const AgentCreation = ({
       let agent = {
         rider_id: rowData?.s_no,
         status: agentInfo?.status,
-        society_ids: agentInfo.assigned_areas,
+        society_ids: agentInfo.society_ids,
         full_name: agentInfo?.full_name,
-        warehouse_id: agentInfo?.warehouse,
+        warehouse_id: agentInfo?.warehouse.id,
         tentative_date_of_joining: agentInfo?.joining_date,
         vehicle_type: agentInfo?.vehicle_type,
         mobile_number: agentInfo?.mobile_number,
@@ -466,6 +476,13 @@ const AgentCreation = ({
   //   return current && current < moment().startOf("day");
   // }
 
+  const statusOptions = [
+    { value: "NOT AVAILABLE", label: "Not Available" },
+    { value: "VERIFICATION PENDING", label: "Verification Pending" },
+    { value: "REJECTED", label: "Rejected" },
+    { value: "AVAILABLE", label: "Available" },
+  ];
+
   return (
     <>
       <div>
@@ -474,11 +491,19 @@ const AgentCreation = ({
           {/* Page 1 - Agent Information */}
           <Tabs.TabPane tab="Agent Info" key="1">
             <div className="w-full flex justify-end ">
-              <Button btnName={"Edit"} onClick={() => setIsDisable(false)} />
+              <Button
+                btnName={!isDisable ? "Disable" : "Edit"}
+                onClick={() => {
+                  setIsDisable(!isDisable);
+                  toast.success(!isDisable ? "Edit disabled" : "Edit Enabled");
+                }}
+              />
               <Button btnName={"Verify"} onClick={handleVerifyAgent} />
               <Button
                 btnName={"Reject"}
-                onClick={() => setRejectionModel(true)}
+                onClick={() => {
+                  setRejectionModel(true);
+                }}
               />
             </div>
 
@@ -512,18 +537,19 @@ const AgentCreation = ({
                     className="w-full h-12 rounded-lg border-select__control p-2"
                     value={agentInfo.status}
                     onChange={(e) => handleChange("status", e.target.value)}
+                    disabled={isDisable}
                   >
-                    <option value="" disabled>
-                      Select status
-                    </option>
-                    <option value="available">Available</option>
-                    <option value="not_available">Not Available</option>
+                    {statusOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
 
               <div className="w-[40%]">
-                <div>
+                <div className={isDisable && `pointer-events-none`}>
                   <label>Assigned Area</label>
                   <Select
                     options={socitiesList}
@@ -535,7 +561,6 @@ const AgentCreation = ({
                     value={socitiesList.filter((society) =>
                       agentInfo?.assigned_areas?.includes(society.label)
                     )}
-                    disabled={isDisable}
                   />
                 </div>
               </div>
@@ -544,7 +569,7 @@ const AgentCreation = ({
             <div className="mt-4 flex w-[100%] justify-between">
               <div className="bg-[#FEF2F7] w-[30%] border-2 border-gray rounded-lg shadow-xs pt-4 space-y-3 px-4 pb-4">
                 <p className="font-bold text-lg">Work Details</p>
-                <div className="space-y-1">
+                <div className={isDisable && `pointer-events-none`}>
                   <label className="text-[#878787] py-1">
                     WAREHOUSE ALLOCATED *
                   </label>
@@ -619,13 +644,31 @@ const AgentCreation = ({
 
               <div className="w-[50%] h-[200px]">
                 <div className="ml-4">Action History</div>
-                <div className="border border-gray border-2 w-[69%] h-72">
-                  {riderActions?.map((item) => (
-                    <div>
-                      <div className="p-2">{uniqueDates[0]}</div>
-                      <div>
-                        {/* {item.split("")[0] == uniqueDates[0] && item.feedback} */}
+                <div className="border border-gray border-2 w-[69%] h-72 p-3">
+                  {riderActions?.map((val) => (
+                    <div key={val.created_date}>
+                      <div className="font-medium text-md underline">
+                        Date:{" "}
+                        <span className="underline">
+                          {new Date(val.created_date).toLocaleDateString(
+                            "en-GB",
+                            {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            }
+                          )}
+                        </span>{" "}
+                        | Delivery TL Name:{" "}
+                        <span className="underline">
+                          {val.feedback_by.first_name +
+                            " " +
+                            val.feedback_by.last_name}
+                        </span>
                       </div>
+                      <ul className="list-disc list-inside ml-5">
+                        <li>{val?.feedback}</li>
+                      </ul>
                     </div>
                   ))}
                 </div>

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { getRiderHistory } from "../../services/riders/riderService";
 import DataTable from "../Common/DataTable/DataTable";
+import { Pagination } from "antd";
+import { useQuery } from "react-query";
 
 const colorStatus = {
   DELIVERED: "#9c29c1",
@@ -12,6 +14,16 @@ const colorStatus = {
 
 function RiderHistory({ rowData }) {
   const [historyData, setHistoryData] = useState([]);
+
+  // const { data, isLoading, isError, refetch } = useQuery(
+  //   ["getRiderHistory", currentPage, size],
+  //   () => getRiderHistory(currentPage, size),
+  //   {
+  //     enabled: shouldFetch, // Only fetch when shouldFetch is true
+  //     onSuccess: () => setShouldFetch(false), // Disable fetch after success
+  //   }
+  // );
+  // console.log("data", data);
 
   useEffect(() => {
     getRiderHistory(rowData?.s_no).then((res) => {
@@ -108,6 +120,23 @@ function RiderHistory({ rowData }) {
           />
         </div>
       </div>
+      {/* <div className="flex justify-end px-4 py-2 transaction-pagination">
+        <Pagination
+          current={currentPage}
+          total={totalCount}
+          showQuickJumper
+          showTotal={(total, range) => (
+            <div>
+              {range[0]} - {range[1]} of {totalCount} items
+            </div>
+          )}
+          onChange={handlePageChange}
+          showSizeChanger={true}
+          pageSizeOptions={pageSizeOptions}
+          onShowSizeChange={handlePageSizeChange}
+          disabled={isSearchLoading}
+        />
+      </div> */}
     </div>
   );
 }

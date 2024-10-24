@@ -2,6 +2,7 @@ import React from "react";
 import FileAction from "../shared/FileAction";
 import moment from "moment";
 import { DatePicker } from "antd";
+import dayjs from "dayjs";
 
 function AgentDoc({
   formData,
@@ -63,13 +64,16 @@ function AgentDoc({
               placeholder="Enter Expiry Date"
               allowClear={false}
               className="h-12 w-48"
-              value={
+              defaultValue={
                 formData.drivingLicenseExpiry
-                  ? moment(formData.drivingLicenseExpiry, "DD-MM-YYYY")
+                  ? dayjs(formData.drivingLicenseExpiry, "DD-MM-YYYY")
                   : null
               }
               onChange={(date) =>
-                handleDateChange("drivingLicenseExpiry", date)
+                handleDateChange(
+                  "drivingLicenseExpiry",
+                  date ? dayjs(date).format("DD-MM-YYYY") : null
+                )
               }
               disabled={isDisable}
             />
@@ -94,8 +98,17 @@ function AgentDoc({
               placeholder="Enter Expiry Date"
               allowClear={false}
               className="h-12 w-52"
-              value={moment(formData?.insuranceExpiry, "DD-MM-YYYY")}
-              onChange={(date) => handleDateChange("insuranceExpiry", date)}
+              value={
+                formData?.insuranceExpiry
+                  ? dayjs(formData?.insuranceExpiry, "DD-MM-YYYY")
+                  : null
+              }
+              onChange={(date) =>
+                handleDateChange(
+                  "insuranceExpiry",
+                  date ? dayjs(date).format("DD-MM-YYYY") : null
+                )
+              }
               disabled={isDisable}
             />
             <FileAction
@@ -127,8 +140,13 @@ function AgentDoc({
               placeholder="Enter Expiry Date"
               allowClear={false}
               className="h-12 w-48"
-              value={moment(formData?.rcExpiry, "DD-MM-YYYY")}
-              onChange={(date) => handleDateChange("rcExpiry", date)}
+              value={dayjs(formData?.rcExpiry, "DD-MM-YYYY")}
+              onChange={(date) =>
+                handleDateChange(
+                  "rcExpiry",
+                  date ? dayjs(date).format("DD-MM-YYYY") : null
+                )
+              }
               disabled={isDisable}
             />
             <FileAction
@@ -185,9 +203,12 @@ function AgentDoc({
               placeholder="Enter Expiry Date"
               allowClear={false}
               className="h-12 w-52"
-              value={moment(formData?.pollutionCheckExpiry, "DD-MM-YYYY")}
+              value={dayjs(formData?.pollutionCheckExpiry, "DD-MM-YYYY")}
               onChange={(date) =>
-                handleDateChange("pollutionCheckExpiry", date)
+                handleDateChange(
+                  "pollutionCheckExpiry",
+                  date ? dayjs(date).format("DD-MM-YYYY") : null
+                )
               }
               disabled={isDisable}
             />

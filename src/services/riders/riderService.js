@@ -32,8 +32,14 @@ export const getRiderFeedback = (id) => {
   return httpVendor.get(`api/delivery/portal/rider_feedback?rider_id=${id}`);
 };
 
-export const getRiderHistory = (id) => {
-  return httpVendor.get(`/api/delivery/portal/rider/history?rider_id=${id}`);
+export const getRiderHistory = (id, page = 1, size = 10) => {
+  const start = (page - 1) * size;
+  const end = start + size;
+  return httpVendor.get(
+    `/api/delivery/portal/rider/history?rider_id=${id}&_start=${start}&_end=${
+      end + 10
+    }`
+  );
 };
 
 export const getRiderData = (riderId) => {

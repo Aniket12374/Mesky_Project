@@ -4,6 +4,7 @@ import downloadIcon from "../../../public/downloadIcon.png";
 import viewIcon from "../../../public/viewIcon.png";
 import tickMark from "../../../public/tickMark.png";
 import { Image } from "antd";
+import { httpVendorUpload } from "../../services/api-client"; // Import your API client
 
 function FileAction({
   name,
@@ -11,39 +12,77 @@ function FileAction({
   display,
   download,
   fileKey,
-  fileState,
-  setFormData,
-  setFile,
+  fileState, // This holds the current state of the file (URL)
+  setFormData, // Function to update form state
+  // handleUpload, // External upload handler
 }) {
-  const [fileType, setFileType] = useState(null); // Track the file type
+  const [isUploading, setIsUploading] = useState(false); // Track upload state
 
-  // const setFile = (key, value) => {
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     [key]: value,
-  //   }));
-  // };
-
-
-  const handleImageChange = (e) => {
-    const selectedFile = e.target.files[0];
-    const fileUrl = URL.createObjectURL(selectedFile);
-
-    setFormData((prevFiles) => ({
-      ...prevFiles,
-      [fileKey]: fileUrl, // Update the specific file in state
+  // Helper function to update form data
+  const setFile = (key, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      [key]: value,
     }));
+  };
 
-    setFileType(selectedFile.type); // Track the file type
+  // Upload file and update form data
+  const handleFileUpload = async (event, key) => {
+    const files = event.target.files;
+    if (files.length === 0) return; // No file selected
+
+    const file = files[0];
+    const allowedTypes = [
+      "application/pdf",
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+    ];
+    const fileType = file.type;
+    const fileName = file.name;
+    const fileExtension = fileName.split(".").pop().toLowerCase();
+
+    // Validate file type and extension
+    if (
+      !allowedTypes.includes(fileType) ||
+      !["pdf", "jpeg", "jpg", "png"].includes(fileExtension)
+    ) {
+      toast.error("Please upload PDF, JPEG, JPG, or PNG files only.");
+      return;
+    }
+
+    // Start upload process
+    setIsUploading(true);
+
+    const formData = new FormData();
+    formData.append("files", file, fileName);
+
+    try {
+      const res = await httpVendorUpload.post(
+        "/api/upload/multiple-image",
+        formData
+      );
+      const uploadedLinks = res.data.links;
+
+      if (uploadedLinks.length > 0) {
+        setFile(key, uploadedLinks[0]); // Update form with the uploaded file URL
+      }
+      toast.success("File uploaded successfully");
+    } catch (err) {
+      console.error("File upload error:", err);
+      toast.error("File upload failed");
+    } finally {
+      setIsUploading(false); // Stop loading state
+    }
   };
 
   const handleDownload = () => {
     const link = document.createElement("a");
     link.href = fileState;
-    link.download = name; // Set the download name (you can customize it)
+    link.download = name;
     document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link); // Clean up
+    document.body.removeChild(link);
   };
 
   return (
@@ -60,7 +99,7 @@ function FileAction({
             <>
               <input
                 type="file"
-                onChange={handleImageChange}
+                onChange={(e) => handleFileUpload(e, fileKey)} // Handle file upload
                 accept=".pdf,image/*"
                 className="hidden"
                 id={`file-upload-${fileKey}`}
@@ -71,6 +110,11 @@ function FileAction({
                   width={20}
                   height={20}
                   preview={false}
+                  className={
+                    isUploading
+                      ? "opacity-50 cursor-not-allowed"
+                      : "cursor-pointer"
+                  }
                 />
               </label>
             </>

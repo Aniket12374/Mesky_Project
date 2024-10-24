@@ -20,6 +20,7 @@ import FileAction from "../shared/FileAction";
 import AgentDetail from "./AgentDetail";
 import RiderHistory from "./RiderHistory";
 import AgentDoc from "./AgentDoc";
+import dayjs from "dayjs";
 
 const dateFormat = "YYYY/MM/DD";
 
@@ -91,7 +92,7 @@ const AgentCreation = ({
     drivingLicenseNumber: docs?.dl_details?.document_number || "",
     drivingLicenseExpiry: docs?.dl_details?.expiry_date || null,
     drivingLicenseFile: docs?.dl || null,
-    insuranceExpiry: docs?.veh_ins_ex_date || null,
+    insuranceExpiry: null,
     insuranceFile: docs?.veh_ins || null,
     rcNumber: docs?.rc_details.document_number || "",
     rcExpiry: docs?.rc_details.expiry_date || null,
@@ -390,7 +391,7 @@ const AgentCreation = ({
         dl_n_plate: formData?.rcVehiclePicture,
         // insurance_number: formData,
         insurance_img: formData?.insuranceFile,
-        insurance_exp: formData?.insuranceExpiry,
+        insuranceExpiry: dayjs(formData.insuranceExpiry).format("DD-MM-YYYY"),
         registration_number: formData?.rcNumber,
         registration_img: formData?.rcFile,
         registration_exp: formData?.rcExpiry,
@@ -738,6 +739,7 @@ const AgentCreation = ({
             <AgentDoc
               formData={formData}
               setFormData={setFormData}
+              // handleUpload={handleUpload}
               handleInputChange={handleInputChange}
               handleDateChange={handleDateChange}
               isDisable={isDisable}

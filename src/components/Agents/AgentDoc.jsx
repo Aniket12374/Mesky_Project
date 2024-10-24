@@ -10,6 +10,7 @@ function AgentDoc({
   handleInputChange,
   handleDateChange,
   isDisable,
+  // handleUpload,
 }) {
   return (
     <div>
@@ -32,6 +33,7 @@ function AgentDoc({
               display={true}
               fileKey="aadharFront"
               fileState={formData?.aadharFront}
+              // handleUpload={handleUpload}
               setFormData={setFormData}
               download={true}
             />
@@ -41,6 +43,7 @@ function AgentDoc({
               display={true}
               fileKey="aadharBack"
               fileState={formData?.aadharBack}
+              // handleUpload={handleUpload}
               setFormData={setFormData}
               download={true}
             />
@@ -84,6 +87,7 @@ function AgentDoc({
               fileKey="drivingLicenseFile"
               fileState={formData?.drivingLicenseFile}
               setFormData={setFormData}
+              // handleUpload={handleUpload}
               download={true}
             />
           </div>
@@ -97,16 +101,12 @@ function AgentDoc({
               format="DD-MM-YYYY"
               placeholder="Enter Expiry Date"
               allowClear={false}
-              className="h-12 w-52"
-              value={
-                formData?.insuranceExpiry
-                  ? dayjs(formData?.insuranceExpiry, "DD-MM-YYYY")
-                  : null
-              }
+              className="h-12 w-48"
+              value={dayjs(formData?.insuranceExpiry, "YYYY-MM-DD")}
               onChange={(date) =>
                 handleDateChange(
                   "insuranceExpiry",
-                  date ? dayjs(date).format("DD-MM-YYYY") : null
+                  date ? dayjs(date).format("YYYY-MM-DD") : null
                 )
               }
               disabled={isDisable}
@@ -117,6 +117,7 @@ function AgentDoc({
               display={true}
               fileKey="insuranceFile"
               fileState={formData?.insuranceFile}
+              // handleUpload={handleUpload}
               setFormData={setFormData}
               download={true}
             />
@@ -155,6 +156,7 @@ function AgentDoc({
               display={true}
               fileKey="rcFile"
               fileState={formData?.rcFile}
+              // handleUpload={handleUpload}
               setFormData={setFormData}
               download={true}
             />
@@ -164,6 +166,7 @@ function AgentDoc({
               display={true}
               fileKey="rcVehiclePicture"
               fileState={formData?.rcVehiclePicture}
+              // handleUpload={handleUpload}
               setFormData={setFormData}
               download={true}
             />
@@ -188,6 +191,7 @@ function AgentDoc({
               display={true}
               fileKey="panFile"
               fileState={formData?.panFile}
+              // handleUpload={handleUpload}
               setFormData={setFormData}
               download={true}
             />
@@ -218,6 +222,7 @@ function AgentDoc({
               display={true}
               fileKey="pollutionCheckFile"
               fileState={formData?.pollutionCheckFile}
+              // handleUpload={handleUpload}
               setFormData={setFormData}
               download={true}
             />
@@ -233,6 +238,7 @@ function AgentDoc({
             display={true}
             fileKey="bankPassbookCheque"
             fileState={formData?.bankPassbookCheque}
+            // handleUpload={handleUpload}
             setFormData={setFormData}
             download={true}
           />

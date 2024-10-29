@@ -3,7 +3,7 @@ import uploadIcon from "../../../public/uploadIcon.png";
 import downloadIcon from "../../../public/downloadIcon.png";
 import viewIcon from "../../../public/viewIcon.png";
 import tickMark from "../../../public/tickMark.png";
-import { Image } from "antd";
+import { Image, Modal } from "antd";
 import { httpVendorUpload } from "../../services/api-client"; // Import your API client
 
 function FileAction({
@@ -85,6 +85,26 @@ function FileAction({
     document.body.removeChild(link);
   };
 
+  const handleViewFile = () => {
+    if (fileState) {
+      // Show the file in a modal with preview
+      Modal.info({
+        title: "File Preview",
+        width: "800px",
+        height: "800px",
+        content: (
+          <Image
+            src={fileState} // Assuming fileState holds the file URL
+            width={400} // Adjust width as needed
+            height={300} // Adjust height as needed
+            preview // Enable Ant Design's default preview behavior
+          />
+        ),
+        onOk() {}, // You can provide an OK button action if needed
+      });
+    }
+  };
+
   return (
     <div>
       <div className="w-48 border border-gray rounded-md shadow-md py-2">
@@ -119,21 +139,16 @@ function FileAction({
               </label>
             </>
           )}
-          {display && (
+          {display && upload && (
             <>
-              {fileState ? (
-                <Image
-                  src={fileState}
-                  width={20}
-                  height={15}
-                  className="relative top-1"
-                />
-              ) : (
+              {fileState && (
                 <Image
                   src={viewIcon}
                   width={20}
                   height={15}
                   className="relative top-1"
+                  preview={false} // Disable the default preview
+                  onClick={handleViewFile}
                 />
               )}
             </>

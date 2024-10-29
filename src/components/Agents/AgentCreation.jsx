@@ -53,8 +53,6 @@ const AgentCreation = ({
     )
   );
 
-  console.log("uniqueDates", uniqueDates);
-
   // const [uploadedFiles, setUploadedFiles] = useState({
   //   dl: false,
   //   adhar_front: false,
@@ -65,46 +63,20 @@ const AgentCreation = ({
   //   poll_ch: false,
   // });
   const [docs, setDocs] = useState();
-  console.log("row", rowData);
-
-  const [agentInfo, setAgentInfo] = useState({
-    full_name: rowData?.agent_name || "",
-    mobile_number: rowData?.phone_number || "",
-    status: rowData?.status || "",
-    society_ids: rowData?.society_ids || [],
-    assigned_areas: rowData?.assigned_area || [],
-    warehouse: [] || null,
-    referred_by: docs?.refered_by_rider.full_name || "",
-    joining_date: null,
-    vehicle_type: "Petrol",
-    bank_account_number: docs?.bank_details.account_number || "",
-    account_holder_name: docs?.bank_details.account_holder_name || "",
-    ifsc_code: docs?.bank_details.ifsc_code || "",
-    branch_name: docs?.bank_details.branch_name || "",
+  const [initialData, setInitialData] = useState({
+    agentInfo: {},
+    formData: {},
+    assignedAreas: [],
   });
+  console.log("initialData", initialData);
 
+  const [agentInfo, setAgentInfo] = useState({});
+  const [formData, setFormData] = useState({});
+  console.log("formData", formData);
   console.log("agentInfo", agentInfo);
 
-  const [formData, setFormData] = useState({
-    aadharNumber: docs?.adhar || "",
-    aadharFront: null,
-    aadharBack: null,
-    drivingLicenseNumber: docs?.dl_details?.document_number || "",
-    drivingLicenseExpiry: docs?.dl_details?.expiry_date || null,
-    drivingLicenseFile: docs?.dl || null,
-    insuranceExpiry: null,
-    insuranceFile: docs?.veh_ins || null,
-    rcNumber: docs?.rc_details.document_number || "",
-    rcExpiry: docs?.rc_details.expiry_date || null,
-    rcFile: docs?.veh_rc || null,
-    rcVehiclePicture: docs?.veh_n_pl_im || null,
-    panNumber: "",
-    panFile: null,
-    pollutionCheckExpiry: docs?.pol_check_details.expiry_date || null,
-    pollutionCheckFile: docs?.poll_ch || null,
-    bankPassbookCheque: docs?.bank_details.passbook_or_cancelled_cheque || null,
-  });
-  console.log("formData", formData);
+  const [assignedAreas, setAssignedAreas] = useState();
+  console.log("assignedAreas", assignedAreas);
 
   useEffect(() => {
     getRiderInfo().then((res) => {
@@ -131,10 +103,17 @@ const AgentCreation = ({
       x.replace(", ", "")
     );
 
-    setAgentInfo((prev) => ({
+    setInitialData((prev) => ({
       ...prev,
-      ...{ assigned_areas: agentAssignedAreas },
+      assignedAreas: agentAssignedAreas,
     }));
+
+    setAssignedAreas(agentAssignedAreas);
+
+    // setAgentInfo((prev) => ({
+    //   ...prev,
+    //   ...{ assigned_areas: agentAssignedAreas },
+    // }));
 
     getRiderHistory(rowData?.s_no).then((res) => {
       let list = [];
@@ -162,41 +141,73 @@ const AgentCreation = ({
       .then((res) => {
         const data = res?.data;
         console.log("data", data);
-        // const { poll_ch, veh_ins, veh_n_pl_im, veh_rc, dl } = data;
-        setAgentInfo((prev) => ({
-          ...prev,
+
+        const fetchedAgentInfo = {
+          full_name: rowData?.agent_name || "",
+          mobile_number: rowData?.phone_number || "",
+          status: rowData?.status || "",
+          society_ids: rowData?.society_ids || [],
+          // assigned_areas: rowData?.assigned_area || [],
           warehouse: data?.allocated_warehouse || [],
-          referred_by: data?.refered_by_rider.full_name || "",
-          joining_date: data?.joining_date,
+          referred_by: data?.refered_by_rider?.full_name || "",
+          joining_date: data?.joining_date || "",
           vehicle_type: "Petrol",
-          bank_account_number: data?.bank_details.account_number || "",
-          account_holder_number: data?.bank_details.account_holder_name || "",
-          ifsc_code: data?.bank_details.ifsc_code || "",
-          branch_name: data?.bank_details.branch_name || "",
-        }));
-        setFormData({
+          bank_account_number: data?.bank_details?.account_number || "",
+          account_holder_name: data?.bank_details?.account_holder_name || "",
+          ifsc_code: data?.bank_details?.ifsc_code || "",
+          branch_name: data?.bank_details?.branch_name || "",
+        };
+
+        const fetchedFormData = {
           aadharNumber: data?.adhar || "",
-          aadharFront: data?.aadhar_details.adhar_front || null,
-          aadharBack: data?.aadhar_details.adhar_back || null,
+          aadharFront: data?.aadhar_details?.adhar_front || null,
+          aadharBack: data?.aadhar_details?.adhar_back || null,
           drivingLicenseNumber: data?.dl_details?.document_number || "",
-          drivingLicenseExpiry: data?.dl_details?.expiry_date || "",
+          drivingLicenseExpiry: data?.dl_details?.expiry_date || null,
           drivingLicenseFile: data?.dl || null,
-          insuranceExpiry: data?.veh_ins_ex_date || "",
+          insuranceExpiry: data?.veh_ins_ex_date || null,
           insuranceFile: data?.veh_ins || null,
-          rcNumber: data?.rc_details.document_number || "",
-          rcExpiry: data?.rc_details.expiry_date || "",
+          rcNumber: data?.rc_details?.document_number || "",
+          rcExpiry: data?.rc_details?.expiry_date || null,
           rcFile: data?.veh_rc || null,
           rcVehiclePicture: data?.veh_n_pl_im || null,
           panNumber: data?.document_number || "",
           panFile: null,
-          pollutionCheckExpiry: data?.pol_check_details.expiry_date || "",
+          pollutionCheckExpiry: data?.pol_check_details?.expiry_date || null,
           pollutionCheckFile: data?.poll_ch || null,
           bankPassbookCheque:
-            data?.bank_details.passbook_or_cancelled_cheque || null,
-        });
+            data?.bank_details?.passbook_or_cancelled_cheque || null,
+        };
+
+        // Set both initial and current states with fetched data
+        setInitialData((prev) => ({
+          ...prev,
+          agentInfo: fetchedAgentInfo,
+          formData: fetchedFormData,
+        }));
+        setAgentInfo(fetchedAgentInfo);
+        setFormData(fetchedFormData);
       })
       .catch((err) => console.log({ err }));
-  }, []);
+  }, [rowData]);
+
+  // Cancel button handler with modal confirmation
+  const handleCancel = () => {
+    Modal.confirm({
+      title: "Are you sure you want to cancel?",
+      okText: "Yes",
+      cancelText: "No",
+      onOk() {
+        // Reset to initial API response data
+        setAgentInfo(initialData.agentInfo);
+        setFormData(initialData.formData);
+        setAssignedAreas(initialData.assignedAreas);
+      },
+      onCancel() {
+        // Just close the modal with no action
+      },
+    });
+  };
 
   useEffect(() => {
     getRiderFeedback(rowData?.s_no).then((res) => {
@@ -336,6 +347,10 @@ const AgentCreation = ({
     const selectedSocietyIds = selectedOption.map((x) => x.value);
     const selectedAssignedAreas = selectedOption.map((x) => x.label);
 
+    // Update the separate assignedAreas state
+    setAssignedAreas(selectedAssignedAreas);
+
+    // Update agentInfo with both society_ids and assigned_areas
     setAgentInfo((prevState) => ({
       ...prevState,
       society_ids: selectedSocietyIds,
@@ -368,79 +383,153 @@ const AgentCreation = ({
   };
 
   const handleVerifyAgent = async () => {
+    // let agent = {
+    //   rider_id: rowData?.s_no,
+    //   status: agentInfo?.status,
+    //   society_ids: agentInfo.society_ids || [],
+    //   full_name: agentInfo?.full_name || "",
+    //   warehouse_id: agentInfo?.warehouse.id || "",
+    //   tentative_date_of_joining: agentInfo?.joining_date || "",
+
+    //   vehicle_type: agentInfo?.vehicle_type || "",
+    //   mobile_number: agentInfo?.mobile_number || "",
+    //   account_number: agentInfo?.bank_account_number || "",
+    //   account_holder_name: agentInfo?.account_holder_name || "",
+    //   ifsc_code: agentInfo?.ifsc_code || "",
+    //   branch_name: agentInfo?.branch_name || "",
+    //   aadhar_number: formData?.aadharNumber || "",
+    //   aadhar_front: formData?.aadharFront || "",
+    //   aadhar_back: formData?.aadharBack || "",
+    //   dl_number: formData?.drivingLicenseNumber || "",
+    //   dl_img: formData?.drivingLicenseFile || "",
+    //   dl_exp: formData?.drivingLicenseExpiry || "",
+    //   dl_n_plate: formData?.rcVehiclePicture || "",
+    //   insurance_img: formData?.insuranceFile || "",
+    //   insurance_exp: dayjs(formData.insuranceExpiry).format("YYYY-MM-DD") || "",
+    //   registration_number: formData?.rcNumber || "",
+    //   registration_img: formData?.rcFile || null,
+    //   registration_exp: formData?.rcExpiry || "",
+    //   pan_number: formData?.panNumber || "",
+    //   pan_img: formData?.panFile || "",
+    //   pol_check_img: formData?.pollutionCheckFile || "",
+    //   pol_check_exp: formData?.pollutionCheckExpiry || "",
+    //   passbk_canc_check_img: formData?.bankPassbookCheque || "",
+    // };
+    let agent = {
+      rider_id: rowData?.s_no,
+      status: agentInfo?.status,
+      society_ids: agentInfo.society_ids || [],
+      full_name: agentInfo?.full_name || "",
+      warehouse_id: agentInfo?.warehouse.id || "",
+      tentative_date_of_joining: agentInfo?.joining_date || "",
+
+      vehicle_type: agentInfo?.vehicle_type || "",
+      mobile_number: agentInfo?.mobile_number || "",
+      account_number: agentInfo?.bank_account_number || "",
+      account_holder_name: agentInfo?.account_holder_name || "",
+      ifsc_code: agentInfo?.ifsc_code || "",
+      branch_name: agentInfo?.branch_name || "",
+      aadhar_number: formData?.aadharNumber || "",
+      aadhar_front: formData?.aadharFront || "",
+      aadhar_back: formData?.aadharBack || "",
+      dl_number: formData?.drivingLicenseNumber || "",
+      dl_img: formData?.drivingLicenseFile || "",
+      dl_exp: formData?.drivingLicenseExpiry || "",
+      dl_n_plate: formData?.rcVehiclePicture || "",
+      insurance_img: formData?.insuranceFile || "",
+      insurance_exp: dayjs(formData.insuranceExpiry).format("DD-MM-YYYY") || "",
+      registration_number: formData?.rcNumber || "",
+      registration_img: formData?.rcFile || "",
+      registration_exp: formData?.rcExpiry || "",
+      pan_number: formData?.panNumber || "",
+      pan_img: formData?.panFile || "",
+      pol_check_img: formData?.pollutionCheckFile || "",
+      pol_check_exp: formData?.pollutionCheckExpiry || "",
+      passbk_canc_check_img: formData?.bankPassbookCheque || "",
+    };
     try {
-      let agent = {
-        rider_id: rowData?.s_no,
-        status: agentInfo?.status,
-        society_ids: agentInfo.society_ids,
-        full_name: agentInfo?.full_name,
-        warehouse_id: agentInfo?.warehouse.id,
-        tentative_date_of_joining: agentInfo?.joining_date,
-        vehicle_type: agentInfo?.vehicle_type,
-        mobile_number: agentInfo?.mobile_number,
-        account_number: agentInfo?.bank_account_number,
-        account_holder_name: agentInfo?.account_holder_name,
-        ifsc_code: agentInfo?.ifsc_code,
-        branch_name: agentInfo?.branch_name,
-        aadhar_number: formData?.aadharNumber,
-        aadhar_front: formData?.aadharFront,
-        aadhar_back: formData?.aadharBack,
-        dl_number: formData?.drivingLicenseNumber,
-        dl_img: formData?.drivingLicenseFile,
-        dl_exp: formData?.drivingLicenseExpiry,
-        dl_n_plate: formData?.rcVehiclePicture,
-        // insurance_number: formData,
-        insurance_img: formData?.insuranceFile,
-        insuranceExpiry: dayjs(formData.insuranceExpiry).format("DD-MM-YYYY"),
-        registration_number: formData?.rcNumber,
-        registration_img: formData?.rcFile,
-        registration_exp: formData?.rcExpiry,
-        pan_number: formData?.panNumber,
-        pan_img: formData?.panFile,
-        // pol_check_number: formData,
-        pol_check_img: formData?.pollutionCheckFile,
-        pol_check_exp: formData?.pollutionCheckExpiry,
-        passbk_canc_check_img: formData?.bankPassbookCheque,
-      };
-      const response = await modifyRider(agent);
-      if (response.data?.message) {
-        const errorMessage = response.data.message;
-
-        // Check if the message contains "sector already allocated"
-        if (errorMessage.includes("sector already allocated")) {
-          // Extract rider name and sector from the message
-          const match = errorMessage.match(
-            /\{'rider': '([^']*)', 'society': '([^']*)'\}/
-          );
-          if (match) {
-            const riderName = match[1];
-            const sector = match[2];
-            // Display a customized error message
-
-            toast.error(
-              `Sector already allocated to ${riderName} in ${sector}`
-            );
-            handleChange("assigned_area", rowData?.assigned_area);
-          } else {
-            // If unable to extract rider name and sector, display original message
-            toast.error(errorMessage);
-            handleChange("assigned_area", rowData?.assigned_area);
-          }
-        } else {
-          // Display original message if it doesn't contain "sector already allocated"
-          toast.error(errorMessage);
-          handleChange("assigned_area", rowData?.assigned_area);
-        }
-      } else {
-        setEditable(false);
-        refetch();
-        toast.success("Successfully Edited");
-      }
+      await modifyRider(agent); // Assuming modifyRider is set up to send headers and format JSON correctly
+      toast.success("Successfully Edited");
     } catch (error) {
+      console.error("Error:", error.response?.data || error.message);
       toast.error("Error Occurred");
-      handleChange("assigned_area", rowData?.assigned_area);
     }
   };
+
+  // const handleVerifyAgent = async () => {
+  //   try {
+  //     let agent = {
+  //       rider_id: rowData?.s_no,
+  //       status: agentInfo?.status,
+  //       society_ids: agentInfo.society_ids,
+  //       full_name: agentInfo?.full_name,
+  //       warehouse_id: agentInfo?.warehouse.id,
+  //       tentative_date_of_joining: agentInfo?.joining_date,
+  //       vehicle_type: agentInfo?.vehicle_type,
+  //       mobile_number: agentInfo?.mobile_number,
+  //       account_number: agentInfo?.bank_account_number,
+  //       account_holder_name: agentInfo?.account_holder_name,
+  //       ifsc_code: agentInfo?.ifsc_code,
+  //       branch_name: agentInfo?.branch_name,
+  //       aadhar_number: formData?.aadharNumber,
+  //       aadhar_front: formData?.aadharFront,
+  //       aadhar_back: formData?.aadharBack,
+  //       dl_number: formData?.drivingLicenseNumber,
+  //       dl_img: formData?.drivingLicenseFile,
+  //       dl_exp: formData?.drivingLicenseExpiry,
+  //       dl_n_plate: formData?.rcVehiclePicture,
+  //       // insurance_number: formData,
+  //       insurance_img: formData?.insuranceFile,
+  //       insuranceExpiry: dayjs(formData.insuranceExpiry).format("DD-MM-YYYY"),
+  //       registration_number: formData?.rcNumber,
+  //       registration_img: formData?.rcFile,
+  //       registration_exp: formData?.rcExpiry,
+  //       pan_number: formData?.panNumber,
+  //       pan_img: formData?.panFile,
+  //       // pol_check_number: formData,
+  //       pol_check_img: formData?.pollutionCheckFile,
+  //       pol_check_exp: formData?.pollutionCheckExpiry,
+  //       passbk_canc_check_img: formData?.bankPassbookCheque,
+  //     };
+  //     await modifyRider(agent);
+  //     // if (response.data?.message) {
+  //     //   const errorMessage = response.data.message;
+
+  //     //   // Check if the message contains "sector already allocated"
+  //     //   if (errorMessage.includes("sector already allocated")) {
+  //     //     // Extract rider name and sector from the message
+  //     //     const match = errorMessage.match(
+  //     //       /\{'rider': '([^']*)', 'society': '([^']*)'\}/
+  //     //     );
+  //     //     if (match) {
+  //     //       const riderName = match[1];
+  //     //       const sector = match[2];
+  //     //       // Display a customized error message
+
+  //     //       toast.error(
+  //     //         `Sector already allocated to ${riderName} in ${sector}`
+  //     //       );
+  //     //       handleChange("assigned_area", rowData?.assigned_area);
+  //     //     } else {
+  //     //       // If unable to extract rider name and sector, display original message
+  //     //       toast.error(errorMessage);
+  //     //       handleChange("assigned_area", rowData?.assigned_area);
+  //     //     }
+  //     //   } else {
+  //     //     // Display original message if it doesn't contain "sector already allocated"
+  //     //     toast.error(errorMessage);
+  //     //     handleChange("assigned_area", rowData?.assigned_area);
+  //     //   }
+  //     // } else {
+  //     //   setEditable(false);
+  //     //   refetch();
+  //     //   toast.success("Successfully Edited");
+  //     // }
+  //   } catch (error) {
+  //     toast.error("Error Occurred");
+  //     // handleChange("assigned_area", rowData?.assigned_area);
+  //   }
+  // };
   // useEffect(() => {
   //   getSocieties().then((res) => {
   //     let list = res?.data?.data?.map((x) => ({
@@ -486,19 +575,17 @@ const AgentCreation = ({
 
   return (
     <>
-      <div>
-        {/* Tabs for Page 1 and Page 2 */}
-        <Tabs defaultActiveKey="1" started>
-          {/* Page 1 - Agent Information */}
-          <Tabs.TabPane tab="Agent Info" key="1">
-            <div className="w-full flex justify-end ">
-              <Button
-                btnName={!isDisable ? "Disable" : "Edit"}
-                onClick={() => {
-                  setIsDisable(!isDisable);
-                  toast.success(!isDisable ? "Edit disabled" : "Edit Enabled");
-                }}
-              />
+      <div className="h-12">
+        <div className="w-full flex justify-end ">
+          <Button
+            btnName={!isDisable ? "Save" : "Edit"}
+            onClick={() => {
+              setIsDisable(!isDisable);
+              toast.success(isDisable && "Edit Enabled");
+            }}
+          />
+          {isDisable ? (
+            <>
               <Button btnName={"Verify"} onClick={handleVerifyAgent} />
               <Button
                 btnName={"Reject"}
@@ -506,252 +593,281 @@ const AgentCreation = ({
                   setRejectionModel(true);
                 }}
               />
-            </div>
-
-            <div className="flex space-x-5 w-full justify-start">
-              <div className="w-[40%] space-y-2">
-                <div className="">
-                  <label>Full Name</label>
-                  <input
-                    type="text"
-                    className="w-full h-12 rounded-lg border-select__control p-2"
-                    value={agentInfo.full_name}
-                    onChange={(e) => handleChange("full_name", e.target.value)}
-                    disabled={isDisable}
-                  />
-                </div>
-                <div className="">
-                  <label>Phone Number (example: 8130067178)</label>
-                  <input
-                    type="text"
-                    className="w-full h-12 rounded-lg border-select__control p-2"
-                    value={agentInfo.mobile_number}
-                    onChange={(e) =>
-                      handleChange("mobile_number", e.target.value)
-                    }
-                    disabled={isDisable}
-                  />
-                </div>
-                <div className="">
-                  <label>Status</label>
-                  <select
-                    className="w-full h-12 rounded-lg border-select__control p-2"
-                    value={agentInfo.status}
-                    onChange={(e) => handleChange("status", e.target.value)}
-                    disabled={isDisable}
-                  >
-                    {statusOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="w-[40%]">
-                <div className={isDisable && `pointer-events-none`}>
-                  <label>Assigned Area</label>
-                  <Select
-                    options={socitiesList}
-                    isMulti={true}
-                    placeholder="Please select areas"
-                    onChange={handleSelectOption}
-                    className="w-full"
-                    classNamePrefix="border-select"
-                    value={socitiesList.filter((society) =>
-                      agentInfo?.assigned_areas?.includes(society.label)
-                    )}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-4 flex w-[100%] justify-between">
-              <div className="bg-[#FEF2F7] w-[30%] border-2 border-gray rounded-lg shadow-xs pt-4 space-y-3 px-4 pb-4">
-                <p className="font-bold text-lg">Work Details</p>
-                <div className={isDisable && `pointer-events-none`}>
-                  <label className="text-[#878787] py-1">
-                    WAREHOUSE ALLOCATED *
-                  </label>
-                  <Select
-                    options={wareHouseList} // The array of warehouse objects
-                    getOptionLabel={(option) => option.name} // Display warehouse name in dropdown
-                    getOptionValue={(option) => option.id} // Use the warehouse id as the value
-                    value={wareHouseList.find(
-                      (ware) => ware.id === agentInfo?.warehouse?.id
-                    )} // Display selected warehouse by matching id
-                    onChange={(selectedOption) =>
-                      handleOptionChange(selectedOption, "warehouse")
-                    }
-                    classNamePrefix="border-select"
-                    placeholder="Please select warehouse"
-                    isMulti={false} // Assuming single selection
-                    disabled={isDisable}
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[#878787]">REFFERED BY *</label>
-                  <Select
-                    options={referenceList}
-                    isMulti
-                    classNamePrefix="border-select"
-                    placeholder="Please select reference"
-                    getOptionLabel={(option) => option.full_name} // Display warehouse name in dropdown
-                    getOptionValue={(option) => option.id} // Use the warehouse id as the value
-                    value={referenceList.find(
-                      (list) => list.id === agentInfo?.referred_by?.id
-                    )}
-                    onChange={(selectedOption) =>
-                      handleOptionChange(selectedOption, "referred_by")
-                    }
-                    disabled={isDisable}
-                  />
-                </div>
-
-                <div className="font-medium">Joining Date *</div>
-                <DatePicker
-                  format={"DD-MM-YYYY"}
-                  placeholder="Select date"
-                  allowClear={false}
-                  onChange={(date) => handleChange("joining_date", date)}
-                  disabled={isDisable}
-                />
-
-                <div className="flex justify-between">
-                  <p>VEHICAL TYPE *</p>
-                  <p
-                    className={`px-8 border rounded-md ${
-                      agentInfo.vehicle_type === "Petrol"
-                        ? "bg-[#FF80B4] border-[#FF80B4]"
-                        : ""
-                    } cursor-pointer`}
-                    onClick={() => handleVehicleTypeChange("Petrol")}
-                  >
-                    Petrol
-                  </p>
-                  <p
-                    className={`px-8 border rounded-md ${
-                      agentInfo.vehicle_type === "Electric"
-                        ? "bg-[#FF80B4] border-[#FF80B4]"
-                        : ""
-                    } cursor-pointer`}
-                    onClick={() => handleVehicleTypeChange("Electric")}
-                  >
-                    Electric
-                  </p>
-                </div>
-              </div>
-
-              <div className="w-[50%] h-[200px]">
-                <div className="ml-4">Action History</div>
-                <div className="border border-gray border-2 w-[69%] h-72 p-3">
-                  {riderActions?.map((val) => (
-                    <div key={val.created_date}>
-                      <div className="font-medium text-md underline">
-                        Date:{" "}
-                        <span className="underline">
-                          {new Date(val.created_date).toLocaleDateString(
-                            "en-GB",
-                            {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                            }
-                          )}
-                        </span>{" "}
-                        | Delivery TL Name:{" "}
-                        <span className="underline">
-                          {val.feedback_by.first_name +
-                            " " +
-                            val.feedback_by.last_name}
-                        </span>
-                      </div>
-                      <ul className="list-disc list-inside ml-5">
-                        <li>{val?.feedback}</li>
-                      </ul>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Bank details */}
-            <div className="w-[40%] bg-[#FEF2F7] mt-4 border-2 border-gray rounded-lg shadow-xs pb-2">
-              <div className="px-4 space-y-2 py-2">
-                <p className="font-bold text-lg">Bank Details</p>
-                <div className="">
-                  <input
-                    type="text"
-                    className="w-full h-12 rounded-lg shadow-xs border-2 border-gray p-2"
-                    value={agentInfo.bank_account_number}
-                    placeholder="Bank account number *"
-                    onChange={(e) =>
-                      handleChange("bank_account_number", e.target.value)
-                    }
-                    disabled={isDisable}
-                  />
-                </div>
-                <div className="">
-                  <input
-                    type="text"
-                    className="w-full h-12 rounded-lg shadow-xs border-2 border-gray p-2"
-                    value={agentInfo.account_holder_name}
-                    placeholder="Account Holder's number *"
-                    onChange={(e) =>
-                      handleChange("account_holder_name", e.target.value)
-                    }
-                    disabled={isDisable}
-                  />
-                </div>
-                <div className="flex justify-between">
-                  <div className="w-[48%]">
-                    <input
-                      type="text"
-                      className="w-full h-12 rounded-lg shadow-xs border-2 border-gray p-2"
-                      value={agentInfo.ifsc_code}
-                      placeholder="IFSC Code *"
-                      onChange={(e) =>
-                        handleChange("ifsc_code", e.target.value)
-                      }
-                      disabled={isDisable}
-                    />
-                  </div>
-                  <div className="w-[48%]">
-                    <input
-                      type="text"
-                      className="w-full h-12 rounded-lg shadow-xs border-2 border-gray p-2"
-                      value={agentInfo.branch_name}
-                      placeholder="Branch Name *"
-                      onChange={(e) =>
-                        handleChange("branch_name", e.target.value)
-                      }
-                      disabled={isDisable}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Tabs.TabPane>
-
-          {/* Page 2 - Documents */}
-          <Tabs.TabPane tab="Documents" key="2">
-            <AgentDoc
-              formData={formData}
-              setFormData={setFormData}
-              // handleUpload={handleUpload}
-              handleInputChange={handleInputChange}
-              handleDateChange={handleDateChange}
-              isDisable={isDisable}
-            />
-          </Tabs.TabPane>
-          {/* Page 3 -  Delivery History*/}
-          {rowData && (
-            <Tabs.TabPane tab="Delivery History" key="3">
-              <RiderHistory rowData={rowData} />
-            </Tabs.TabPane>
+            </>
+          ) : (
+            <Button btnName={"Cancel"} onClick={handleCancel} />
           )}
-        </Tabs>
+        </div>
+      </div>
+      <div className="">
+        {/* Tabs for Page 1 and Page 2 */}
+        <div>
+          <Tabs defaultActiveKey="1" started>
+            {/* Page 1 - Agent Information */}
+            <Tabs.TabPane tab="Agent Info" key="1">
+              <div className="flex space-x-5 w-full justify-start ">
+                <div className="w-[40%] space-y-2">
+                  <div className="">
+                    <label>Full Name</label>
+                    <input
+                      type="text"
+                      className="w-full h-12 rounded-lg border-select__control p-2"
+                      value={agentInfo.full_name}
+                      onChange={(e) =>
+                        handleChange("full_name", e.target.value)
+                      }
+                      disabled={isDisable}
+                    />
+                  </div>
+                  <div className="">
+                    <label>Phone Number (example: 8130067178)</label>
+                    <input
+                      type="text"
+                      className="w-full h-12 rounded-lg border-select__control p-2"
+                      value={agentInfo.mobile_number}
+                      onChange={(e) =>
+                        handleChange("mobile_number", e.target.value)
+                      }
+                      disabled={isDisable}
+                    />
+                  </div>
+                  <div className="">
+                    <label>Status</label>
+                    <select
+                      className="w-full h-12 rounded-lg border-select__control p-2"
+                      value={agentInfo.status}
+                      onChange={(e) => handleChange("status", e.target.value)}
+                      disabled={isDisable}
+                    >
+                      {statusOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className=" w-[80%] flex justify-center ">
+                  <div
+                    className={isDisable && `pointer-events-none`}
+                    style={{ width: "50%" }}
+                  >
+                    <label>Assigned Area</label>
+                    <Select
+                      options={socitiesList}
+                      isMulti={true}
+                      placeholder="Please select areas"
+                      onChange={handleSelectOption}
+                      className="w-[100%]"
+                      classNamePrefix="border-select"
+                      value={socitiesList.filter((society) =>
+                        assignedAreas?.includes(society.label)
+                      )}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 flex w-[100%] justify-between">
+                <div className="bg-[#FEF2F7] w-[40%] border-2 border-gray rounded-lg shadow-xs pt-4 space-y-3 px-4 pb-4">
+                  <p className="font-bold text-lg">Work Details</p>
+                  <div className={isDisable && `pointer-events-none`}>
+                    <label className="text-[#878787] py-1">
+                      WAREHOUSE ALLOCATED *
+                    </label>
+                    <Select
+                      options={wareHouseList} // The array of warehouse objects
+                      getOptionLabel={(option) => option.name} // Display warehouse name in dropdown
+                      getOptionValue={(option) => option.id} // Use the warehouse id as the value
+                      value={wareHouseList.find(
+                        (ware) => ware.id === agentInfo?.warehouse?.id
+                      )} // Display selected warehouse by matching id
+                      onChange={(selectedOption) =>
+                        handleOptionChange(selectedOption, "warehouse")
+                      }
+                      classNamePrefix="border-select"
+                      placeholder="Please select warehouse"
+                      isMulti={false} // Assuming single selection
+                      disabled={isDisable}
+                    />
+                  </div>
+                  <div className="space-y-1 pointer-events-none">
+                    <label className="text-[#878787]">REFFERED BY *</label>
+                    <Select
+                      options={referenceList}
+                      isMulti
+                      classNamePrefix="border-select"
+                      placeholder="Please select reference"
+                      getOptionLabel={(option) => option.full_name} // Display warehouse name in dropdown
+                      getOptionValue={(option) => option.id} // Use the warehouse id as the value
+                      value={referenceList.find(
+                        (list) => list.id === agentInfo?.referred_by?.id
+                      )}
+                      onChange={(selectedOption) =>
+                        handleOptionChange(selectedOption, "referred_by")
+                      }
+                      disabled={isDisable}
+                    />
+                  </div>
+
+                  <div className="font-medium">Joining Date *</div>
+                  <DatePicker
+                    format={"DD-MM-YYYY"}
+                    placeholder="Select date"
+                    allowClear={false}
+                    onChange={(date) => handleChange("joining_date", date)}
+                    disabled={isDisable}
+                  />
+
+                  <div className="flex justify-between">
+                    <p>VEHICAL TYPE *</p>
+                    <p
+                      className={`px-8 border rounded-md ${
+                        agentInfo.vehicle_type === "Petrol"
+                          ? "bg-[#FF80B4] border-[#FF80B4]"
+                          : ""
+                      } cursor-pointer`}
+                      onClick={() => handleVehicleTypeChange("Petrol")}
+                    >
+                      Petrol
+                    </p>
+                    <p
+                      className={`px-8 border rounded-md ${
+                        agentInfo.vehicle_type === "Electric"
+                          ? "bg-[#FF80B4] border-[#FF80B4]"
+                          : ""
+                      } cursor-pointer`}
+                      onClick={() => handleVehicleTypeChange("Electric")}
+                    >
+                      Electric
+                    </p>
+                  </div>
+                </div>
+
+                <div className="w-[60%] h-[200px] flex justify-center ml-8">
+                  <div className="w-[69%] h-72 p-3">
+                    <div className="ml-4">Action History</div>
+                    <div className="border border-gray border-2 h-72 p-4 overflow-auto">
+                      <>
+                        {riderActions?.length > 0 ? (
+                          Array.from({ length: 1 }).map((_, index) => (
+                            <div key={index}>
+                              {riderActions?.map((val) => (
+                                <div key={`${val.created_date}-${index}`}>
+                                  <div className="font-medium text-md underline">
+                                    Date:{" "}
+                                    <span className="underline">
+                                      {new Date(
+                                        val.created_date
+                                      ).toLocaleDateString("en-GB", {
+                                        day: "2-digit",
+                                        month: "short",
+                                        year: "numeric",
+                                      })}
+                                    </span>{" "}
+                                    | Delivery TL Name:{" "}
+                                    <span className="underline">
+                                      {val.feedback_by.first_name +
+                                        " " +
+                                        val.feedback_by.last_name}
+                                    </span>
+                                  </div>
+                                  <ul className="list-disc list-inside ml-5">
+                                    <li>{val?.feedback}</li>
+                                  </ul>
+                                </div>
+                              ))}
+                            </div>
+                          ))
+                        ) : (
+                          <div className="flex justify-center text-gray-800">
+                            No Data Available
+                          </div>
+                        )}
+                      </>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bank details */}
+              <div className="w-[40%] bg-[#FEF2F7] mt-4 border-2 border-gray rounded-lg shadow-xs pb-2">
+                <div className="px-4 space-y-2 py-2">
+                  <p className="font-bold text-lg">Bank Details</p>
+                  <div className="">
+                    <input
+                      type="text"
+                      className="w-full h-12 rounded-lg shadow-xs border-2 border-gray p-2"
+                      value={agentInfo.bank_account_number}
+                      placeholder="Bank account number *"
+                      onChange={(e) =>
+                        handleChange("bank_account_number", e.target.value)
+                      }
+                      disabled={isDisable}
+                    />
+                  </div>
+                  <div className="">
+                    <input
+                      type="text"
+                      className="w-full h-12 rounded-lg shadow-xs border-2 border-gray p-2"
+                      value={agentInfo.account_holder_name}
+                      placeholder="Account Holder's number *"
+                      onChange={(e) =>
+                        handleChange("account_holder_name", e.target.value)
+                      }
+                      disabled={isDisable}
+                    />
+                  </div>
+                  <div className="flex justify-between">
+                    <div className="w-[48%]">
+                      <input
+                        type="text"
+                        className="w-full h-12 rounded-lg shadow-xs border-2 border-gray p-2"
+                        value={agentInfo.ifsc_code}
+                        placeholder="IFSC Code *"
+                        onChange={(e) =>
+                          handleChange("ifsc_code", e.target.value)
+                        }
+                        disabled={isDisable}
+                      />
+                    </div>
+                    <div className="w-[48%]">
+                      <input
+                        type="text"
+                        className="w-full h-12 rounded-lg shadow-xs border-2 border-gray p-2"
+                        value={agentInfo.branch_name}
+                        placeholder="Branch Name *"
+                        onChange={(e) =>
+                          handleChange("branch_name", e.target.value)
+                        }
+                        disabled={isDisable}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Tabs.TabPane>
+
+            {/* Page 2 - Documents */}
+            <Tabs.TabPane tab="Documents" key="2">
+              <AgentDoc
+                formData={formData}
+                setFormData={setFormData}
+                // handleUpload={handleUpload}
+                handleInputChange={handleInputChange}
+                handleDateChange={handleDateChange}
+                isDisable={isDisable}
+              />
+            </Tabs.TabPane>
+            {/* Page 3 -  Delivery History*/}
+            {rowData && (
+              <Tabs.TabPane tab="Delivery History" key="3">
+                <RiderHistory rowData={rowData} />
+              </Tabs.TabPane>
+            )}
+          </Tabs>
+        </div>
       </div>
       <Modal
         open={rejectionModel}

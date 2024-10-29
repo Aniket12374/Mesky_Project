@@ -13,7 +13,7 @@ function AgentDoc({
   // handleUpload,
 }) {
   return (
-    <div>
+    <div className={isDisable && `pointer-events-none bg-gray-50`} style={{padding:"10px"}}>
       <div>
         {/* Aadhar details */}
         <div>

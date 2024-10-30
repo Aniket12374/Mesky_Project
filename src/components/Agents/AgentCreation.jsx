@@ -21,6 +21,7 @@ import AgentDetail from "./AgentDetail";
 import RiderHistory from "./RiderHistory";
 import AgentDoc from "./AgentDoc";
 import dayjs from "dayjs";
+import { useNavigate } from "react-router-dom";
 
 const dateFormat = "YYYY/MM/DD";
 
@@ -39,6 +40,7 @@ const AgentCreation = ({
   const [isDisable, setIsDisable] = useState(true);
   const [wareHouseList, setWareHouseList] = useState([]);
   const [referenceList, setReferenceList] = useState([]);
+  const navigate = useNavigate();
 
   const uniqueDates = Array.from(
     new Set(
@@ -68,15 +70,11 @@ const AgentCreation = ({
     formData: {},
     assignedAreas: [],
   });
-  console.log("initialData", initialData);
 
   const [agentInfo, setAgentInfo] = useState({});
   const [formData, setFormData] = useState({});
-  console.log("formData", formData);
-  console.log("agentInfo", agentInfo);
 
   const [assignedAreas, setAssignedAreas] = useState();
-  console.log("assignedAreas", assignedAreas);
 
   useEffect(() => {
     getRiderInfo().then((res) => {
@@ -140,7 +138,6 @@ const AgentCreation = ({
     getRiderData(rowData?.s_no)
       .then((res) => {
         const data = res?.data;
-        console.log("data", data);
 
         const fetchedAgentInfo = {
           full_name: rowData?.agent_name || "",
@@ -382,77 +379,110 @@ const AgentCreation = ({
     }
   };
 
+  const validateAgent = (agentInfo, formData) => {
+    const errors = [];
+
+    // Validate agentInfo fields
+    if (!agentInfo.full_name) {
+      errors.push("Full name is required.");
+    }
+    if (!agentInfo.mobile_number || !/^\d{10}$/.test(agentInfo.mobile_number)) {
+      errors.push("A valid mobile number is required.");
+    }
+    if (!agentInfo.warehouse?.id) {
+      errors.push("Warehouse selection is required.");
+    }
+    if (!agentInfo.joining_date) {
+      errors.push("Date of joining is required.");
+    }
+
+    // Validate file presence (if applicable)
+    if (!formData.aadharFront) {
+      errors.push("Aadhar front file is required.");
+    }
+    if (!formData.aadharBack) {
+      errors.push("Aadhar back file is required.");
+    }
+    if (!formData.drivingLicenseFile) {
+      errors.push("Driving license image is required.");
+    }
+    if (!formData.insuranceFile) {
+      errors.push("Insurance file is required.");
+    }
+    if (!formData.rcFile) {
+      errors.push("Registration certificate file is required.");
+    }
+    if (!formData.panFile) {
+      errors.push("PAN file is required.");
+    }
+    if (!formData.pollutionCheckFile) {
+      errors.push("Pollution check file is required.");
+    }
+    if (!formData.bankPassbookCheque) {
+      errors.push("Bank passbook or cheque image is required.");
+    }
+
+    return errors;
+  };
+
   const handleVerifyAgent = async () => {
-    // let agent = {
-    //   rider_id: rowData?.s_no,
-    //   status: agentInfo?.status,
-    //   society_ids: agentInfo.society_ids || [],
-    //   full_name: agentInfo?.full_name || "",
-    //   warehouse_id: agentInfo?.warehouse.id || "",
-    //   tentative_date_of_joining: agentInfo?.joining_date || "",
-
-    //   vehicle_type: agentInfo?.vehicle_type || "",
-    //   mobile_number: agentInfo?.mobile_number || "",
-    //   account_number: agentInfo?.bank_account_number || "",
-    //   account_holder_name: agentInfo?.account_holder_name || "",
-    //   ifsc_code: agentInfo?.ifsc_code || "",
-    //   branch_name: agentInfo?.branch_name || "",
-    //   aadhar_number: formData?.aadharNumber || "",
-    //   aadhar_front: formData?.aadharFront || "",
-    //   aadhar_back: formData?.aadharBack || "",
-    //   dl_number: formData?.drivingLicenseNumber || "",
-    //   dl_img: formData?.drivingLicenseFile || "",
-    //   dl_exp: formData?.drivingLicenseExpiry || "",
-    //   dl_n_plate: formData?.rcVehiclePicture || "",
-    //   insurance_img: formData?.insuranceFile || "",
-    //   insurance_exp: dayjs(formData.insuranceExpiry).format("YYYY-MM-DD") || "",
-    //   registration_number: formData?.rcNumber || "",
-    //   registration_img: formData?.rcFile || null,
-    //   registration_exp: formData?.rcExpiry || "",
-    //   pan_number: formData?.panNumber || "",
-    //   pan_img: formData?.panFile || "",
-    //   pol_check_img: formData?.pollutionCheckFile || "",
-    //   pol_check_exp: formData?.pollutionCheckExpiry || "",
-    //   passbk_canc_check_img: formData?.bankPassbookCheque || "",
-    // };
-    let agent = {
-      rider_id: rowData?.s_no,
-      status: agentInfo?.status,
-      society_ids: agentInfo.society_ids || [],
-      full_name: agentInfo?.full_name || "",
-      warehouse_id: agentInfo?.warehouse.id || "",
-      tentative_date_of_joining: agentInfo?.joining_date || "",
-
-      vehicle_type: agentInfo?.vehicle_type || "",
-      mobile_number: agentInfo?.mobile_number || "",
-      account_number: agentInfo?.bank_account_number || "",
-      account_holder_name: agentInfo?.account_holder_name || "",
-      ifsc_code: agentInfo?.ifsc_code || "",
-      branch_name: agentInfo?.branch_name || "",
-      aadhar_number: formData?.aadharNumber || "",
-      aadhar_front: formData?.aadharFront || "",
-      aadhar_back: formData?.aadharBack || "",
-      dl_number: formData?.drivingLicenseNumber || "",
-      dl_img: formData?.drivingLicenseFile || "",
-      dl_exp: formData?.drivingLicenseExpiry || "",
-      dl_n_plate: formData?.rcVehiclePicture || "",
-      insurance_img: formData?.insuranceFile || "",
-      insurance_exp: dayjs(formData.insuranceExpiry).format("DD-MM-YYYY") || "",
-      registration_number: formData?.rcNumber || "",
-      registration_img: formData?.rcFile || "",
-      registration_exp: formData?.rcExpiry || "",
-      pan_number: formData?.panNumber || "",
-      pan_img: formData?.panFile || "",
-      pol_check_img: formData?.pollutionCheckFile || "",
-      pol_check_exp: formData?.pollutionCheckExpiry || "",
-      passbk_canc_check_img: formData?.bankPassbookCheque || "",
-    };
     try {
-      await modifyRider(agent); // Assuming modifyRider is set up to send headers and format JSON correctly
-      toast.success("Successfully Edited");
+      const validationErrors = validateAgent(agentInfo, formData);
+      if (validationErrors.length > 0) {
+        // Show error messages
+        validationErrors.forEach((error) => toast.error(error));
+        console.log("Validation errors:", validationErrors);
+        return; // Exit if validation fails
+      }
+
+      const formattedJoiningDate = dayjs(agentInfo.joining_date).format(
+        "DD-MM-YYYY"
+      );
+
+      const agent = {
+        rider_id: rowData?.s_no,
+        status: agentInfo?.status,
+        society_ids: agentInfo.society_ids || [],
+        full_name: agentInfo?.full_name || "",
+        warehouse_id: agentInfo?.warehouse?.id,
+        tentative_date_of_joining: formattedJoiningDate,
+        vehicle_type: agentInfo?.vehicle_type || "",
+        mobile_number: agentInfo?.mobile_number || "",
+        account_number: agentInfo?.bank_account_number || "",
+        account_holder_name: agentInfo?.account_holder_name || "",
+        ifsc_code: agentInfo?.ifsc_code || "",
+        branch_name: agentInfo?.branch_name || "",
+        aadhar_number: formData?.aadharNumber || "",
+        aadhar_front: formData?.aadharFront || "",
+        aadhar_back: formData?.aadharBack || "",
+        dl_number: formData?.drivingLicenseNumber || "",
+        dl_img: formData?.drivingLicenseFile || "",
+        dl_exp: formData?.drivingLicenseExpiry || "",
+        dl_n_plate: formData?.rcVehiclePicture || "",
+        insurance_img: formData?.insuranceFile || "",
+        insurance_exp:
+          dayjs(formData.insuranceExpiry).format("DD-MM-YYYY") || "",
+        registration_number: formData?.rcNumber || "",
+        registration_img: formData?.rcFile || "",
+        registration_exp: formData?.rcExpiry || "",
+        pan_number: formData?.panNumber || "",
+        pan_img: formData?.panFile || "",
+        pol_check_img: formData?.pollutionCheckFile || "",
+        pol_check_exp: formData?.pollutionCheckExpiry || "",
+        passbk_canc_check_img: formData?.bankPassbookCheque || "",
+      };
+
+      try {
+        await modifyRider(agent); // Assuming modifyRider is set up to send headers and format JSON correctly
+        toast.success("Successfully Edited");
+        navigate("/agents");
+      } catch (error) {
+        console.error("Error:", error.response?.data || error.message);
+        toast.error("Error Occurred");
+      }
     } catch (error) {
-      console.error("Error:", error.response?.data || error.message);
-      toast.error("Error Occurred");
+      console.error("Unexpected error:", error);
+      toast.error("Validation failed due to an unexpected error.");
     }
   };
 
@@ -716,6 +746,11 @@ const AgentCreation = ({
                     format={"DD-MM-YYYY"}
                     placeholder="Select date"
                     allowClear={false}
+                    defaultValue={
+                      agentInfo?.joining_date
+                        ? dayjs(agentInfo?.joining_date, "DD-MM-YYYY")
+                        : ""
+                    }
                     onChange={(date) => handleChange("joining_date", date)}
                     disabled={isDisable}
                   />
@@ -752,7 +787,7 @@ const AgentCreation = ({
                       <>
                         {riderActions?.length > 0 ? (
                           Array.from({ length: 1 }).map((_, index) => (
-                            <div key={index}>
+                            <div key={index} className="py-2 space-y-2">
                               {riderActions?.map((val) => (
                                 <div key={`${val.created_date}-${index}`}>
                                   <div className="font-medium text-md underline">

@@ -29,7 +29,7 @@ function FileAction({
   // Upload file and update form data
   const handleFileUpload = async (event, key) => {
     const files = event.target.files;
-    if (files.length === 0) return; // No file selected
+    if (files?.length === 0) return; // No file selected
 
     const file = files[0];
     const allowedTypes = [
@@ -44,7 +44,7 @@ function FileAction({
 
     // Validate file type and extension
     if (
-      !allowedTypes.includes(fileType) ||
+      !allowedTypes?.includes(fileType) ||
       !["pdf", "jpeg", "jpg", "png"].includes(fileExtension)
     ) {
       toast.error("Please upload PDF, JPEG, JPG, or PNG files only.");
@@ -64,7 +64,7 @@ function FileAction({
       );
       const uploadedLinks = res.data.links;
 
-      if (uploadedLinks.length > 0) {
+      if (uploadedLinks?.length > 0) {
         setFile(key, uploadedLinks[0]); // Update form with the uploaded file URL
       }
       toast.success("File uploaded successfully");

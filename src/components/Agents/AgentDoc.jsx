@@ -13,7 +13,10 @@ function AgentDoc({
   // handleUpload,
 }) {
   return (
-    <div className={isDisable && `pointer-events-none bg-gray-50`} style={{padding:"10px"}}>
+    <div
+      className={isDisable && `pointer-events-none bg-gray-50`}
+      style={{ padding: "10px" }}
+    >
       <div>
         {/* Aadhar details */}
         <div>
@@ -102,7 +105,11 @@ function AgentDoc({
               placeholder="Enter Expiry Date"
               allowClear={false}
               className="h-12 w-48"
-              value={dayjs(formData?.insuranceExpiry, "YYYY-MM-DD")}
+              defaultValue={
+                formData?.insuranceExpiry
+                  ? dayjs(formData?.insuranceExpiry, "YYYY-MM-DD")
+                  : null
+              }
               onChange={(date) =>
                 handleDateChange(
                   "insuranceExpiry",
@@ -141,7 +148,11 @@ function AgentDoc({
               placeholder="Enter Expiry Date"
               allowClear={false}
               className="h-12 w-48"
-              value={dayjs(formData?.rcExpiry, "DD-MM-YYYY")}
+              defaultValue={
+                formData?.rcExpiry
+                  ? dayjs(formData?.rcExpiry, "DD-MM-YYYY")
+                  : null
+              }
               onChange={(date) =>
                 handleDateChange(
                   "rcExpiry",
@@ -207,7 +218,11 @@ function AgentDoc({
               placeholder="Enter Expiry Date"
               allowClear={false}
               className="h-12 w-52"
-              value={dayjs(formData?.pollutionCheckExpiry, "DD-MM-YYYY")}
+              defaultValue={
+                formData?.pollutionCheckExpiry
+                  ? dayjs(formData?.pollutionCheckExpiry, "DD-MM-YYYY")
+                  : ""
+              }
               onChange={(date) =>
                 handleDateChange(
                   "pollutionCheckExpiry",

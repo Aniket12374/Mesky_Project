@@ -13,7 +13,7 @@ const colorStatus = {
   "NOT AVAILABLE": "#FF0028",
 };
 
-const ListingPage = ({ setShowAgentCreation }) => {
+const ListingPage = ({ setShowAgentCreation, setShowBack }) => {
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [size, setSize] = useState(10);
@@ -165,6 +165,7 @@ const ListingPage = ({ setShowAgentCreation }) => {
                 onClick: () => {
                   setSelectedRowData(record);
                   setShowAgentCreation(false);
+                  setShowBack(true);
                 },
               };
             }}

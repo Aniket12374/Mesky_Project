@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 
 const Agents = () => {
   const [showAgentCreation, setShowAgentCreation] = useState(false);
-  
+  const [showBack, setShowBack] = useState(false);
 
   const navigate = useNavigate();
 
@@ -24,17 +24,23 @@ const Agents = () => {
   return (
     <Layout>
       <div className="flex space-x-2">
-        {/* {showAgentCreation && ( */}
+        {showBack && (
           <div onClick={handleBack}>
             <img src={arrow} width={30} height={30} alt="backArrow-1" />
           </div>
-        {/* )} */}
+        )}
         <Header text="Agents " />
       </div>
       {showAgentCreation ? (
-        <AgentCreation setShowAgentCreation={setShowAgentCreation} />
+        <AgentCreation
+          setShowAgentCreation={setShowAgentCreation}
+          setShowBack={setShowBack}
+        />
       ) : (
-        <ListingPage setShowAgentCreation={setShowAgentCreation} />
+        <ListingPage
+          setShowAgentCreation={setShowAgentCreation}
+          setShowBack={setShowBack}
+        />
       )}
     </Layout>
   );

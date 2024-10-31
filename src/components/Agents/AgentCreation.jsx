@@ -364,6 +364,12 @@ const AgentCreation = ({
 
   const handleRiderFeedback = async (event) => {
     event.preventDefault(); // Prevent the form from refreshing the page
+
+    if (!riderFeedback.length > 0) {
+      toast.error("Please provide proper feedback");
+      return;
+    }
+
     const data = {
       rider_id: rowData.s_no,
       feedback: riderFeedback,
@@ -392,7 +398,10 @@ const AgentCreation = ({
     if (!agentInfo.warehouse?.id) {
       errors.push("Warehouse selection is required.");
     }
-    if (!agentInfo.joining_date) {
+    if (
+      !agentInfo.joining_date ||
+      agentInfo.joining_date == "Invalid Date"
+    ) {
       errors.push("Date of joining is required.");
     }
 
@@ -478,7 +487,7 @@ const AgentCreation = ({
         navigate("/agents");
       } catch (error) {
         console.error("Error:", error.response?.data || error.message);
-        toast.error("Error Occurred");
+        toast.error("Error Occurred , Please cross check the Joining date ");
       }
     } catch (error) {
       console.error("Unexpected error:", error);

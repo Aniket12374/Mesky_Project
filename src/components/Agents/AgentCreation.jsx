@@ -388,44 +388,79 @@ const AgentCreation = ({
   const validateAgent = (agentInfo, formData) => {
     const errors = [];
 
-    // Validate agentInfo fields
     if (!agentInfo.full_name) {
       errors.push("Full name is required.");
     }
     if (!agentInfo.mobile_number || !/^\d{10}$/.test(agentInfo.mobile_number)) {
       errors.push("A valid mobile number is required.");
     }
+    if (
+      agentInfo.status === "AVAILABLE" &&
+      !(agentInfo?.society_ids?.length > 0)
+    ) {
+      errors.push("Assigned areas is required.");
+    }
     if (!agentInfo.warehouse?.id) {
       errors.push("Warehouse selection is required.");
     }
-    if (
-      !agentInfo.joining_date ||
-      agentInfo.joining_date == "Invalid Date"
-    ) {
+    if (!agentInfo.joining_date || agentInfo.joining_date === "Invalid Date") {
       errors.push("Date of joining is required.");
     }
 
-    // Validate file presence (if applicable)
+    // Validate file presence and document details
+    if (!formData.aadharNumber) {
+      errors.push("Aadhar Number is required.");
+    }
     if (!formData.aadharFront) {
       errors.push("Aadhar front file is required.");
     }
     if (!formData.aadharBack) {
       errors.push("Aadhar back file is required.");
     }
+    if (!formData.drivingLicenseNumber) {
+      errors.push("Driving license number is required.");
+    }
     if (!formData.drivingLicenseFile) {
       errors.push("Driving license image is required.");
+    }
+    if (
+      !formData.drivingLicenseExpiry ||
+      formData.drivingLicenseExpiry === "Invalid Date"
+    ) {
+      errors.push("Driving license expiry date is required.");
     }
     if (!formData.insuranceFile) {
       errors.push("Insurance file is required.");
     }
+    if (
+      !formData.insuranceExpiry ||
+      formData.insuranceExpiry === "Invalid Date"
+    ) {
+      errors.push("Insurance expiry date is required.");
+    }
+    if (!formData.rcNumber) {
+      errors.push("Registration certificate number is required.");
+    }
     if (!formData.rcFile) {
       errors.push("Registration certificate file is required.");
+    }
+    if (!formData.rcExpiry || formData.rcExpiry === "Invalid Date") {
+      errors.push("Registration certificate expiry date is required.");
+    }
+    if (!formData.panNumber) {
+      errors.push("PAN number is required.");
     }
     if (!formData.panFile) {
       errors.push("PAN file is required.");
     }
     if (!formData.pollutionCheckFile) {
       errors.push("Pollution check file is required.");
+    }
+    if (
+      !formData.pollutionCheckExpiry ||
+      formData.pollutionCheckExpiry === "Invalid Date"
+    ) {
+      errors.push("Pollution check expiry date is required.");
     }
     if (!formData.bankPassbookCheque) {
       errors.push("Bank passbook or cheque image is required.");
@@ -605,6 +640,12 @@ const AgentCreation = ({
   //   return current && current < moment().startOf("day");
   // }
 
+  const [activeKey, setActiveKey] = useState("1");
+
+  const handleTabChange = (key) => {
+    setActiveKey(key);
+  };
+
   const statusOptions = [
     { value: "NOT AVAILABLE", label: "Not Available" },
     { value: "VERIFICATION PENDING", label: "Verification Pending" },
@@ -618,6 +659,7 @@ const AgentCreation = ({
         <div className="w-full flex justify-end ">
           <Button
             btnName={!isDisable ? "Save" : "Edit"}
+            className="w-24 rounded-full"
             onClick={() => {
               setIsDisable(!isDisable);
               toast.success(isDisable && "Edit Enabled");
@@ -625,9 +667,14 @@ const AgentCreation = ({
           />
           {isDisable ? (
             <>
-              <Button btnName={"Verify"} onClick={handleVerifyAgent} />
+              <Button
+                btnName={"Verify"}
+                onClick={handleVerifyAgent}
+                className="w-24 rounded-full"
+              />
               <Button
                 btnName={"Reject"}
+                className="w-24 rounded-full"
                 onClick={() => {
                   setRejectionModel(true);
                 }}
@@ -641,13 +688,30 @@ const AgentCreation = ({
       <div className="">
         {/* Tabs for Page 1 and Page 2 */}
         <div>
-          <Tabs defaultActiveKey="1" started>
+          <Tabs
+            defaultActiveKey="1"
+            started
+            activeKey={activeKey}
+            onChange={handleTabChange}
+          >
             {/* Page 1 - Agent Information */}
-            <Tabs.TabPane tab="Agent Info" key="1">
+            <Tabs.TabPane
+              tab={
+                <span
+                  style={{
+                    fontWeight: activeKey === "1" ? "bold" : "normal",
+                    color: activeKey === "1" ? "black" : "gray",
+                  }}
+                >
+                  Agent Profile
+                </span>
+              }
+              key="1"
+            >
               <div className="flex space-x-5 w-full justify-start ">
                 <div className="w-[40%] space-y-2">
                   <div className="">
-                    <label>Full Name</label>
+                    <label>NAME</label>
                     <input
                       type="text"
                       className="w-full h-12 rounded-lg border-select__control p-2"
@@ -659,7 +723,7 @@ const AgentCreation = ({
                     />
                   </div>
                   <div className="">
-                    <label>Phone Number (example: 8130067178)</label>
+                    <label>PHONE NUMBER</label>
                     <input
                       type="text"
                       className="w-full h-12 rounded-lg border-select__control p-2"
@@ -671,19 +735,21 @@ const AgentCreation = ({
                     />
                   </div>
                   <div className="">
-                    <label>Status</label>
-                    <select
-                      className="w-full h-12 rounded-lg border-select__control p-2"
-                      value={agentInfo.status}
-                      onChange={(e) => handleChange("status", e.target.value)}
+                    <label>STATUS</label>
+                    <Select
+                      className="w-full mt-1"
+                      style={{ height: "48px" }}
+                      value={statusOptions.find(
+                        (ware) => ware.value === agentInfo?.status
+                      )}
+                      onChange={(value) => handleChange("status", value)}
+                      classNamePrefix="border-select"
                       disabled={isDisable}
-                    >
-                      {statusOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
+                      options={statusOptions.map((option) => ({
+                        label: option.label,
+                        value: option.value,
+                      }))}
+                    />
                   </div>
                 </div>
 
@@ -692,7 +758,7 @@ const AgentCreation = ({
                     className={isDisable && `pointer-events-none`}
                     style={{ width: "50%" }}
                   >
-                    <label>Assigned Area</label>
+                    <label>ASSIGNED AREA</label>
                     <Select
                       options={socitiesList}
                       isMulti={true}
@@ -708,7 +774,7 @@ const AgentCreation = ({
                 </div>
               </div>
 
-              <div className="mt-4 flex w-[100%] justify-between">
+              <div className="mt-8 flex w-[100%] justify-between">
                 <div className="bg-[#FEF2F7] w-[40%] border-2 border-gray rounded-lg shadow-xs pt-4 space-y-3 px-4 pb-4">
                   <p className="font-bold text-lg">Work Details</p>
                   <div className={isDisable && `pointer-events-none`}>
@@ -760,6 +826,7 @@ const AgentCreation = ({
                         ? dayjs(agentInfo?.joining_date, "DD-MM-YYYY")
                         : ""
                     }
+                    className="h-12"
                     onChange={(date) => handleChange("joining_date", date)}
                     disabled={isDisable}
                   />
@@ -894,7 +961,19 @@ const AgentCreation = ({
             </Tabs.TabPane>
 
             {/* Page 2 - Documents */}
-            <Tabs.TabPane tab="Documents" key="2">
+            <Tabs.TabPane
+              key="2"
+              tab={
+                <span
+                  style={{
+                    fontWeight: activeKey === "2" ? "bold" : "normal",
+                    color: activeKey === "2" ? "black" : "gray",
+                  }}
+                >
+                  Uploaded Documents
+                </span>
+              }
+            >
               <AgentDoc
                 formData={formData}
                 setFormData={setFormData}
@@ -906,38 +985,52 @@ const AgentCreation = ({
             </Tabs.TabPane>
             {/* Page 3 -  Delivery History*/}
             {rowData && (
-              <Tabs.TabPane tab="Delivery History" key="3">
+              <Tabs.TabPane
+                tab={
+                  <span
+                    style={{
+                      fontWeight: activeKey === "3" ? "bold" : "normal",
+                      color: activeKey === "3" ? "black" : "gray",
+                    }}
+                  >
+                    Delivery History
+                  </span>
+                }
+                key="3"
+              >
                 <RiderHistory rowData={rowData} />
               </Tabs.TabPane>
             )}
           </Tabs>
         </div>
       </div>
-      <Modal
-        open={rejectionModel}
-        onCancel={() => setRejectionModel(false)}
-        footer={null}
-        title="Action History"
-        centered
-      >
-        <form>
-          <div className="flex flex-col">
-            <textarea
-              onChange={(e) => setRiderFeedback(e.target.value)}
-              placeholder="Enter rejection Feedback"
-              className="border border-gray-300 rounded-lg p-4 shadow-md h-72"
-            />
-          </div>
-          <div className="flex justify-center">
-            <button
-              onClick={handleRiderFeedback}
-              className="bg-[#DF4584] px-8 text-white p-2 mr-2 rounded-3xl relative top-2"
-            >
-              submit
-            </button>
-          </div>
-        </form>
-      </Modal>
+      <div>
+        <Modal
+          open={rejectionModel}
+          onCancel={() => setRejectionModel(false)}
+          footer={null}
+          title="Action History"
+          centered
+        >
+          <form>
+            <div className="flex flex-col">
+              <textarea
+                onChange={(e) => setRiderFeedback(e.target.value)}
+                placeholder="Enter rejection Feedback"
+                className="border border-gray-300 rounded-lg p-4 shadow-md h-72"
+              />
+            </div>
+            <div className="flex justify-center">
+              <button
+                onClick={handleRiderFeedback}
+                className="bg-[#DF4584] px-8 text-white p-2 mr-2 rounded-3xl relative top-2"
+              >
+                submit
+              </button>
+            </div>
+          </form>
+        </Modal>
+      </div>
     </>
   );
 };

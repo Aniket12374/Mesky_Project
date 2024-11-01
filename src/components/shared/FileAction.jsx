@@ -114,7 +114,7 @@ function FileAction({
             <Image src={tickMark} width={15} height={15} preview={false} />
           )}
         </p>
-        <div className="flex justify-center space-x-6 pt-1">
+        <div className="flex justify-center pr-4 space-x-6 pt-1">
           {upload && (
             <>
               <input

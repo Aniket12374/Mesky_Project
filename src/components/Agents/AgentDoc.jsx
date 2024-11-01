@@ -31,7 +31,7 @@ function AgentDoc({
               disabled={isDisable}
             />
             <FileAction
-              name="Upload Aadhar Front JPG/PDF"
+              name="Upload Aadhar Front (JPG/PDF)"
               upload={true}
               display={true}
               fileKey="aadharFront"
@@ -41,7 +41,7 @@ function AgentDoc({
               download={true}
             />
             <FileAction
-              name="Upload Aadhar Back JPG/PDF"
+              name="Upload Aadhar Back (JPG/PDF)"
               upload={true}
               display={true}
               fileKey="aadharBack"
@@ -84,7 +84,7 @@ function AgentDoc({
               disabled={isDisable}
             />
             <FileAction
-              name="Upload DL with expiry date Visible JPG/PDF"
+              name="Upload DL with expiry date visible (JPG/PDF)"
               upload={true}
               display={true}
               fileKey="drivingLicenseFile"
@@ -162,7 +162,7 @@ function AgentDoc({
               disabled={isDisable}
             />
             <FileAction
-              name="Upload Vehicle Registration Certificate (JPG/PDF)"
+              name="Upload vehicle Registration Certificate (JPG/PDF)"
               upload={true}
               display={true}
               fileKey="rcFile"
@@ -172,7 +172,7 @@ function AgentDoc({
               download={true}
             />
             <FileAction
-              name="Upload Vehicle Picture with Number Visible (JPG/PDF)"
+              name="Upload vehicle Picture with Number Visible (JPG/PDF)"
               upload={true}
               display={true}
               fileKey="rcVehiclePicture"
@@ -232,7 +232,7 @@ function AgentDoc({
               disabled={isDisable}
             />
             <FileAction
-              name="Upload Vehicle PUC Check (JPG/PDF)"
+              name="Upload vehicle PUC Check (JPG/PDF)"
               upload={true}
               display={true}
               fileKey="pollutionCheckFile"

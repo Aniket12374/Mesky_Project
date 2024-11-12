@@ -14,7 +14,7 @@ import {
 } from "../../services/riders/riderService";
 import toast from "react-hot-toast";
 import Select from "react-select";
-import { DatePicker, Modal, Tabs } from "antd";
+import { DatePicker, Modal, Tabs, Drawer } from "antd";
 import moment from "moment";
 import FileAction from "../shared/FileAction";
 import AgentDetail from "./AgentDetail";
@@ -378,6 +378,7 @@ const AgentCreation = ({
     try {
       await feedBackRider(data);
       toast.success("Feed Back Submited Successfully");
+      setRiderFeedback("");
       setRejectionModel(false);
       // handle successful response
     } catch (error) {
@@ -518,8 +519,9 @@ const AgentCreation = ({
 
       try {
         await modifyRider(agent); // Assuming modifyRider is set up to send headers and format JSON correctly
-        toast.success("Successfully Edited");
+        toast.success("Successfully Verfiyed");
         navigate("/agents");
+        window.location.reload();
       } catch (error) {
         console.error("Error:", error.response?.data || error.message);
         toast.error("Error Occurred , Please cross check the Joining date ");
@@ -1005,12 +1007,12 @@ const AgentCreation = ({
         </div>
       </div>
       <div>
-        <Modal
+        {/* <Modal
           open={rejectionModel}
           onCancel={() => setRejectionModel(false)}
           footer={null}
           title="Action History"
-          centered
+          Right
         >
           <form>
             <div className="flex flex-col">
@@ -1018,6 +1020,7 @@ const AgentCreation = ({
                 onChange={(e) => setRiderFeedback(e.target.value)}
                 placeholder="Enter rejection Feedback"
                 className="border border-gray-300 rounded-lg p-4 shadow-md h-72"
+                value={riderFeedback}
               />
             </div>
             <div className="flex justify-center">
@@ -1029,7 +1032,33 @@ const AgentCreation = ({
               </button>
             </div>
           </form>
-        </Modal>
+        </Modal> */}
+        <Drawer
+          open={rejectionModel}
+          onClose={() => setRejectionModel(false)}
+          title="Action History"
+          placement="right" // Opens from the right side
+          width={400} // Adjust width as needed
+        >
+          <form>
+            <div className="flex flex-col">
+              <textarea
+                onChange={(e) => setRiderFeedback(e.target.value)}
+                placeholder="Enter rejection Feedback"
+                className="border border-gray-300 rounded-lg p-4 shadow-md h-72"
+                value={riderFeedback}
+              />
+            </div>
+            <div className="flex justify-center">
+              <button
+                onClick={handleRiderFeedback}
+                className="bg-[#DF4584] px-8 text-white p-2 mr-2 rounded-3xl relative top-2"
+              >
+                Submit
+              </button>
+            </div>
+          </form>
+        </Drawer>
       </div>
     </>
   );

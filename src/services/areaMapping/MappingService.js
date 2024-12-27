@@ -9,3 +9,4 @@ export const mappingList = (start = 0) => {
     `/api/delivery/portal/area_mapping_v2?_start=${start}&_end=${start + 20}`
   );
 };
+
